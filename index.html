@@ -386,7 +386,7 @@
         let currentSheet = null; 
         
         // ===========================================
-        // FUNCIONES AUXILIARES DE FECHA (CORRECCIÓN FINAL)
+        // FUNCIONES AUXILIARES DE FECHA
         // ===========================================
 
         /**
@@ -483,7 +483,7 @@
         }
         
         // ===========================================
-        // LÓGICA DEL MODAL DE BIENVENIDA (ACTUALIZADA)
+        // LÓGICA DEL MODAL DE BIENVENIDA
         // ===========================================
 
         /**
@@ -822,32 +822,28 @@
         }
         
         /**
-         * Renderiza la hoja 'gestor_programacion' como acordeones. (ACTUALIZADO CON FORMATO DE DISPLAY)
+         * Renderiza la hoja 'gestor_programacion' como acordeones. 
          */
         function renderProgramacion(programacion) {
-            const todayStr = getTodayDateString();
-            
-            // FILTRADO: Excluye el evento de hoy (ya que se muestra en el modal)
-            const filteredProgramacion = programacion.filter(item => 
-                normalizeDate(item.fecha) !== todayStr
-            );
+            // 🚨 CORRECCIÓN: Quitamos el filtro que excluía los eventos de HOY
+            // para que puedan aparecer en la lista y ser coloreados de verde si están en curso.
 
-            if (filteredProgramacion.length === 0) {
+            if (programacion.length === 0) {
                  noResults.classList.remove('hidden');
                  return;
             }
 
-            filteredProgramacion.forEach(item => {
+            programacion.forEach(item => { // Iteramos sobre la lista completa 'programacion'
                 const titulo = item.titulo || 'Sin Título';
                 const hora = item.hora || 'Sin Hora';
                 const costo = item.costo || 'Consultar Costo';
                 const detalle = item.detalle || 'Detalle no especificado.';
                 
-                // 🚨 Uso de la nueva función para mostrar el formato DD/MM/YYYY limpio
+                // Uso de la función para mostrar el formato DD/MM/YYYY limpio
                 const fechaDisplay = formatDateForDisplay(item.fecha); 
                 const fechaInput = item.fecha; 
 
-                // Las clases de color/badge se mantienen, pero ya sabemos que no será 'HOY'
+                // Las clases de color/badge se mantienen
                 const { cardClass, badgeClass, iconClass } = getHoraColorClass(fechaInput, hora);
 
                 const card = document.createElement('div');
