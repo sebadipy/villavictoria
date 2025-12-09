@@ -50,7 +50,7 @@
         }
 
         /* ==================================== */
-        /* Estilo para el FLIP 180 GRADOS (Se mantiene) */
+        /* Estilo para el FLIP 180 GRADOS */
         /* ==================================== */
         .flip-container {
             width: 100%;
@@ -78,11 +78,10 @@
         }
         
         .menu-button {
-             /* Estilo del botón base para ambas caras del flip */
              width: 100%; 
-             padding: 1.5rem; /* p-6 */
-             border-radius: 1rem; /* rounded-2xl */
-             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); /* shadow-xl */
+             padding: 1.5rem; 
+             border-radius: 1rem; 
+             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); 
              transition: transform 0.3s, box-shadow 0.3s;
              background-color: white;
              text-align: left;
@@ -93,7 +92,6 @@
             transform: scale(1.02);
         }
         
-        /* *************** CARA TRASERA (OPCIONAL: LA USAMOS COMO CARTA DE CONFIRMACIÓN AL DAR VUELTA) ******************* */
         .back-face {
              transform: rotateY(180deg);
              align-items: center;
@@ -105,7 +103,7 @@
         }
 
         /* ==================================== */
-        /* Estilos de la Tarjeta de Muestra (Acordeón) */
+        /* Estilos de la Tarjeta de Acordeón */
         /* ==================================== */
         .muestra-card {
             transition: all 0.3s ease-in-out;
@@ -117,11 +115,41 @@
             background-color: var(--color-card-bg);
         }
         
-        /* Estilo para la tarjeta HOY (verde) - heredado de programacion.html */
+        /* Estilo para la tarjeta HOY (verde) 🚨 NUEVO FONDO 🚨*/
         .muestra-card.bg-green-100-card {
             background-color: #d1fae5 !important; /* bg-green-100 */
             border-color: #10b981 !important; /* border-green-500 */
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); 
+        }
+        
+        /* ==================================== */
+        /* Estilos para el efecto de titileo (Blinking) 🚨 MEJORADO 🚨 */
+        /* ==================================== */
+        @keyframes blink-green {
+            0%, 100% { 
+                opacity: 1; 
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            }
+            50% { 
+                opacity: 0.7; /* Más opaco en el punto medio */
+                box-shadow: 0 0 25px 8px #059669; /* Sombra verde más fuerte (emerald-600) */
+            }
+        }
+
+        .muestra-card.blinking-card {
+            animation: blink-green 1.5s ease-in-out infinite;
+        }
+        
+        /* ==================================== */
+        /* Estilo para los BADGES (Fechas/Horas) RESALTADOS 🚨 NUEVO 🚨 */
+        /* ==================================== */
+        .tag-badge.highlighted-badge {
+            padding: 0.5rem 0.8rem; /* Más padding */
+            font-size: 0.9rem; /* Más grande */
+            font-weight: 900; /* Extra-bold */
+            letter-spacing: 0.05em;
+            border: 2px solid #10b981; /* Borde verde fuerte */
+            border-radius: 0.75rem;
         }
 
         .muestra-content {
@@ -167,22 +195,20 @@
             text-shadow: 0 1px 1px rgba(0,0,0,0.05);
         }
 
-        /* Ocultamos los estilos de tabla para que Programación use Acordeón */
+        /* Ocultamos los estilos de tabla para que Programación use Acordeón (Se mantiene) */
         .table-container, .programacion-table, .programacion-table th, .programacion-table td {
             display: none !important; 
         }
         
-        /* 🚨 NUEVO: Clase de estilo para el logo más grande */
         .large-logo {
-            width: 170px; /* Tamaño más grande para acercarse al ancho del texto */
+            width: 170px; 
             height: 170px; 
-            margin-bottom: 0.75rem; /* Ajuste de margen inferior */
-            /* El filtro para hacerlo blanco y con sombra se mantiene */
+            margin-bottom: 0.75rem; 
             filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(0, 0, 0, 0.3)); 
         }
 
         /* ==================================== */
-        /* ESTILOS DEL MODAL DE BIENVENIDA (ACTUALIZADO A LA IMAGEN) */
+        /* ESTILOS DEL MODAL DE BIENVENIDA */
         /* ==================================== */
         .modal-overlay {
             position: fixed;
@@ -194,7 +220,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 50; /* z-50 */
+            z-index: 50; 
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease-in-out;
@@ -206,17 +232,16 @@
         }
 
         .modal-content {
-            /* CAMBIO: Usamos el color principal de fondo (#4A5568) */
             background-color: var(--color-primary);
             max-width: 400px;
             width: 90%;
             padding: 1.5rem;
-            border-radius: 1rem; /* rounded-xl */
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* shadow-2xl */
+            border-radius: 1rem; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
             transform: scale(0.9);
             transition: transform 0.3s ease-in-out;
-            color: white; /* CAMBIO: Color de texto blanco por el fondo oscuro */
-            border: 4px solid var(--color-accent); /* CAMBIO: Borde de acento */
+            color: white; 
+            border: 4px solid var(--color-accent); 
         }
 
         .modal-overlay.open .modal-content {
@@ -224,12 +249,10 @@
         }
         
         .logo-modal {
-            filter: brightness(0) invert(1); /* CAMBIO: El logo debe ser BLANCO en este fondo oscuro */
+            filter: brightness(0) invert(1); 
             width: 150px; 
             height: 150px; 
-            /* Estilo para el logo dentro del modal */
             border-radius: 50%;
-            /* Quitar sombra para que se vea más limpio contra el fondo sólido */
             box-shadow: none; 
         }
     </style>
@@ -380,7 +403,7 @@
         const menuView = document.getElementById('menuView');
         const dataView = document.getElementById('dataView');
         const welcomeModal = document.getElementById('welcomeModal');
-        const modalMessage = document.getElementById('modalMessage'); // Nuevo: Contenedor del mensaje
+        const modalMessage = document.getElementById('modalMessage'); 
         
         let allData = []; 
         let currentSheet = null; 
@@ -403,7 +426,7 @@
                 const year = dateValue.getFullYear();
                 const month = dateValue.getMonth();
                 const day = dateValue.getDate();
-                dateObj = new Date(year, month, day); 
+                dateObj = new Date(year, month, day, 12); // Usar mediodía para evitar problemas de zona horaria
             } 
             // 2. Si es una cadena de texto (ej: "09/12/2025 17:00:00" o "2025-12-09T...")
             else if (typeof dateValue === 'string') {
@@ -412,18 +435,20 @@
                 // --- A. Formato DD/MM/YYYY (Barra) ---
                 if (dateOnly.includes('/')) {
                     const parts = dateOnly.split('/');
-                    // Usar YYYY, MM-1, DD para crear la fecha correctamente
+                    // Usar YYYY, MM-1, DD para crear la fecha correctamente (usamos 12hs)
                     if (parts.length === 3) {
-                        dateObj = new Date(parts[2], parts[1] - 1, parts[0]); 
+                        dateObj = new Date(parts[2], parts[1] - 1, parts[0], 12); 
                     }
                 // --- B. Formato ISO (Guion) o YYYY-MM-DD ---
                 } else if (dateOnly.includes('-')) {
                      // Intenta parsear directamente la cadena ISO o YYYY-MM-DD
-                     dateObj = new Date(dateValue);
+                     // Reemplazamos 'T' y 'Z' si existen y ajustamos a mediodía local
+                     const cleanDate = dateOnly.replace(/T.*Z$/, ''); 
+                     dateObj = new Date(cleanDate + 'T12:00:00'); 
                 }
             } 
             
-            // Si logramos obtener un objeto Date válido (y no es 'Invalid Date'), lo formateamos
+            // Si logramos obtener un objeto Date válido, lo formateamos
             if (dateObj && !isNaN(dateObj.getTime())) {
                 const year = dateObj.getFullYear();
                 const month = String(dateObj.getMonth() + 1).padStart(2, '0'); 
@@ -440,35 +465,15 @@
          * Helper para formatear cualquier valor de fecha a la cadena DD/MM/YYYY para la interfaz.
          */
         function formatDateForDisplay(dateValue) {
-            if (!dateValue) return 'Sin Fecha';
+            const normalized = normalizeDate(dateValue);
+            if (!normalized) return 'Sin Fecha';
             
-            let dateObj;
-            
-            if (dateValue instanceof Date) {
-                dateObj = dateValue;
+            // normalized es YYYY-MM-DD
+            const parts = normalized.split('-');
+            if (parts.length === 3) {
+                 return `${parts[2]}/${parts[1]}/${parts[0]}`; // DD/MM/YYYY
             }
-            else if (typeof dateValue === 'string') {
-                const dateOnly = String(dateValue).split(' ')[0].trim();
-                
-                if (dateOnly.includes('/')) { // DD/MM/YYYY
-                    const parts = dateOnly.split('/');
-                    if (parts.length === 3) {
-                        dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
-                    }
-                } else if (dateOnly.includes('-')) { // ISO o YYYY-MM-DD
-                     dateObj = new Date(dateValue);
-                }
-            }
-            
-            if (dateObj && !isNaN(dateObj.getTime())) {
-                const day = String(dateObj.getDate()).padStart(2, '0');
-                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                const year = dateObj.getFullYear();
-                return `${day}/${month}/${year}`;
-            }
-            
-            // Fallback: intenta extraer los primeros 10 caracteres
-            return String(dateValue).substring(0, 10); 
+            return normalized;
         }
 
         /**
@@ -493,14 +498,14 @@
             if (!sessionStorage.getItem('welcomeModalShown')) {
                 
                 let todayEvent = null;
-                const todayStr = getTodayDateString(); // YYYY-MM-DD
+                const todayStr = getTodayDateString(); 
 
                 try {
                     // Carga silenciosa de la programación
                     const programacion = await fetchSheetData('gestor_programacion');
                     
                     if (programacion && programacion.length > 0) {
-                        // AQUÍ SE USA normalizeDate para la comparación
+                        // Aquí se usa normalizeDate para la comparación
                         todayEvent = programacion.find(item => 
                             normalizeDate(item.fecha) === todayStr
                         );
@@ -512,7 +517,7 @@
 
                 if (todayEvent) {
                     const titulo = todayEvent.titulo || 'Evento Cultural';
-                    // 🚨 Ajuste para limpiar el formato de la hora
+                    // Ajuste para limpiar el formato de la hora
                     const rawHora = todayEvent.hora || 'todo el día';
                     const hora = rawHora.replace(/\s*hs/i, '').trim(); 
                     
@@ -624,7 +629,6 @@
         
         /**
          * Carga los datos desde el AppScript de forma silenciosa.
-         * Retorna un Array de objetos o lanza un error.
          */
         async function fetchSheetData(sheetName) {
             const url = `${APPSSCRIPT_URL}?action=READ_SHEET&sheetName=${sheetName}`;
@@ -656,7 +660,7 @@
             try {
                 const dataArray = await fetchSheetData(sheetName);
                 
-                // Ordenar por la columna 'fecha' si existe, si no, por la primera columna
+                // Ordenar por la columna 'fecha' si existe
                 dataArray.sort((a, b) => {
                     const keyA = a.fecha || Object.values(a)[0] || '';
                     const keyB = b.fecha || Object.values(b)[0] || '';
@@ -666,7 +670,6 @@
                     const dateB = normalizeDate(keyB);
                     
                     if (dateA && dateB) {
-                        // Compara las cadenas YYYY-MM-DD para un orden confiable
                         return dateA.localeCompare(dateB);
                     }
                     // Si no son fechas o son inválidas, compara alfabéticamente
@@ -693,39 +696,46 @@
         }
         
         /**
-         * Determina las clases de estilo según si el evento es pasado, pendiente o en curso (HOY).
+         * Determina las clases de estilo según si el evento es pasado, pendiente o EN CURSO (HOY).
+         * 🚨 ACTUALIZADO: Agrega blinking-card y el indicador isHappening. 🚨
          */
         function getHoraColorClass(fechaStr, horaStr) {
             const now = new Date();
             let dateEvent = null;
 
-            // Normaliza la fecha a YYYY-MM-DD
+            // 1. Normaliza la fecha a YYYY-MM-DD
             let isoDateStr = normalizeDate(fechaStr);
             
             if (!isoDateStr) {
-                 return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock' };
+                 return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock', isHappening: false };
             }
 
+            // 2. Intenta parsear la hora
             try {
+                // Elimina 'hs' y espacios
                 const cleanedHoraStr = String(horaStr).replace(/\s*hs/i, '').trim(); 
                 let timeParts = cleanedHoraStr.split(':');
+                
                 if (timeParts.length === 2) {
-                    const h = String(parseInt(timeParts[0])).padStart(2, '0');
-                    const m = String(parseInt(timeParts[1])).padStart(2, '0');
-                    // Combina la fecha normalizada y la hora
+                    const h = String(parseInt(timeParts[0] || '0')).padStart(2, '0');
+                    const m = String(parseInt(timeParts[1] || '0')).padStart(2, '0');
+                    // Combina la fecha normalizada y la hora con T (necesario para la zona horaria local)
                     dateEvent = new Date(`${isoDateStr}T${h}:${m}:00`);
                 } else {
-                     // Si no hay hora válida, usa el final del día
+                     // Si la hora es "todo el día" o inválida, asumimos el final del día
                      dateEvent = new Date(`${isoDateStr}T23:59:00`); 
                 }
             } catch(e) {
-                 return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock' }; 
+                 // Si falla, asumimos el final del día
+                 dateEvent = new Date(`${isoDateStr}T23:59:00`);
             }
 
             if (isNaN(dateEvent.getTime())) {
-                return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock' };
+                return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock', isHappening: false };
             }
 
+            // 3. Comparación de días
+            // Creamos fechas de día (sin hora) para comparar solo la fecha
             const nowDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             nowDay.setHours(0, 0, 0, 0); 
             
@@ -735,24 +745,40 @@
             const isToday = eventDay.getTime() === nowDay.getTime();
             
             if (eventDay.getTime() < nowDay.getTime()) {
-                return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-history' };
+                // Evento pasado
+                return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-history', isHappening: false };
             }
             
             if (isToday) {
-                // Si es hoy, verifica si ya pasó la hora
-                if (dateEvent.getTime() < now.getTime()) {
-                    return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-check-circle' };
-                } else {
-                    // Es hoy y todavía no pasó
-                    return { 
-                        cardClass: 'bg-green-100-card', 
+                // Si es HOY, revisamos la hora
+                // Damos un margen de 2 horas desde la hora de inicio para considerarlo "en curso" si la hora actual es posterior
+                const startTime = dateEvent.getTime();
+                const twoHoursLater = startTime + (2 * 60 * 60 * 1000); 
+                
+                if (now.getTime() < startTime) {
+                    // HOY, PRÓXIMO: Titila, verde de fondo y badge verde
+                     return { 
+                        cardClass: 'bg-green-100-card blinking-card', 
                         badgeClass: 'bg-green-600 text-white', 
-                        iconClass: 'fas fa-calendar-day' 
+                        iconClass: 'fas fa-calendar-day',
+                        isHappening: true 
                     };
+                } else if (now.getTime() >= startTime && now.getTime() < twoHoursLater) {
+                    // HOY, EN CURSO: Titila, verde de fondo y badge verde
+                     return { 
+                        cardClass: 'bg-green-100-card blinking-card', 
+                        badgeClass: 'bg-green-600 text-white', 
+                        iconClass: 'fas fa-calendar-day',
+                        isHappening: true 
+                    };
+                } else {
+                    // HOY, TERMINADO (hace más de 2 horas)
+                     return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-check-circle', isHappening: false };
                 }
             }
             
-            return { cardClass: '', badgeClass: 'bg-blue-100 text-blue-700', iconClass: 'fas fa-clock' };
+            // Evento futuro (cualquier otro día)
+            return { cardClass: '', badgeClass: 'bg-blue-100 text-blue-700', iconClass: 'fas fa-clock', isHappening: false };
         }
 
         /**
@@ -761,7 +787,8 @@
         function renderData(data, sheetName) {
             dataList.innerHTML = '';
             
-            if (data.length === 0) {
+            // Si no hay datos activos, salimos.
+            if (data.length === 0) { 
                 noResults.classList.remove('hidden');
                 return;
             }
@@ -775,7 +802,7 @@
         }
 
         /**
-         * Renderiza la hoja 'gestor_muestra' como acordeones. (Sin cambios)
+         * Renderiza la hoja 'gestor_muestra' como acordeones.
          */
         function renderMuestras(muestras) {
             muestras.forEach(muestra => {
@@ -822,47 +849,66 @@
         }
         
         /**
-         * Renderiza la hoja 'gestor_programacion' como acordeones. 
+         * Renderiza la hoja 'gestor_programacion' como acordeones. 🚨 ACTUALIZADO 🚨
          */
         function renderProgramacion(programacion) {
-            // 🚨 CORRECCIÓN: Quitamos el filtro que excluía los eventos de HOY
-            // para que puedan aparecer en la lista y ser coloreados de verde si están en curso.
+            
+            // Filtramos solo los eventos futuros y los de HOY
+            const filteredProgramacion = programacion.filter(item => {
+                const eventDateNormalized = normalizeDate(item.fecha);
+                const todayStr = getTodayDateString();
+                
+                // Si la fecha es pasada, la omitimos de la lista (pero no la de hoy, aunque ya haya pasado la hora)
+                // Usamos la lógica de getHoraColorClass para ver si es pasado o no
+                const { iconClass } = getHoraColorClass(item.fecha, item.hora);
+                
+                // Excluimos solo si es claramente 'pasado' (icono de historial)
+                if (iconClass === 'fas fa-history' || iconClass === 'fas fa-check-circle') {
+                    return false;
+                }
+                
+                return true; 
+            });
 
-            if (programacion.length === 0) {
+            if (filteredProgramacion.length === 0) {
                  noResults.classList.remove('hidden');
                  return;
             }
 
-            programacion.forEach(item => { // Iteramos sobre la lista completa 'programacion'
+            filteredProgramacion.forEach(item => {
                 const titulo = item.titulo || 'Sin Título';
                 const hora = item.hora || 'Sin Hora';
                 const costo = item.costo || 'Consultar Costo';
                 const detalle = item.detalle || 'Detalle no especificado.';
                 
-                // Uso de la función para mostrar el formato DD/MM/YYYY limpio
                 const fechaDisplay = formatDateForDisplay(item.fecha); 
                 const fechaInput = item.fecha; 
 
-                // Las clases de color/badge se mantienen
-                const { cardClass, badgeClass, iconClass } = getHoraColorClass(fechaInput, hora);
+                // Obtiene todas las clases y el estado 'isHappening'
+                const { cardClass, badgeClass, iconClass, isHappening } = getHoraColorClass(fechaInput, hora);
 
+                // Determina la clase extra para el badge si el evento está en curso (o próximo, hoy)
+                const highlightClass = isHappening ? 'highlighted-badge' : '';
+                
                 const card = document.createElement('div');
-                card.className = `muestra-card ${cardClass}`; 
+                // Aplica la clase de fondo verde y la de titileo cuando isHappening es true
+                card.className = `muestra-card ${cardClass} ${isHappening ? 'blinking-card' : ''}`; 
 
                 card.onclick = function() {
                     toggleMuestra(this); 
                 };
 
-                const headerBgClass = cardClass ? 'bg-white' : 'bg-white hover:bg-gray-50 active:bg-gray-100';
+                // Si está titilando, la cabecera no debe cambiar de color al pasar el mouse
+                const headerBgClass = isHappening ? 'bg-white' : 'bg-white hover:bg-gray-50 active:bg-gray-100';
 
                 card.innerHTML = `
                     <div class="p-4 flex items-start justify-between ${headerBgClass} transition duration-150 rounded-lg">
                         <div class="flex-1 min-w-0 pr-4">
                             <div class="flex items-center mb-2">
-                                <span class="tag-badge bg-indigo-100 text-indigo-700">
+                                <span class="tag-badge bg-indigo-100 text-indigo-700 ${highlightClass}">
                                     <i class="fas fa-calendar-alt mr-1"></i> ${fechaDisplay} 
                                 </span>
-                                <span class="tag-badge ${badgeClass}">
+                                <span class="tag-badge ${badgeClass} ${highlightClass}">
                                     <i class="${iconClass} mr-1"></i> ${hora} 
                                 </span>
                             </div>
@@ -891,7 +937,7 @@
         }
 
         /**
-         * Abre o cierra la tarjeta de muestra y cierra las otras abiertas. (Sin cambios)
+         * Abre o cierra la tarjeta de muestra y cierra las otras abiertas.
          */
         function toggleMuestra(card) {
             const isOpen = card.classList.contains('open');
