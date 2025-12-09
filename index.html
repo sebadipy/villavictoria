@@ -11,8 +11,8 @@
     <style>
         /* Configuraciones personalizadas de Tailwind (Paleta Victoria Ocampo) */
         :root {
-            /* Azul Marino Oscuro (Header Villa Victoria) */
-            --color-primary: #2E4A71; 
+            /* 🚨 MANTENIDO: Grisecito neutro para el encabezado (#4A5568) */
+            --color-primary: #4A5568; 
             /* Turquesa Claro (Acento de la barra de MDQ Cultura) */
             --color-accent: #30B5AA;  
             --color-bg-light: #f3f4f6;/* Fondo claro */
@@ -50,7 +50,7 @@
         }
 
         /* ==================================== */
-        /* 🚨 NUEVO: ESTILO PARA EL FLIP 180 GRADOS 🚨 */
+        /* Estilo para el FLIP 180 GRADOS (Se mantiene) */
         /* ==================================== */
         .flip-container {
             width: 100%;
@@ -104,12 +104,9 @@
              text-align: center;
         }
 
-
         /* ==================================== */
         /* Estilos de la Tarjeta de Muestra (Acordeón) */
-        /* ... (el resto de tus estilos de muestra-card, etc., quedan igual) ... */
         /* ==================================== */
-
         .muestra-card {
             transition: all 0.3s ease-in-out;
             cursor: pointer;
@@ -175,28 +172,31 @@
             display: none !important; 
         }
         
-        /* Estilo para la animación 3D del logo */
-        #threeJsContainer {
-            width: 48px; /* w-12 */
-            height: 48px; /* h-12 */
-            position: relative;
-            opacity: 0.9;
-            flex-shrink: 0; /* Evita que se encoja */
+        /* 🚨 NUEVO: Clase de estilo para el logo más grande */
+        .large-logo {
+            width: 150px; /* Tamaño más grande para acercarse al ancho del texto */
+            height: 150px; 
+            margin-bottom: 0.75rem; /* Ajuste de margen inferior */
+            /* El filtro para hacerlo blanco y con sombra se mantiene */
+            filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(0, 0, 0, 0.3)); 
         }
+
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
     <div class="app-container">
         
-        <header class="p-5 bg-[var(--color-primary)] text-white shadow-xl flex-shrink-0 relative flex items-center justify-between">
+        <!-- ESTRUCTURA DEL HEADER: Color gris oscuro y centrado -->
+        <header class="p-5 bg-[var(--color-primary)] text-white shadow-xl flex-shrink-0 relative flex flex-col items-center">
             
-            <div class="flex items-center space-x-2 flex-shrink-0">
-                <img src="logo.jpg" alt="Logo Villa Victoria" class="w-8 h-8" style="filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(48, 181, 170, 0.5));" />
-            </div>
+            <img 
+                src="logo.png" 
+                alt="Logo Villa Victoria" 
+                class="large-logo" 
+            />
 
-            <div class="text-center flex-1 mx-2">
+            <div class="text-center">
                 <h1 class="header-title text-3xl sm:text-4xl">
                     VILLA VICTORIA
                 </h1>
@@ -204,19 +204,23 @@
                     Centro Cultural y Programación
                 </p>
             </div>
-
-            <div id="threeJsContainer"></div>
+            
         </header>
 
         <div id="menuView" class="p-6 flex-1 flex flex-col justify-center items-center space-y-8 bg-[var(--color-bg-light)]">
             
             <p class="text-center text-xl font-semibold text-gray-700">Seleccioná una sección para empezar:</p>
 
-            <div class="w-full max-w-sm" style="height: 120px;"> <div 
+            <!-- ************************************ -->
+            <!-- BOTÓN MUESTRAS - IMPLEMENTACIÓN FLIP -->
+            <!-- ************************************ -->
+            <div class="w-full max-w-sm" style="height: 120px;"> <!-- Fijamos una altura para el contenedor -->
+                <div 
                     id="muestraButtonFlip"
                     onclick="animateButton(this, 'gestor_muestra')" 
                     class="flip-container h-full"
                 >
+                    <!-- Cara Frontal (Botón Normal) -->
                     <div class="flip-face menu-button border-[var(--color-accent)] hover:border-[var(--color-accent)]">
                         <div class="flex items-center">
                             <i class="fas fa-camera-retro text-4xl text-[var(--color-accent)] mr-4"></i>
@@ -227,6 +231,7 @@
                         </div>
                     </div>
                     
+                    <!-- Cara Trasera (Mensaje de Confirmación/Carga) -->
                     <div class="flip-face back-face bg-white shadow-xl">
                         <p class="text-xl font-bold">Cargando Muestras...</p>
                         <i class="fas fa-spinner fa-spin text-4xl mt-3 text-[var(--color-accent)]"></i>
@@ -234,11 +239,16 @@
                 </div>
             </div>
 
-            <div class="w-full max-w-sm" style="height: 120px;"> <div 
+            <!-- ************************************ -->
+            <!-- BOTÓN PROGRAMACIÓN - IMPLEMENTACIÓN FLIP -->
+            <!-- ************************************ -->
+            <div class="w-full max-w-sm" style="height: 120px;"> <!-- Fijamos una altura para el contenedor -->
+                <div 
                     id="programacionButtonFlip"
                     onclick="animateButton(this, 'gestor_programacion')" 
                     class="flip-container h-full"
                 >
+                    <!-- Cara Frontal (Botón Normal) -->
                     <div class="flip-face menu-button border-[var(--color-primary)] hover:border-[var(--color-primary)]">
                         <div class="flex items-center">
                             <i class="fas fa-calendar-check text-4xl text-[var(--color-primary)] mr-4"></i>
@@ -249,6 +259,7 @@
                         </div>
                     </div>
                     
+                    <!-- Cara Trasera (Mensaje de Confirmación/Carga) -->
                     <div class="flip-face back-face bg-white shadow-xl">
                         <p class="text-xl font-bold">Cargando Programación...</p>
                         <i class="fas fa-spinner fa-spin text-4xl mt-3 text-[var(--color-primary)]"></i>
@@ -310,11 +321,11 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             changeView('menu'); // Inicia en el menú
-            initThreeJS(); // Inicializa la animación 3D del logo
+            // 🚨 ELIMINADO: La llamada a initThreeJS();
         });
         
         /**
-         * 🚨 ACTUALIZADO: Maneja la animación 3D de FLIP al hacer clic y luego navega.
+         * Maneja la animación 3D de FLIP al hacer clic y luego navega.
          * @param {HTMLElement} flipContainer - El elemento con la clase .flip-container.
          * @param {string} sheetName - El nombre de la hoja a cargar (ej: 'gestor_muestra', 'gestor_programacion').
          */
@@ -679,77 +690,6 @@
                 card.classList.remove('open');
             }
         }
-
-        // ===========================================
-        // LÓGICA DE ANIMACIÓN 3D (THREE.JS) - Se mantiene el logo girando
-        // ===========================================
-        let scene, camera, renderer, cube;
-
-        function initThreeJS() {
-            const container = document.getElementById('threeJsContainer');
-            if (!container) return;
-            
-            const width = container.offsetWidth;
-            const height = container.offsetHeight;
-
-            scene = new THREE.Scene();
-
-            camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-            camera.position.z = 1.5;
-
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(width, height);
-            container.appendChild(renderer.domElement);
-            
-            const geometry = new THREE.BoxGeometry(0.7, 0.7, 0.7);
-            const material = new THREE.MeshPhongMaterial({ 
-                color: 0x30B5AA, 
-                shininess: 90,
-                specular: 0xffffff
-            });
-            cube = new THREE.Mesh(geometry, material);
-            scene.add(cube);
-            
-            const ambientLight = new THREE.AmbientLight(0x404040, 5); 
-            scene.add(ambientLight);
-            
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 4);
-            directionalLight.position.set(1, 1, 1).normalize();
-            scene.add(directionalLight);
-            
-            window.addEventListener('resize', onWindowResize, false);
-
-            animate();
-        }
-        
-        function onWindowResize() {
-            const container = document.getElementById('threeJsContainer');
-            if (!container) return;
-
-            const width = container.offsetWidth;
-            const height = container.offsetHeight;
-
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-
-            renderer.setSize(width, height);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            if (cube) {
-                cube.rotation.x += 0.005;
-                cube.rotation.y += 0.008;
-            }
-
-            renderer.render(scene, camera);
-        }
-
-        window.onload = function () {
-            initThreeJS();
-        }
-
     </script>
 </body>
 </html>
