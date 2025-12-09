@@ -50,25 +50,64 @@
         }
 
         /* ==================================== */
-        /* ESTILO Y ANIMACIÓN DE BOTONES DEL MENÚ (ROTACIÓN 3D) */
+        /* 🚨 NUEVO: ESTILO PARA EL FLIP 180 GRADOS 🚨 */
         /* ==================================== */
-        .menu-button-wrapper {
-            perspective: 1000px;
-        }
-
-        .menu-button {
+        .flip-container {
+            width: 100%;
+            height: 100%; 
+            position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1.0); 
-            backface-visibility: hidden; /* FIX: Asegura el buen renderizado 3D */
+            transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+        
+        .flip-container.flipped {
+            transform: rotateY(180deg);
         }
 
-        .menu-button.click-rotate {
-            transform: rotateY(360deg);
+        .flip-face {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%; 
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch; 
         }
-        /* ==================================== */
+        
+        .menu-button {
+             /* Estilo del botón base para ambas caras del flip */
+             width: 100%; 
+             padding: 1.5rem; /* p-6 */
+             border-radius: 1rem; /* rounded-2xl */
+             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); /* shadow-xl */
+             transition: transform 0.3s, box-shadow 0.3s;
+             background-color: white;
+             text-align: left;
+             border: 2px solid transparent;
+        }
+        
+        .menu-button:hover {
+            transform: scale(1.02);
+        }
+        
+        /* *************** CARA TRASERA (OPCIONAL: LA USAMOS COMO CARTA DE CONFIRMACIÓN AL DAR VUELTA) ******************* */
+        .back-face {
+             transform: rotateY(180deg);
+             align-items: center;
+             justify-content: center;
+             padding: 1rem;
+             color: var(--color-primary);
+             font-weight: 700;
+             text-align: center;
+        }
+
 
         /* ==================================== */
         /* Estilos de la Tarjeta de Muestra (Acordeón) */
+        /* ... (el resto de tus estilos de muestra-card, etc., quedan igual) ... */
         /* ==================================== */
 
         .muestra-card {
@@ -81,11 +120,10 @@
             background-color: var(--color-card-bg);
         }
         
-        /* 🚨 NUEVO: Estilo para la tarjeta "EN CURSO" (Fondo Verde) 🚨 */
+        /* Estilo para la tarjeta HOY (verde) - heredado de programacion.html */
         .muestra-card.bg-green-100-card {
             background-color: #d1fae5 !important; /* bg-green-100 */
             border-color: #10b981 !important; /* border-green-500 */
-            /* Agregamos una pequeña elevación para destacar */
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); 
         }
 
@@ -137,7 +175,7 @@
             display: none !important; 
         }
         
-        /* Estilo para la animación 3D */
+        /* Estilo para la animación 3D del logo */
         #threeJsContainer {
             width: 48px; /* w-12 */
             height: 48px; /* h-12 */
@@ -145,8 +183,6 @@
             opacity: 0.9;
             flex-shrink: 0; /* Evita que se encoja */
         }
-
-
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
@@ -176,36 +212,48 @@
             
             <p class="text-center text-xl font-semibold text-gray-700">Seleccioná una sección para empezar:</p>
 
-            <div class="w-full max-w-sm menu-button-wrapper">
-                <button 
-                    id="muestraButton"
+            <div class="w-full max-w-sm" style="height: 120px;"> <div 
+                    id="muestraButtonFlip"
                     onclick="animateButton(this, 'gestor_muestra')" 
-                    class="menu-button w-full p-6 bg-white border-2 border-transparent hover:border-[var(--color-accent)] rounded-2xl shadow-xl transition duration-300 transform hover:scale-[1.02] text-left"
+                    class="flip-container h-full"
                 >
-                    <div class="flex items-center">
-                        <i class="fas fa-camera-retro text-4xl text-[var(--color-accent)] mr-4"></i>
-                        <div>
-                            <span class="text-xl font-bold text-gray-900 block">MUESTRAS</span>
-                            <span class="text-sm text-gray-500">Listado de exhibiciones activas.</span>
+                    <div class="flip-face menu-button border-[var(--color-accent)] hover:border-[var(--color-accent)]">
+                        <div class="flex items-center">
+                            <i class="fas fa-camera-retro text-4xl text-[var(--color-accent)] mr-4"></i>
+                            <div>
+                                <span class="text-xl font-bold text-gray-900 block">MUESTRAS</span>
+                                <span class="text-sm text-gray-500">Listado de exhibiciones activas.</span>
+                            </div>
                         </div>
                     </div>
-                </button>
+                    
+                    <div class="flip-face back-face bg-white shadow-xl">
+                        <p class="text-xl font-bold">Cargando Muestras...</p>
+                        <i class="fas fa-spinner fa-spin text-4xl mt-3 text-[var(--color-accent)]"></i>
+                    </div>
+                </div>
             </div>
 
-            <div class="w-full max-w-sm menu-button-wrapper">
-                <button 
-                    id="programacionButton"
+            <div class="w-full max-w-sm" style="height: 120px;"> <div 
+                    id="programacionButtonFlip"
                     onclick="animateButton(this, 'gestor_programacion')" 
-                    class="menu-button w-full p-6 bg-white border-2 border-transparent hover:border-[var(--color-primary)] rounded-2xl shadow-xl transition duration-300 transform hover:scale-[1.02] text-left"
+                    class="flip-container h-full"
                 >
-                    <div class="flex items-center">
-                        <i class="fas fa-calendar-check text-4xl text-[var(--color-primary)] mr-4"></i>
-                        <div>
-                            <span class="text-xl font-bold text-gray-900 block">PROGRAMACIÓN</span>
-                            <span class="text-sm text-gray-500">Planificación semanal/mensual.</span>
+                    <div class="flip-face menu-button border-[var(--color-primary)] hover:border-[var(--color-primary)]">
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar-check text-4xl text-[var(--color-primary)] mr-4"></i>
+                            <div>
+                                <span class="text-xl font-bold text-gray-900 block">PROGRAMACIÓN</span>
+                                <span class="text-sm text-gray-500">Planificación semanal/mensual.</span>
+                            </div>
                         </div>
                     </div>
-                </button>
+                    
+                    <div class="flip-face back-face bg-white shadow-xl">
+                        <p class="text-xl font-bold">Cargando Programación...</p>
+                        <i class="fas fa-spinner fa-spin text-4xl mt-3 text-[var(--color-primary)]"></i>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -262,28 +310,30 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             changeView('menu'); // Inicia en el menú
-            initThreeJS(); // Inicializa la animación 3D
+            initThreeJS(); // Inicializa la animación 3D del logo
         });
         
         /**
-         * Maneja la animación 3D del botón al hacer clic y luego navega.
-         * @param {HTMLElement} button - El elemento del botón.
+         * 🚨 ACTUALIZADO: Maneja la animación 3D de FLIP al hacer clic y luego navega.
+         * @param {HTMLElement} flipContainer - El elemento con la clase .flip-container.
          * @param {string} sheetName - El nombre de la hoja a cargar (ej: 'gestor_muestra', 'gestor_programacion').
          */
-        function animateButton(button, sheetName) {
-            // 1. Iniciar animación de rotación 3D
-            button.classList.add('click-rotate');
+        function animateButton(flipContainer, sheetName) {
             
-            // 2. Deshabilitar el botón para evitar doble clic
-            button.disabled = true;
+            // 1. Iniciar animación de rotación 180 grados
+            flipContainer.classList.add('flipped');
+            
+            // 2. Deshabilitar los botones para evitar doble clic
+            const buttons = document.querySelectorAll('.flip-container');
+            buttons.forEach(btn => btn.style.pointerEvents = 'none');
 
-            // 3. Después de que termine la animación (0.8s), cambiar de vista
+            // 3. Después de que termine la animación (0.8s, que es la duración en CSS), cambiar de vista
             setTimeout(() => {
                 changeView('data', sheetName);
                 
-                // 4. Resetear el botón (eliminar la clase de rotación y habilitar)
-                button.classList.remove('click-rotate');
-                button.disabled = false;
+                // 4. Resetear los botones (eliminar la clase de rotación y habilitar)
+                flipContainer.classList.remove('flipped');
+                buttons.forEach(btn => btn.style.pointerEvents = 'auto');
             }, 800); 
         }
 
@@ -401,34 +451,24 @@
         /**
          * Determina las clases de estilo según si el evento es pasado, pendiente o en curso (HOY).
          * Retorna cardClass, badgeClass e iconClass.
-         * @param {string} fechaStr - La fecha del evento (DD/MM/YYYY o YYYY-MM-DD).
-         * @param {string} horaStr - La hora del evento (HH:MM hs).
-         * @returns {object} {cardClass, badgeClass, iconClass}
+         * (Función heredada de programacion.html, se mantiene por si se reutiliza)
          */
         function getHoraColorClass(fechaStr, horaStr) {
-            // 🚨 Modificado: Usamos la hora actual de la máquina del usuario (o donde se ejecuta el JS) 🚨
             const now = new Date();
             let dateEvent = null;
 
-            // 1. Convertir la fecha a formato YYYY-MM-DD para crear un objeto Date
             let isoDateStr;
             if (fechaStr && fechaStr.includes('/')) {
                 const parts = fechaStr.split(' ')[0].split('/'); 
-                // Convierte DD/MM/YYYY a YYYY-MM-DD para compatibilidad de Date()
                 isoDateStr = `${parts[2]}-${parts[1]}-${parts[0]}`; 
             } else if (fechaStr) {
                 isoDateStr = fechaStr.split(' ')[0];
             } else {
-                 // Caso sin fecha
                  return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock' };
             }
             
-            // 2. Crear el objeto Date completo con fecha y hora
             try {
-                // LIMPIAR EL FORMATO " hs" DE LA HORA
                 const cleanedHoraStr = horaStr.replace(/\s*hs/i, '').trim(); 
-                
-                // Asegurarse de que la hora esté en formato HH:MM (ej. "9:00" -> "09:00")
                 let timeParts = cleanedHoraStr.split(':');
                 if (timeParts.length === 2) {
                     const h = String(parseInt(timeParts[0])).padStart(2, '0');
@@ -438,49 +478,37 @@
                      throw new Error('Formato de hora inválido');
                 }
             } catch(e) {
-                 // Si falla la hora o el formato es inválido, devolvemos gris
-                 console.warn(`Error al parsear fecha/hora: ${e.message}`, fechaStr, horaStr);
                  return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock' }; 
             }
 
-            // Si la fecha resultante es inválida, devolvemos gris
             if (isNaN(dateEvent.getTime())) {
                 return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock' };
             }
 
-            // 3. Comparación (Normalizar la fecha actual a medianoche)
             const nowDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             nowDay.setHours(0, 0, 0, 0); 
             
             const eventDay = new Date(dateEvent.getFullYear(), dateEvent.getMonth(), dateEvent.getDate());
             eventDay.setHours(0, 0, 0, 0); 
 
-            // Comparar solo el día
             const isToday = eventDay.getTime() === nowDay.getTime();
             
-            // --- LÓGICA DE ESTADO ---
-            
             if (eventDay.getTime() < nowDay.getTime()) {
-                // Pasado (días anteriores)
                 return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-history' };
             }
             
             if (isToday) {
                 if (dateEvent.getTime() < now.getTime()) {
-                    // Ya pasó la hora de HOY
                     return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-check-circle' };
                 } else {
-                    // ¡Es HOY y la hora está EN CURSO o es FUTURA! 
-                    // 🚨 Aplicamos la clase de fondo verde a la tarjeta. 🚨
                     return { 
-                        cardClass: 'bg-green-100-card', // Clase CSS definida en el <style>
-                        badgeClass: 'bg-green-600 text-white', // Badge oscuro para mejor contraste
-                        iconClass: 'fas fa-calendar-day' // Cambiamos el ícono a uno que denote "HOY"
+                        cardClass: 'bg-green-100-card', 
+                        badgeClass: 'bg-green-600 text-white', 
+                        iconClass: 'fas fa-calendar-day' 
                     };
                 }
             }
             
-            // Futuro (días posteriores): Sin fondo en tarjeta
             return { cardClass: '', badgeClass: 'bg-blue-100 text-blue-700', iconClass: 'fas fa-clock' };
         }
 
@@ -508,23 +536,19 @@
          */
         function renderMuestras(muestras) {
             muestras.forEach(muestra => {
-                // Claves: nombre, periodo, detalle (asumiendo que vienen de la hoja muestra)
                 const nombre = muestra.Nombre || muestra.nombre || Object.values(muestra)[0] || 'Sin Nombre';
                 const periodo = muestra.Periodo || muestra.periodo || Object.values(muestra)[1] || 'Sin Período';
                 const detalle = muestra.Detalle || muestra.detalle || Object.values(muestra)[2] || 'Detalle no especificado.';
                 
+                const { cardClass } = getHoraColorClass(periodo, '23:59'); 
+                
                 const card = document.createElement('div');
-                // 🚨 NUEVO: Aunque las muestras no tienen hora, si Periodo contiene una fecha/hora, esto lo aplicaría.
-                // Lo dejamos sin color de tarjeta de momento para MUESTRAS, pero mantiene la clase para consistencia.
-                // Si la Muestra tiene Periodo = "HASTA HOY 18 HS", la lógica de getHoraColorClass podría aplicarse
-                const { cardClass } = getHoraColorClass(periodo, '23:59'); // Asumimos fin de día para 'periodo'
                 card.className = `muestra-card ${cardClass}`; 
 
                 card.onclick = function() {
                     toggleMuestra(this);
                 };
 
-                // Si la tarjeta está activa, la cabecera (div interno) debe ser blanca para contraste.
                 const headerBgClass = cardClass ? 'bg-white' : 'bg-white hover:bg-gray-50 active:bg-gray-100';
 
                 card.innerHTML = `
@@ -559,13 +583,11 @@
          */
         function renderProgramacion(programacion) {
             programacion.forEach(item => {
-                // Mapeo de claves en MINÚSCULAS 
                 const titulo = item.titulo || 'Sin Título';
                 const hora = item.hora || 'Sin Hora';
                 const costo = item.costo || 'Consultar Costo';
                 const detalle = item.detalle || 'Detalle no especificado.';
                 
-                // Formateo de FECHA para que salga DD/MM/AAAA 
                 let fechaDisplay = 'Sin Fecha';
                 let fechaInput = item.fecha; 
 
@@ -591,18 +613,15 @@
                     }
                 }
                 
-                // 🚨 OBTENEMOS cardClass 🚨
                 const { cardClass, badgeClass, iconClass } = getHoraColorClass(fechaInput, hora);
 
                 const card = document.createElement('div');
-                // *** APLICAMOS cardClass (verde si transcurre) AQUÍ ***
                 card.className = `muestra-card ${cardClass}`; 
 
                 card.onclick = function() {
                     toggleMuestra(this); 
                 };
 
-                // Si la tarjeta está activa (verde), la cabecera (div interno) debe ser blanca para contraste.
                 const headerBgClass = cardClass ? 'bg-white' : 'bg-white hover:bg-gray-50 active:bg-gray-100';
 
                 card.innerHTML = `
@@ -662,7 +681,7 @@
         }
 
         // ===========================================
-        // LÓGICA DE ANIMACIÓN 3D (THREE.JS)
+        // LÓGICA DE ANIMACIÓN 3D (THREE.JS) - Se mantiene el logo girando
         // ===========================================
         let scene, camera, renderer, cube;
 
@@ -673,37 +692,31 @@
             const width = container.offsetWidth;
             const height = container.offsetHeight;
 
-            // Escena (Scene)
             scene = new THREE.Scene();
 
-            // Cámara (Camera)
             camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
             camera.position.z = 1.5;
 
-            // Renderizador (Renderer)
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(width, height);
             container.appendChild(renderer.domElement);
             
-            // Geometría y Material (Cubo)
             const geometry = new THREE.BoxGeometry(0.7, 0.7, 0.7);
             const material = new THREE.MeshPhongMaterial({ 
-                color: 0x30B5AA, // Color de acento
+                color: 0x30B5AA, 
                 shininess: 90,
                 specular: 0xffffff
             });
             cube = new THREE.Mesh(geometry, material);
             scene.add(cube);
             
-            // Luces (Lights)
-            const ambientLight = new THREE.AmbientLight(0x404040, 5); // Luz suave
+            const ambientLight = new THREE.AmbientLight(0x404040, 5); 
             scene.add(ambientLight);
             
             const directionalLight = new THREE.DirectionalLight(0xffffff, 4);
             directionalLight.position.set(1, 1, 1).normalize();
             scene.add(directionalLight);
             
-            // Manejar redimensionamiento (responsive)
             window.addEventListener('resize', onWindowResize, false);
 
             animate();
@@ -725,7 +738,6 @@
         function animate() {
             requestAnimationFrame(animate);
 
-            // Rotación suave del cubo
             if (cube) {
                 cube.rotation.x += 0.005;
                 cube.rotation.y += 0.008;
@@ -734,7 +746,6 @@
             renderer.render(scene, camera);
         }
 
-        // Asegurarse de que la animación inicie después de que el DOM esté listo
         window.onload = function () {
             initThreeJS();
         }
