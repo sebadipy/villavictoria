@@ -11,7 +11,7 @@
     <style>
         /* Configuraciones personalizadas de Tailwind (Paleta Victoria Ocampo) */
         :root {
-            /* 🚨 MANTENIDO: Grisecito neutro para el encabezado (#4A5568) */
+            /* Grisecito neutro para el encabezado (#4A5568) */
             --color-primary: #4A5568; 
             /* Turquesa Claro (Acento de la barra de MDQ Cultura) */
             --color-accent: #30B5AA;  
@@ -181,10 +181,84 @@
             filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(0, 0, 0, 0.3)); 
         }
 
+        /* ==================================== */
+        /* ESTILOS DEL MODAL DE BIENVENIDA (ACTUALIZADO A LA IMAGEN) */
+        /* ==================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50; /* z-50 */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            /* CAMBIO: Usamos el color principal de fondo (#4A5568) */
+            background-color: var(--color-primary);
+            max-width: 400px;
+            width: 90%;
+            padding: 1.5rem;
+            border-radius: 1rem; /* rounded-xl */
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* shadow-2xl */
+            transform: scale(0.9);
+            transition: transform 0.3s ease-in-out;
+            color: white; /* CAMBIO: Color de texto blanco por el fondo oscuro */
+            border: 4px solid var(--color-accent); /* CAMBIO: Borde de acento */
+        }
+
+        .modal-overlay.open .modal-content {
+            transform: scale(1);
+        }
+        
+        .logo-modal {
+            filter: brightness(0) invert(1); /* CAMBIO: El logo debe ser BLANCO en este fondo oscuro */
+            width: 150px; 
+            height: 150px; 
+            /* Estilo para el logo dentro del modal */
+            border-radius: 50%;
+            /* Quitar sombra para que se vea más limpio contra el fondo sólido */
+            box-shadow: none; 
+        }
     </style>
 </head>
 <body>
 
+    <div id="welcomeModal" class="modal-overlay">
+        <div class="modal-content text-center">
+            <img 
+                src="logo.png" 
+                alt="Logo Villa Victoria" 
+                class="logo-modal mx-auto mb-4" 
+            />
+            <h3 class="text-2xl font-extrabold text-white mb-2">
+                ¡Bienvenido/a a Villa Victoria!
+            </h3>
+            
+            <div id="modalMessage" class="text-gray-200 mb-6 text-sm">
+                <p>Descubrí las muestras y la programación cultural que ofrece este espacio único en Mar del Plata. Esta es tu guía rápida y en tiempo real.</p>
+            </div>
+            
+            <button 
+                onclick="closeModal()" 
+                class="w-full py-2 px-4 bg-[var(--color-accent)] text-white font-bold rounded-lg shadow-md hover:bg-[#289E93] transition duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2"
+            >
+                Entendido, ¡a Explorar!
+            </button>
+        </div>
+    </div>
     <div class="app-container">
         
         <header class="p-5 bg-[var(--color-primary)] text-white shadow-xl flex-shrink-0 relative flex flex-col items-center">
@@ -305,23 +379,184 @@
         const sectionTitle = document.getElementById('sectionTitle');
         const menuView = document.getElementById('menuView');
         const dataView = document.getElementById('dataView');
+        const welcomeModal = document.getElementById('welcomeModal');
+        const modalMessage = document.getElementById('modalMessage'); // Nuevo: Contenedor del mensaje
         
         let allData = []; 
         let currentSheet = null; 
         
+        // ===========================================
+        // FUNCIONES AUXILIARES DE FECHA (CORRECCIÓN FINAL)
+        // ===========================================
+
+        /**
+         * Normaliza cualquier formato de fecha (Date Object, DD/MM/YYYY, ISO) a YYYY-MM-DD para comparación.
+         */
+        function normalizeDate(dateValue) {
+            if (!dateValue) return null;
+
+            let dateObj;
+
+            // 1. Si Apps Script devuelve un objeto Date
+            if (dateValue instanceof Date) {
+                // Obtenemos los componentes de la fecha sin offset de tiempo (hora)
+                const year = dateValue.getFullYear();
+                const month = dateValue.getMonth();
+                const day = dateValue.getDate();
+                dateObj = new Date(year, month, day); 
+            } 
+            // 2. Si es una cadena de texto (ej: "09/12/2025 17:00:00" o "2025-12-09T...")
+            else if (typeof dateValue === 'string') {
+                const dateOnly = String(dateValue).split(' ')[0].trim(); 
+                
+                // --- A. Formato DD/MM/YYYY (Barra) ---
+                if (dateOnly.includes('/')) {
+                    const parts = dateOnly.split('/');
+                    // Usar YYYY, MM-1, DD para crear la fecha correctamente
+                    if (parts.length === 3) {
+                        dateObj = new Date(parts[2], parts[1] - 1, parts[0]); 
+                    }
+                // --- B. Formato ISO (Guion) o YYYY-MM-DD ---
+                } else if (dateOnly.includes('-')) {
+                     // Intenta parsear directamente la cadena ISO o YYYY-MM-DD
+                     dateObj = new Date(dateValue);
+                }
+            } 
+            
+            // Si logramos obtener un objeto Date válido (y no es 'Invalid Date'), lo formateamos
+            if (dateObj && !isNaN(dateObj.getTime())) {
+                const year = dateObj.getFullYear();
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0'); 
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                // Retornamos el formato de comparación estándar
+                return `${year}-${month}-${day}`;
+            }
+
+            return null; // Si no pudo normalizar
+        }
+
+
+        /**
+         * Helper para formatear cualquier valor de fecha a la cadena DD/MM/YYYY para la interfaz.
+         */
+        function formatDateForDisplay(dateValue) {
+            if (!dateValue) return 'Sin Fecha';
+            
+            let dateObj;
+            
+            if (dateValue instanceof Date) {
+                dateObj = dateValue;
+            }
+            else if (typeof dateValue === 'string') {
+                const dateOnly = String(dateValue).split(' ')[0].trim();
+                
+                if (dateOnly.includes('/')) { // DD/MM/YYYY
+                    const parts = dateOnly.split('/');
+                    if (parts.length === 3) {
+                        dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
+                    }
+                } else if (dateOnly.includes('-')) { // ISO o YYYY-MM-DD
+                     dateObj = new Date(dateValue);
+                }
+            }
+            
+            if (dateObj && !isNaN(dateObj.getTime())) {
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const year = dateObj.getFullYear();
+                return `${day}/${month}/${year}`;
+            }
+            
+            // Fallback: intenta extraer los primeros 10 caracteres
+            return String(dateValue).substring(0, 10); 
+        }
+
+        /**
+         * Obtiene la fecha de hoy en formato YYYY-MM-DD.
+         */
+        function getTodayDateString() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        // ===========================================
+        // LÓGICA DEL MODAL DE BIENVENIDA (ACTUALIZADA)
+        // ===========================================
+
+        /**
+         * Muestra el modal de bienvenida y busca el evento de hoy.
+         */
+        async function showWelcomeModal() {
+            if (!sessionStorage.getItem('welcomeModalShown')) {
+                
+                let todayEvent = null;
+                const todayStr = getTodayDateString(); // YYYY-MM-DD
+
+                try {
+                    // Carga silenciosa de la programación
+                    const programacion = await fetchSheetData('gestor_programacion');
+                    
+                    if (programacion && programacion.length > 0) {
+                        // AQUÍ SE USA normalizeDate para la comparación
+                        todayEvent = programacion.find(item => 
+                            normalizeDate(item.fecha) === todayStr
+                        );
+                    }
+                } catch (error) {
+                    console.error('Error al cargar datos para el modal:', error);
+                    // No hacemos nada, el modal usará el mensaje por defecto
+                }
+
+                if (todayEvent) {
+                    const titulo = todayEvent.titulo || 'Evento Cultural';
+                    // 🚨 Ajuste para limpiar el formato de la hora
+                    const rawHora = todayEvent.hora || 'todo el día';
+                    const hora = rawHora.replace(/\s*hs/i, '').trim(); 
+                    
+                    // Mensaje con el evento de hoy
+                    modalMessage.innerHTML = `
+                        <p class="font-bold text-white mb-4">
+                            ¡Hoy te comentamos que está programado el evento:
+                            <span class="text-[var(--color-accent)]">${titulo}</span> a las <span class="text-[var(--color-accent)]">${hora}</span>!
+                        </p>
+                        <p class="text-gray-200 text-sm">
+                            Descubrí las muestras y la programación completa navegando por las secciones.
+                        </p>
+                    `;
+                } else {
+                    // Mensaje por defecto
+                    modalMessage.innerHTML = `
+                        <p>Descubrí las muestras y la programación cultural que ofrece este espacio único en Mar del Plata. Esta es tu guía rápida y en tiempo real.</p>
+                        <p class="mt-2 text-gray-300 text-xs">(Por el momento, no hay eventos de programación exclusivos para hoy).</p>
+                    `;
+                }
+                
+                welcomeModal.classList.add('open');
+            }
+        }
+        
+        /**
+         * Cierra el modal de bienvenida y marca que ya se ha visto.
+         */
+        function closeModal() {
+            welcomeModal.classList.remove('open');
+            sessionStorage.setItem('welcomeModalShown', 'true');
+        }
+
         // ===========================================
         // LÓGICA DE DATOS Y VISTAS
         // ===========================================
 
         document.addEventListener('DOMContentLoaded', () => {
             changeView('menu'); // Inicia en el menú
-            // 🚨 ELIMINADO: La llamada a initThreeJS();
+            showWelcomeModal(); // Muestra el modal al cargar
         });
         
         /**
          * Maneja la animación 3D de FLIP al hacer clic y luego navega.
-         * @param {HTMLElement} flipContainer - El elemento con la clase .flip-container.
-         * @param {string} sheetName - El nombre de la hoja a cargar (ej: 'gestor_muestra', 'gestor_programacion').
          */
         function animateButton(flipContainer, sheetName) {
             
@@ -365,7 +600,7 @@
                     sectionTitle.textContent = 'PROGRAMACIÓN';
                 }
 
-                fetchData(sheetName);
+                fetchAndRenderData(sheetName);
             }
         }
 
@@ -388,55 +623,59 @@
         }
         
         /**
-         * Carga los datos desde el AppScript, especificando la hoja.
+         * Carga los datos desde el AppScript de forma silenciosa.
+         * Retorna un Array de objetos o lanza un error.
          */
-        async function fetchData(sheetName) {
+        async function fetchSheetData(sheetName) {
+            const url = `${APPSSCRIPT_URL}?action=READ_SHEET&sheetName=${sheetName}`;
+            const response = await fetchWithRetry(url);
+            const responseText = await response.text();
+            
+            let data = {};
+            try {
+                data = JSON.parse(responseText);
+            } catch(e) {
+                throw new Error(`Respuesta inválida (no JSON) al cargar ${sheetName}.`); 
+            }
+            
+            if (data.status === 'success' && Array.isArray(data.data)) {
+                return data.data;
+            } else {
+                throw new Error(data.message || `Error en el status al cargar ${sheetName}.`);
+            }
+        }
+
+        /**
+         * Carga los datos y los renderiza en la vista.
+         */
+        async function fetchAndRenderData(sheetName) {
             loadingSpinner.classList.remove('hidden');
             dataList.innerHTML = '';
             noResults.classList.add('hidden');
 
             try {
-                // Llama al AppScript con la acción de lectura y el nombre de la hoja
-                const url = `${APPSSCRIPT_URL}?action=READ_SHEET&sheetName=${sheetName}`;
-                const response = await fetchWithRetry(url);
-                const responseText = await response.text();
+                const dataArray = await fetchSheetData(sheetName);
                 
-                let data = {};
-                try {
-                    data = JSON.parse(responseText);
-                } catch(e) {
-                     throw new Error(`Respuesta inválida. Detalle: ${responseText.substring(0, 100)}...`); 
-                }
-                
-                const dataArray = data.data || []; 
-                
-                if (data.status === 'success' && Array.isArray(dataArray)) {
+                // Ordenar por la columna 'fecha' si existe, si no, por la primera columna
+                dataArray.sort((a, b) => {
+                    const keyA = a.fecha || Object.values(a)[0] || '';
+                    const keyB = b.fecha || Object.values(b)[0] || '';
                     
-                    allData = dataArray;
+                    // Intentar ordenar por la fecha normalizada (YYYY-MM-DD)
+                    const dateA = normalizeDate(keyA);
+                    const dateB = normalizeDate(keyB);
                     
-                    // Ordenar por la columna 'fecha' si existe, si no, por la primera columna
-                    allData.sort((a, b) => {
-                        const keyA = a.fecha || Object.values(a)[0] || '';
-                        const keyB = b.fecha || Object.values(b)[0] || '';
-                        
-                        // Intentar ordenar por fecha (DD/MM/YYYY o YYYY-MM-DD)
-                        if (String(keyA).includes('/') || String(keyB).includes('/') || String(keyA).includes('-')) {
-                            const dateA = new Date(String(keyA).split(' ')[0].replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$2-$1'));
-                            const dateB = new Date(String(keyB).split(' ')[0].replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$2-$1'));
-                            
-                            if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
-                                return dateA.getTime() - dateB.getTime();
-                            }
-                        }
-                        // Si no son fechas o son inválidas, compara alfabéticamente
-                        return String(keyA).localeCompare(String(keyB));
-                    });
+                    if (dateA && dateB) {
+                        // Compara las cadenas YYYY-MM-DD para un orden confiable
+                        return dateA.localeCompare(dateB);
+                    }
+                    // Si no son fechas o son inválidas, compara alfabéticamente
+                    return String(keyA).localeCompare(String(keyB));
+                });
 
-                    renderData(allData, sheetName); 
+                allData = dataArray;
+                renderData(allData, sheetName); 
 
-                } else {
-                    throw new Error(data.message || 'Error: Formato de datos inesperado o status no es "success".');
-                }
             } catch (error) {
                 console.error('Error al cargar la data:', error);
                 
@@ -455,32 +694,29 @@
         
         /**
          * Determina las clases de estilo según si el evento es pasado, pendiente o en curso (HOY).
-         * Retorna cardClass, badgeClass e iconClass.
-         * (Función heredada de programacion.html, se mantiene por si se reutiliza)
          */
         function getHoraColorClass(fechaStr, horaStr) {
             const now = new Date();
             let dateEvent = null;
 
-            let isoDateStr;
-            if (fechaStr && fechaStr.includes('/')) {
-                const parts = fechaStr.split(' ')[0].split('/'); 
-                isoDateStr = `${parts[2]}-${parts[1]}-${parts[0]}`; 
-            } else if (fechaStr) {
-                isoDateStr = fechaStr.split(' ')[0];
-            } else {
+            // Normaliza la fecha a YYYY-MM-DD
+            let isoDateStr = normalizeDate(fechaStr);
+            
+            if (!isoDateStr) {
                  return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock' };
             }
-            
+
             try {
-                const cleanedHoraStr = horaStr.replace(/\s*hs/i, '').trim(); 
+                const cleanedHoraStr = String(horaStr).replace(/\s*hs/i, '').trim(); 
                 let timeParts = cleanedHoraStr.split(':');
                 if (timeParts.length === 2) {
                     const h = String(parseInt(timeParts[0])).padStart(2, '0');
                     const m = String(parseInt(timeParts[1])).padStart(2, '0');
+                    // Combina la fecha normalizada y la hora
                     dateEvent = new Date(`${isoDateStr}T${h}:${m}:00`);
                 } else {
-                     throw new Error('Formato de hora inválido');
+                     // Si no hay hora válida, usa el final del día
+                     dateEvent = new Date(`${isoDateStr}T23:59:00`); 
                 }
             } catch(e) {
                  return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock' }; 
@@ -503,9 +739,11 @@
             }
             
             if (isToday) {
+                // Si es hoy, verifica si ya pasó la hora
                 if (dateEvent.getTime() < now.getTime()) {
                     return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-check-circle' };
                 } else {
+                    // Es hoy y todavía no pasó
                     return { 
                         cardClass: 'bg-green-100-card', 
                         badgeClass: 'bg-green-600 text-white', 
@@ -537,7 +775,7 @@
         }
 
         /**
-         * Renderiza la hoja 'gestor_muestra' como acordeones.
+         * Renderiza la hoja 'gestor_muestra' como acordeones. (Sin cambios)
          */
         function renderMuestras(muestras) {
             muestras.forEach(muestra => {
@@ -584,40 +822,32 @@
         }
         
         /**
-         * Renderiza la hoja 'gestor_programacion' como acordeones.
+         * Renderiza la hoja 'gestor_programacion' como acordeones. (ACTUALIZADO CON FORMATO DE DISPLAY)
          */
         function renderProgramacion(programacion) {
-            programacion.forEach(item => {
+            const todayStr = getTodayDateString();
+            
+            // FILTRADO: Excluye el evento de hoy (ya que se muestra en el modal)
+            const filteredProgramacion = programacion.filter(item => 
+                normalizeDate(item.fecha) !== todayStr
+            );
+
+            if (filteredProgramacion.length === 0) {
+                 noResults.classList.remove('hidden');
+                 return;
+            }
+
+            filteredProgramacion.forEach(item => {
                 const titulo = item.titulo || 'Sin Título';
                 const hora = item.hora || 'Sin Hora';
                 const costo = item.costo || 'Consultar Costo';
                 const detalle = item.detalle || 'Detalle no especificado.';
                 
-                let fechaDisplay = 'Sin Fecha';
-                let fechaInput = item.fecha; 
+                // 🚨 Uso de la nueva función para mostrar el formato DD/MM/YYYY limpio
+                const fechaDisplay = formatDateForDisplay(item.fecha); 
+                const fechaInput = item.fecha; 
 
-                if (fechaInput) {
-                    try {
-                        const dateInput = String(fechaInput).split(' ')[0]; 
-                        
-                        if (dateInput.includes('/')) {
-                            fechaDisplay = dateInput;
-                        } else {
-                            const dateObj = new Date(dateInput);
-                            if (!isNaN(dateObj.getTime())) {
-                                const day = String(dateObj.getDate()).padStart(2, '0');
-                                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                                const year = dateObj.getFullYear();
-                                fechaDisplay = `${day}/${month}/${year}`;
-                            } else {
-                                fechaDisplay = dateInput; 
-                            }
-                        }
-                    } catch (e) {
-                        fechaDisplay = String(fechaInput).substring(0, 10);
-                    }
-                }
-                
+                // Las clases de color/badge se mantienen, pero ya sabemos que no será 'HOY'
                 const { cardClass, badgeClass, iconClass } = getHoraColorClass(fechaInput, hora);
 
                 const card = document.createElement('div');
@@ -665,7 +895,7 @@
         }
 
         /**
-         * Abre o cierra la tarjeta de muestra y cierra las otras abiertas.
+         * Abre o cierra la tarjeta de muestra y cierra las otras abiertas. (Sin cambios)
          */
         function toggleMuestra(card) {
             const isOpen = card.classList.contains('open');
