@@ -174,8 +174,8 @@
         
         /* 🚨 NUEVO: Clase de estilo para el logo más grande */
         .large-logo {
-            width: 150px; /* Tamaño más grande para acercarse al ancho del texto */
-            height: 150px; 
+            width: 170px; /* Tamaño más grande para acercarse al ancho del texto */
+            height: 170px; 
             margin-bottom: 0.75rem; /* Ajuste de margen inferior */
             /* El filtro para hacerlo blanco y con sombra se mantiene */
             filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(0, 0, 0, 0.3)); 
@@ -207,14 +207,17 @@
             
         </header>
 
-        <div id="menuView" class="p-6 flex-1 flex flex-col justify-center items-center space-y-8 bg-[var(--color-bg-light)]">
+        <!-- 🚨 CAMBIOS AQUÍ: p-6 reducido a p-4 y space-y-8 reducido a space-y-6, mt-4 para el título -->
+        <div id="menuView" class="p-4 flex-1 flex flex-col items-center space-y-6 bg-[var(--color-bg-light)]">
             
-            <p class="text-center text-xl font-semibold text-gray-700">Seleccioná una sección para empezar:</p>
+            <!-- 🚨 CAMBIO DE TEXTO Y AJUSTE DE CLASES PARA EL TÍTULO -->
+            <p class="text-center text-xl font-bold text-gray-700 mt-4">Menú Principal</p>
 
             <!-- ************************************ -->
             <!-- BOTÓN MUESTRAS - IMPLEMENTACIÓN FLIP -->
             <!-- ************************************ -->
-            <div class="w-full max-w-sm" style="height: 120px;"> <!-- Fijamos una altura para el contenedor -->
+            <!-- Max-w-sm (384px) es bueno para responsive, pero lo ponemos en w-full para asegurar que ocupe el espacio disponible -->
+            <div class="w-full px-4" style="max-width: 384px; height: 120px;"> 
                 <div 
                     id="muestraButtonFlip"
                     onclick="animateButton(this, 'gestor_muestra')" 
@@ -242,7 +245,7 @@
             <!-- ************************************ -->
             <!-- BOTÓN PROGRAMACIÓN - IMPLEMENTACIÓN FLIP -->
             <!-- ************************************ -->
-            <div class="w-full max-w-sm" style="height: 120px;"> <!-- Fijamos una altura para el contenedor -->
+            <div class="w-full px-4" style="max-width: 384px; height: 120px;"> 
                 <div 
                     id="programacionButtonFlip"
                     onclick="animateButton(this, 'gestor_programacion')" 
@@ -266,6 +269,8 @@
                     </div>
                 </div>
             </div>
+            
+            <div class="flex-1"></div> <!-- Empuja el contenido hacia arriba, ya que quitamos justify-center -->
         </div>
 
         <div id="dataView" class="hidden flex-1 relative bg-white overflow-y-auto">
