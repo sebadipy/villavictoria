@@ -187,7 +187,6 @@
 
     <div class="app-container">
         
-        <!-- ESTRUCTURA DEL HEADER: Color gris oscuro y centrado -->
         <header class="p-5 bg-[var(--color-primary)] text-white shadow-xl flex-shrink-0 relative flex flex-col items-center">
             
             <img 
@@ -207,23 +206,16 @@
             
         </header>
 
-        <!-- 🚨 CAMBIOS AQUÍ: p-6 reducido a p-4 y space-y-8 reducido a space-y-6, mt-4 para el título -->
         <div id="menuView" class="p-4 flex-1 flex flex-col items-center space-y-6 bg-[var(--color-bg-light)]">
             
-            <!-- 🚨 CAMBIO DE TEXTO Y AJUSTE DE CLASES PARA EL TÍTULO -->
-            <p class="text-center text-xl font-bold text-gray-700 mt-4">Menú Principal</p>
+            <p class="text-center text-xl font-bold text-gray-700 mt-4">Seleccione una opción</p>
 
-            <!-- ************************************ -->
-            <!-- BOTÓN MUESTRAS - IMPLEMENTACIÓN FLIP -->
-            <!-- ************************************ -->
-            <!-- Max-w-sm (384px) es bueno para responsive, pero lo ponemos en w-full para asegurar que ocupe el espacio disponible -->
             <div class="w-full px-4" style="max-width: 384px; height: 120px;"> 
                 <div 
                     id="muestraButtonFlip"
                     onclick="animateButton(this, 'gestor_muestra')" 
                     class="flip-container h-full"
                 >
-                    <!-- Cara Frontal (Botón Normal) -->
                     <div class="flip-face menu-button border-[var(--color-accent)] hover:border-[var(--color-accent)]">
                         <div class="flex items-center">
                             <i class="fas fa-camera-retro text-4xl text-[var(--color-accent)] mr-4"></i>
@@ -234,7 +226,6 @@
                         </div>
                     </div>
                     
-                    <!-- Cara Trasera (Mensaje de Confirmación/Carga) -->
                     <div class="flip-face back-face bg-white shadow-xl">
                         <p class="text-xl font-bold">Cargando Muestras...</p>
                         <i class="fas fa-spinner fa-spin text-4xl mt-3 text-[var(--color-accent)]"></i>
@@ -242,16 +233,12 @@
                 </div>
             </div>
 
-            <!-- ************************************ -->
-            <!-- BOTÓN PROGRAMACIÓN - IMPLEMENTACIÓN FLIP -->
-            <!-- ************************************ -->
             <div class="w-full px-4" style="max-width: 384px; height: 120px;"> 
                 <div 
                     id="programacionButtonFlip"
                     onclick="animateButton(this, 'gestor_programacion')" 
                     class="flip-container h-full"
                 >
-                    <!-- Cara Frontal (Botón Normal) -->
                     <div class="flip-face menu-button border-[var(--color-primary)] hover:border-[var(--color-primary)]">
                         <div class="flex items-center">
                             <i class="fas fa-calendar-check text-4xl text-[var(--color-primary)] mr-4"></i>
@@ -262,7 +249,6 @@
                         </div>
                     </div>
                     
-                    <!-- Cara Trasera (Mensaje de Confirmación/Carga) -->
                     <div class="flip-face back-face bg-white shadow-xl">
                         <p class="text-xl font-bold">Cargando Programación...</p>
                         <i class="fas fa-spinner fa-spin text-4xl mt-3 text-[var(--color-primary)]"></i>
@@ -270,8 +256,7 @@
                 </div>
             </div>
             
-            <div class="flex-1"></div> <!-- Empuja el contenido hacia arriba, ya que quitamos justify-center -->
-        </div>
+            <div class="flex-1"></div> </div>
 
         <div id="dataView" class="hidden flex-1 relative bg-white overflow-y-auto">
             
@@ -302,7 +287,11 @@
         </div>
         
         <footer class="p-3 text-center text-xs text-gray-500 border-t mt-auto bg-gray-50 flex-shrink-0">
-            <p>&copy; 2025 Data App - Adaptado para Villa Victoria.</p>
+            <p class="text-gray-600 font-medium mb-1">Villa Victoria</p>
+            <p class="mt-1">Matheu 1851, Mar del Plata, Argentina</p>
+            <p>Email: <a href="mailto:villavictoria100@gmail.com" class="hover:text-[var(--color-primary)] transition">villavictoria100@gmail.com</a></p>
+            <p>Web: <a href="http://mardelplata.gob.ar/centroculturalvictoriaocampo" target="_blank" class="hover:text-[var(--color-primary)] transition">mardelplata.gob.ar/centroculturalvictoriaocampo</a></p>
+            <p class="mt-2 text-gray-400">&copy; 2025 Villa Victoria.</p>
         </footer>
     </div>
 
