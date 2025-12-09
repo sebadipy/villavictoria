@@ -278,7 +278,7 @@
                 onclick="closeModal()" 
                 class="w-full py-2 px-4 bg-[var(--color-accent)] text-white font-bold rounded-lg shadow-md hover:bg-[#289E93] transition duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2"
             >
-                Entendido, ¡a Explorar!
+                Aceptar
             </button>
         </div>
     </div>
@@ -317,14 +317,14 @@
                         <div class="flex items-center">
                             <i class="fas fa-camera-retro text-4xl text-[var(--color-accent)] mr-4"></i>
                             <div>
-                                <span class="text-xl font-bold text-gray-900 block">MUESTRAS</span>
-                                <span class="text-sm text-gray-500">Listado de exhibiciones activas.</span>
+                                <span class="text-xl font-bold text-gray-900 block">Muestras</span>
+                                <span class="text-sm text-gray-500">Listado de muestras.</span>
                             </div>
                         </div>
                     </div>
                     
                     <div class="flip-face back-face bg-white shadow-xl">
-                        <p class="text-xl font-bold">Cargando Muestras...</p>
+                        <p class="text-xl font-bold">Aguarde un instante...</p>
                         <i class="fas fa-spinner fa-spin text-4xl mt-3 text-[var(--color-accent)]"></i>
                     </div>
                 </div>
@@ -340,14 +340,14 @@
                         <div class="flex items-center">
                             <i class="fas fa-calendar-check text-4xl text-[var(--color-primary)] mr-4"></i>
                             <div>
-                                <span class="text-xl font-bold text-gray-900 block">PROGRAMACIÓN</span>
-                                <span class="text-sm text-gray-500">Planificación semanal/mensual.</span>
+                                <span class="text-xl font-bold text-gray-900 block">Programaciones</span>
+                                <span class="text-sm text-gray-500">Actividades Programadas.</span>
                             </div>
                         </div>
                     </div>
                     
                     <div class="flip-face back-face bg-white shadow-xl">
-                        <p class="text-xl font-bold">Cargando Programación...</p>
+                        <p class="text-xl font-bold">Aguarde un instante...</p>
                         <i class="fas fa-spinner fa-spin text-4xl mt-3 text-[var(--color-primary)]"></i>
                     </div>
                 </div>
@@ -600,9 +600,9 @@
                 
                 // Actualizar título de la sección y luego cargar datos
                 if (sheetName === 'gestor_muestra') {
-                    sectionTitle.textContent = 'MUESTRAS ACTIVAS';
+                    sectionTitle.textContent = 'Listado de Muestras';
                 } else if (sheetName === 'gestor_programacion') {
-                    sectionTitle.textContent = 'PROGRAMACIÓN';
+                    sectionTitle.textContent = 'Actividades Programadas';
                 }
 
                 fetchAndRenderData(sheetName);
