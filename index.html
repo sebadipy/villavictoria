@@ -558,7 +558,12 @@
             }
             
             if (data.status === 'success' && Array.isArray(data.data)) {
-                return data.data;
+                // --- MODIFICACIÓN PARA FILTRAR POR CAMPO ACTIVO ("SI") ---
+                // Filtramos los datos para que solo pasen los que tienen "SI" en el campo ACTIVO
+                return data.data.filter(item => {
+                    const valorActivo = String(item.ACTIVO || '').toUpperCase().trim();
+                    return valorActivo === 'SI';
+                });
             } else {
                 throw new Error(data.message || `Error en el status al cargar ${sheetName}.`);
             }
