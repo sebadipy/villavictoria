@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <base target="_top"> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Actividades - Villa Victoria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* CONSTANTES DE COLOR ajustadas al color del encabezado (Dark Gray) */
+        :root {
+            --stm-main-color: #2D3748; /* Color unificado principal (Gris Oscuro) */
+            --stm-teal: #34B3C5;       /* Turquesa (Crear) - Se mantiene para diferenciar la acción de creación */
+            --stm-red: #dc3545;        /* Rojo (Eliminar) */
+            --stm-gray: #f8f9fa;       /* Fondo de página */
+            --stm-light-main: #4A5568; /* Gris más claro para hover */
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--stm-gray);
+            padding-top: 20px;
+        }
+        .header-section {
+            background-color: var(--stm-main-color); /* Usa el color principal */
+            color: white;
+            padding: 15px 0;
+            border-radius: 8px 8px 0 0;
+        }
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        /* Color del encabezado de la tarjeta/tabla */
+        .card-header-custom {
+            background-color: var(--stm-main-color);
+            color: white;
+            padding: 10px 15px;
+            font-weight: 700;
+        }
+        
+        /* Botón Crear (se mantiene el turquesa para diferenciar la acción principal) */
+        .btn-custom-teal {
+            background-color: var(--stm-teal);
+            border-color: var(--stm-teal);
+            color: white;
+            transition: all 0.2s;
+        }
+        .btn-custom-teal:hover {
+            background-color: #2CAAB7;
+            border-color: #2CAAB7;
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        /* Botón Guardar / Botones Principales (antes púrpura, ahora gris oscuro principal) */
+        .btn-custom-purple, .btn-stm-primary {
+            background-color: var(--stm-main-color) !important;
+            border-color: var(--stm-main-color) !important;
+            color: white !important;
+            transition: all 0.2s;
+        }
+        .btn-custom-purple:hover, .btn-stm-primary:hover {
+            background-color: var(--stm-light-main) !important;
+            border-color: var(--stm-light-main) !important;
+            color: white !important;
+            transform: translateY(-1px);
+        }
+        
+        /* Pestañas activas y hover */
+        .nav-link.active, .nav-link:hover {
+            color: var(--stm-main-color) !important;
+        }
+        .nav-link.active {
+            border-bottom: 3px solid var(--stm-main-color) !important;
+            border-top-color: transparent !important;
+            border-left-color: transparent !important;
+            border-right-color: transparent !important;
+            background-color: white;
+        }
+
+        .table-responsive {
+            margin-top: 15px;
+        }
+        .table thead th {
+            background-color: #e9ecef;
+            color: var(--stm-main-color);
+            border-bottom: 2px solid #dee2e6;
+        }
+        .table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        .action-btns .btn {
+            margin: 2px;
+            padding: 5px 10px;
+            font-size: 0.85rem;
+        }
+        /* Iconos de editar en la tabla (usando el color principal) */
+        .btn-primary {
+            background-color: var(--stm-main-color) !important;
+            border-color: var(--stm-main-color) !important;
+        }
+        .btn-primary:hover {
+            background-color: var(--stm-light-main) !important;
+            border-color: var(--stm-light-main) !important;
+        }
+        /* Modal Header (Color unificado) */
+        .modal-header {
+            background-color: var(--stm-main-color) !important;
+            color: white !important;
+        }
+        /* Color de carga (Loading) */
+        .loading-text {
+            margin-left: 10px;
+            font-weight: bold;
+            color: var(--stm-main-color); 
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1050;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .loading-overlay.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+        .feedback {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1100;
+            min-width: 250px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translateY(-20px);
+        }
+        .feedback.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .feedback.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .feedback.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Estilos específicos para el modal de formulario */
+        .form-label {
+            font-weight: 500;
+        }
+        /* Estilos para el modal de actividades de hoy */
+        #actividadHoyModal .modal-header {
+            background-color: #ffc107 !important; /* Amarillo de Bootstrap 'warning' (Se mantiene para diferenciación de alerta) */
+            color: #212529 !important; /* Texto oscuro */
+        }
+        /* Estilos para las pestañas con iconos */
+        .nav-link i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="d-flex align-items-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <span class="loading-text" id="loadingText">Cargando datos...</span>
+        </div>
+    </div>
+
+    <div class="feedback" id="feedbackMessage"></div>
+
+    <div class="container main-container">
+        <div class="header-section text-center p-3 mb-4 rounded-top-lg">
+            <img src="logo.png" alt="Logo Villa Victoria" class="mb-3" style="max-width: 100px; height: auto; border-radius: 50%; border: 3px solid white;">
+            
+            <h1>Gestor de Actividades Villa Victoria</h1>
+            <p class="lead">Muestras y Programación</p>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center p-3">
+            <h2 class="h4 mb-0">Listado de Actividades</h2>
+            <div class="d-flex gap-2">
+                <button class="btn btn-custom-teal" onclick="showModal('Muestra')">
+                    <i class="fas fa-plus-circle"></i> Nueva Muestra
+                </button>
+                <button class="btn btn-custom-teal" onclick="showModal('Programacion')">
+                    <i class="fas fa-plus-circle"></i> Nueva Programación
+                </button>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs nav-justified" id="activityTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="muestras-tab" data-bs-toggle="tab" data-bs-target="#muestras" type="button" role="tab" aria-controls="muestras" aria-selected="true" onclick="setActiveTab('Muestra')">
+                    <i class="fas fa-camera-retro"></i> Muestras
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="programaciones-tab" data-bs-toggle="tab" data-bs-target="#programaciones" type="button" role="tab" aria-controls="programaciones" aria-selected="false" onclick="setActiveTab('Programacion')">
+                    <i class="fas fa-calendar-alt"></i> Programación
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content p-3 border border-top-0 rounded-bottom-lg">
+            <div class="tab-pane fade show active" id="muestras" role="tabpanel" aria-labelledby="muestras-tab">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle" id="muestrasTable">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="width: 0; display:none;">ID</th> 
+                                <th scope="col" style="width: 25%;">Nombre</th>
+                                <th scope="col" style="width: 25%;">Período</th>
+                                <th scope="col" style="width: 30%;">Detalle</th>
+                                <th scope="col" style="width: 10%;">Activo</th>
+                                <th scope="col" style="width: 10%;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="programaciones" role="tabpanel" aria-labelledby="programaciones-tab">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle" id="programacionesTable">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="width: 0; display:none;">ID</th>
+                                <th scope="col" style="width: 10%;">Fecha</th>
+                                <th scope="col" style="width: 7%;">Hora</th>
+                                <th scope="col" style="width: 20%;">Título</th>
+                                <th scope="col" style="width: 25%;">Detalle</th>
+                                <th scope="col" style="width: 15%;">Costo</th>
+                                <th scope="col" style="width: 8%;">Activo</th>
+                                <th scope="col" style="width: 15%;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="actividadModal" tabindex="-1" aria-labelledby="actividadModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="actividadModalLabel">Crear Actividad</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="actividadForm" class="needs-validation" novalidate>
+                    <div class="modal-body">
+                        <input type="hidden" id="actividadTipo" name="actividadTipo" value="">
+                        <input type="hidden" id="actividadId" name="actividadId" value="">
+
+                        <div id="formContent">
+                            </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Estado de Actividad</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="activo" id="activoSI" value="true" required>
+                                    <label class="form-check-label" for="activoSI">Activo (SI)</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="activo" id="activoNO" value="false" required>
+                                    <label class="form-check-label" for="activoNO">Inactivo (NO)</label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-custom-purple" id="saveActividadBtn">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel"><i class="fas fa-trash-alt"></i> Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar esta actividad: <strong id="deleteActividadInfo"></strong>?</p>
+                    <p class="text-danger">¡Esta acción no se puede deshacer!</p>
+                    <input type="hidden" id="deleteId" value="">
+                    <input type="hidden" id="deleteTipo" value="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteActividad(document.getElementById('deleteId').value, document.getElementById('deleteTipo').value)">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="actividadHoyModal" tabindex="-1" aria-labelledby="actividadHoyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="actividadHoyModalLabel"><i class="fas fa-bell me-2"></i> ¡ATENCIÓN! Actividades para Hoy</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="lead">Se encontraron actividades de Programación programadas para el día de hoy, <strong id="todayDateDisplay"></strong>:</p>
+                    <ul id="actividadesHoyList" class="list-group list-group-flush">
+                        </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-stm-primary" data-bs-dismiss="modal" onclick="document.getElementById('programaciones-tab').click()">
+                        Ver Programaciones
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // URL DE TU WEB APP (DEBE SER REEMPLAZADA DESPUÉS DE LA IMPLEMENTACIÓN)
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby-NOwqPr07P_RFwkem6w3hP_DKW3XJ28goy3kjlwArN4fgUdK1_SKAyDEC4cXfxKtN4g/exec'; 
+
+        let actividadModal;
+        let deleteConfirmModal;
+        let actividadHoyModal; // Declaración de la variable para el modal de hoy
+        let activeTab = 'Muestra';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar Modales
+            actividadModal = new bootstrap.Modal(document.getElementById('actividadModal'));
+            deleteConfirmModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+            // Inicialización correcta del Modal de Actividades para Hoy
+            actividadHoyModal = new bootstrap.Modal(document.getElementById('actividadHoyModal')); 
+
+            // Asignar manejador de envío al botón del modal
+            document.getElementById('saveActividadBtn').addEventListener('click', handleFormSubmission);
+            
+            // Inicializar la tabla activa y chequear actividades de hoy
+            fetchActividades(); 
+            checkTodayActivities(); // <--- ESTA FUNCIÓN SE LLAMA AL CARGAR
+        });
+        
+        // =================================================================
+        // UTILIDADES Y FORMATO
+        // =================================================================
+        
+        /**
+         * Convierte la fecha de formato ISO (YYYY-MM-DDTHH:MM:SS.sssZ) a DD/MM/AAAA (Tabla).
+         * @param {string} dateString - Fecha en formato ISO o YYYY-MM-DD.
+         * @returns {string} Fecha en formato 'DD/MM/AAAA' o la original si es inválida.
+         */
+        function formatToDisplayDate(dateString) {
+            if (!dateString) return '';
+            
+            // 1. Intentar crear un objeto Date a partir del string ISO que viene de Apps Script
+            const dateObj = new Date(dateString);
+
+            // Verificar si la fecha es válida
+            if (isNaN(dateObj)) {
+                // Si falla, intentamos la lógica de YYYY-MM-DD simple o devolvemos el original
+                const match = dateString.match(/^(\d{4})-(\d{2})-(\d{2})/);
+                if (match) {
+                    // Formato YYYY-MM-DD simple
+                    return `${match[3]}/${match[2]}/${match[1]}`;
+                }
+                // Devolver el string original si no podemos parsearlo.
+                return dateString; 
+            }
+            
+            // 2. Si es una fecha válida (formato ISO), formateamos a DD/MM/AAAA usando UTC.
+            const day = String(dateObj.getUTCDate()).padStart(2, '0');
+            const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0'); // Meses son 0-based
+            const year = dateObj.getUTCFullYear();
+
+            return `${day}/${month}/${year}`;
+        }
+
+        /**
+         * Ordena las actividades por fecha (si existe) o ID, de más reciente a más antigua.
+         * (Más nuevo al más viejo).
+         * @param {Array<Object>} actividades - Lista de actividades.
+         * @param {string} tipo - 'Muestra' o 'Programacion'.
+         * @returns {Array<Object>} Lista ordenada.
+         */
+        function sortActividades(actividades, tipo) {
+            if (!actividades || actividades.length === 0) return [];
+
+            return actividades.sort((a, b) => {
+                // Ordenar por Programacion: fecha descendente (Más nueva primero)
+                if (tipo === 'Programacion' && a.fecha && b.fecha) {
+                    if (a.fecha !== b.fecha) {
+                         // b.fecha.localeCompare(a.fecha) devuelve > 0 si b es mayor (más nueva)
+                         // y sort pone b antes de a (descendente).
+                         return b.fecha.localeCompare(a.fecha); 
+                    }
+                    if (a.hora && b.hora) {
+                        return b.hora.localeCompare(a.hora); // Hora también descendente
+                    }
+                    return 0; 
+                } 
+                
+                // Ordenar por ID (Muestra o desempate): ID descendente (Más nuevo primero)
+                if (a.id && b.id) {
+                    const idA = parseFloat(a.id) || 0;
+                    const idB = parseFloat(b.id) || 0;
+                    return idB - idA; // b - a -> Orden descendente (más nuevo primero)
+                }
+                
+                return 0;
+            });
+        }
+        
+        // =================================================================
+        // HTML DINÁMICO PARA EL FORMULARIO (Se mantiene igual, solo se asegura la corrección del backend)
+        // =================================================================
+
+        const MUESTRA_FORM_HTML = `
+            <div class="mb-3">
+                <label for="nombreMuestra" class="form-label">Nombre de la Muestra</label>
+                <input type="text" class="form-control" id="nombreMuestra" name="nombreMuestra" required>
+                <div class="invalid-feedback">El nombre es obligatorio.</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Período</label>
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="tipoPeriodoMuestra" id="periodoPermanente" value="Permanente" checked onclick="togglePeriodoTexto(false)">
+                        <label class="form-check-label" for="periodoPermanente">Permanente</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="tipoPeriodoMuestra" id="periodoTemporaria" value="Temporaria" onclick="togglePeriodoTexto(true)">
+                        <label class="form-check-label" for="periodoTemporaria">Temporaria</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3" id="periodoMuestraTextoGroup" style="display:none;">
+                <label for="periodoMuestraTexto" class="form-label">Descripción del Período Temporario (Ej: 10/2024 - 03/2025)</label>
+                <input type="text" class="form-control" id="periodoMuestraTexto" name="periodoMuestraTexto">
+                <div class="invalid-feedback">Debes ingresar una descripción si es Temporaria.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="detalleMuestra" class="form-label">Detalle</label>
+                <textarea class="form-control" id="detalleMuestra" name="detalleMuestra" rows="3"></textarea>
+            </div>
+        `;
+
+        const PROGRAMACION_FORM_HTML = `
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="fechaProgramacion" class="form-label">Fecha</label>
+                    <input type="date" class="form-control" id="fechaProgramacion" name="fechaProgramacion" required>
+                    <div class="invalid-feedback">La fecha es obligatoria.</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="horaProgramacion" class="form-label">Hora</label>
+                    <input type="text" class="form-control" id="horaProgramacion" name="horaProgramacion">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="tituloProgramacion" class="form-label">Título de la Programación</label>
+                <input type="text" class="form-control" id="tituloProgramacion" name="tituloProgramacion" required>
+                <div class="invalid-feedback">El título es obligatorio.</div>
+            </div>
+            <div class="mb-3">
+                <label for="detalleProgramacion" class="form-label">Detalle</label>
+                <textarea class="form-control" id="detalleProgramacion" name="detalleProgramacion" rows="3"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Costo</label>
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="tipoCostoProgramacion" id="costoGratuito" value="Gratuito" checked onclick="toggleCostoMonto(false)">
+                        <label class="form-check-label" for="costoGratuito">Libre y gratuita</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="tipoCostoProgramacion" id="costoFijo" value="Fijo" onclick="toggleCostoMonto(true)">
+                        <label class="form-check-label" for="costoFijo">Costo Fijo</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3" id="costoMontoGroup" style="display:none;">
+                <label for="montoCostoProgramacion" class="form-label">Monto (Ej: 5000)</label>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" step="0.01" min="0" class="form-control" id="montoCostoProgramacion" name="montoCostoProgramacion" placeholder="0">
+                </div>
+                <div class="invalid-feedback">Debes ingresar el monto.</div>
+            </div>
+        `;
+
+        function togglePeriodoTexto(show) {
+            const group = document.getElementById('periodoMuestraTextoGroup');
+            group.style.display = show ? 'block' : 'none';
+            const input = document.getElementById('periodoMuestraTexto');
+            if (show) {
+                // Se mantiene el campo NO requerido, como fue solicitado.
+            } else {
+                input.removeAttribute('required');
+                input.value = ''; // Limpiar si se oculta
+            }
+        }
+
+        function toggleCostoMonto(show) {
+            const group = document.getElementById('costoMontoGroup');
+            group.style.display = show ? 'block' : 'none';
+            const input = document.getElementById('montoCostoProgramacion');
+            if (show) {
+                input.setAttribute('required', 'required');
+            } else {
+                input.removeAttribute('required');
+                input.value = ''; // Limpiar si se oculta
+            }
+        }
+        
+        // =================================================================
+        // FUNCIÓN NUEVA: Aplica la máscara de hora (ELIMINADA)
+        // =================================================================
+        function applyProgramacionMasks() {
+            // La función de máscara fue eliminada. El campo 'horaProgramacion' ahora se maneja como un input de texto simple.
+            console.log("Máscara de hora deshabilitada.");
+        }
+        
+        // =================================================================
+        // MANEJO DE ESTADO Y UI
+        // =================================================================
+
+        function setActiveTab(tipo) {
+            activeTab = tipo;
+            fetchActividades();
+        }
+
+        function setLoadingState(isLoading, actionText = 'Cargando') {
+            const overlay = document.getElementById('loadingOverlay');
+            const text = document.getElementById('loadingText');
+            if (isLoading) {
+                text.textContent = `${actionText}...`;
+                overlay.classList.add('visible');
+            } else {
+                overlay.classList.remove('visible');
+            }
+        }
+
+        function showFeedback(message, isSuccess) {
+            const feedback = document.getElementById('feedbackMessage');
+            feedback.textContent = message;
+            feedback.className = 'feedback show';
+            feedback.classList.add(isSuccess ? 'success' : 'error');
+            
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 3000); 
+        }
+
+        function showModal(tipo, id = null) {
+            const modalLabel = document.getElementById('actividadModalLabel');
+            const formContent = document.getElementById('formContent');
+            const form = document.getElementById('actividadForm');
+
+            // Limpiar y configurar campos comunes
+            form.reset();
+            form.classList.remove('was-validated');
+            document.getElementById('actividadTipo').value = tipo;
+            document.getElementById('actividadId').value = ''; 
+            document.getElementById('saveActividadBtn').textContent = 'Guardar Cambios';
+
+            if (tipo === 'Muestra') {
+                formContent.innerHTML = MUESTRA_FORM_HTML;
+                togglePeriodoTexto(false); // Resetear a Permanente
+            } else { // Programacion
+                formContent.innerHTML = PROGRAMACION_FORM_HTML;
+                toggleCostoMonto(false); // Resetear a Gratuito
+                
+                // === APLICAR MÁSCARA DE HORA DESPUÉS DE INYECTAR EL HTML ===
+                applyProgramacionMasks(); // Llamada a la función (ahora vacía)
+            }
+
+            if (id) {
+                modalLabel.textContent = `Editar ${tipo}`;
+                document.getElementById('saveActividadBtn').textContent = 'Actualizar';
+                readActividadById(id, tipo); 
+            } else {
+                modalLabel.textContent = `Crear Nueva ${tipo}`;
+                // Por defecto: Activo = SI
+                document.getElementById('activoSI').checked = true;
+            }
+
+            actividadModal.show();
+        }
+
+        // =================================================================
+        // FUNCIONES CRUD DEL FRONTEND 
+        // =================================================================
+
+        /**
+         * Llama a Apps Script para obtener todos los datos.
+         */
+        async function fetchActividades() {
+            setLoadingState(true, 'Consultando datos');
+            try {
+                // El backend espera el nombre de la hoja en mayúsculas/minúsculas correctas
+                const response = await fetch(`${WEB_APP_URL}?action=READ_ALL&actividadTipo=${activeTab}`);
+                const data = await response.json();
+                
+                setLoadingState(false);
+                
+                if (data.status === 'success') {
+                    // Ordenar antes de renderizar (Más reciente a más antiguo)
+                    const actividadesOrdenadas = sortActividades(data.actividades, activeTab);
+                    renderTable(actividadesOrdenadas, activeTab);
+                } else {
+                    showFeedback(`Error al cargar ${activeTab}: ${data.message}`, false);
+                    renderTable([], activeTab);
+                }
+            } catch (error) {
+                setLoadingState(false);
+                showFeedback(`Error de conexión: ${error.message}`, false);
+                renderTable([], activeTab);
+            }
+        }
+
+        /**
+         * Llama a Apps Script para leer una actividad por ID y rellenar el modal.
+         */
+        async function readActividadById(id, tipo) {
+            setLoadingState(true, 'Cargando datos para editar');
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=READ_BY_ID&id=${id}&actividadTipo=${tipo}`);
+                const data = await response.json();
+
+                setLoadingState(false);
+
+                if (data.status === 'success' && data.actividad) {
+                    const actividad = data.actividad;
+                    
+                    // 1. Campos Comunes
+                    document.getElementById('actividadId').value = actividad.id;
+                    document.getElementById('actividadTipo').value = tipo;
+                    
+                    // El campo ACTIVO en Apps Script devuelve "SI" o "NO". 
+                    const activoValue = actividad.ACTIVO.toUpperCase() === 'SI' ? 'true' : 'false';
+                    document.getElementById(activoValue === 'true' ? 'activoSI' : 'activoNO').checked = true;
+
+                    // 2. Campos Específicos
+                    if (tipo === 'Muestra') {
+                        // Usamos las claves en minúscula para la data de la hoja
+                        document.getElementById('nombreMuestra').value = actividad.nombre;
+                        document.getElementById('detalleMuestra').value = actividad.detalle;
+                        
+                        // Período (actividad.periodo trae el texto completo de la celda, ej: "Temporaria: 10/2024")
+                        if (actividad.periodo.toString().startsWith('Temporaria')) {
+                            document.getElementById('periodoTemporaria').checked = true;
+                            togglePeriodoTexto(true);
+                            // Extraer solo la descripción del periodo
+                            const periodoTexto = actividad.periodo.toString().replace('Temporaria:', '').trim();
+                            document.getElementById('periodoMuestraTexto').value = periodoTexto;
+                        } else {
+                            document.getElementById('periodoPermanente').checked = true;
+                            togglePeriodoTexto(false);
+                        }
+                    } else { // Programacion
+                        // Usamos las claves en minúscula para la data de la hoja
+                        
+                        // El campo de edición necesita la fecha en formato YYYY-MM-DD
+                        if (actividad.fecha) {
+                            const dateObj = new Date(actividad.fecha);
+                            // Usar el formato YYYY-MM-DD para el input type="date"
+                            if (!isNaN(dateObj)) {
+                                const yyyy = dateObj.getUTCFullYear();
+                                const mm = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+                                const dd = String(dateObj.getUTCDate()).padStart(2, '0');
+                                document.getElementById('fechaProgramacion').value = `${yyyy}-${mm}-${dd}`;
+                            } else {
+                                document.getElementById('fechaProgramacion').value = actividad.fecha;
+                            }
+                        } else {
+                             document.getElementById('fechaProgramacion').value = '';
+                        }
+                        
+                        document.getElementById('horaProgramacion').value = actividad.hora;
+                        document.getElementById('tituloProgramacion').value = actividad.titulo;
+                        document.getElementById('detalleProgramacion').value = actividad.detalle;
+                        
+                        // Costo (actividad.costo trae el texto completo, ej: "$5000" o "Libre y gratuita")
+                        if (actividad.costo.toString().startsWith('$')) {
+                            document.getElementById('costoFijo').checked = true;
+                            toggleCostoMonto(true);
+                            // Extraer solo el monto numérico
+                            const monto = actividad.costo.toString().replace('$', '').trim();
+                            document.getElementById('montoCostoProgramacion').value = monto;
+                        } else {
+                            document.getElementById('costoGratuito').checked = true;
+                            toggleCostoMonto(false);
+                        }
+                    }
+                } else {
+                    showFeedback(`Error al obtener datos para edición: ${data.message}`, false);
+                }
+            } catch (error) {
+                setLoadingState(false);
+                showFeedback(`Error de conexión al leer ID: ${error.message}`, false);
+            }
+        }
+
+
+        /**
+         * Maneja el envío del formulario para crear o actualizar. (CREATE/UPDATE)
+         */
+        async function handleFormSubmission() {
+            const form = document.getElementById('actividadForm');
+            const actividadId = document.getElementById('actividadId').value;
+            const accion = actividadId ? 'UPDATE' : 'CREATE';
+            const tipo = document.getElementById('actividadTipo').value;
+
+            // 1. Validación de Formulario (Bootstrap)
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                showFeedback("Por favor, rellena los campos obligatorios.", false);
+                return;
+            }
+            form.classList.remove('was-validated'); 
+
+            // 2. Validación mínima para campos dinámicos
+            if (tipo === 'Programacion') {
+                if (document.getElementById('costoFijo').checked && !document.getElementById('montoCostoProgramacion').value) {
+                    showFeedback("Debes ingresar el monto si la Programación tiene costo fijo.", false);
+                    document.getElementById('montoCostoProgramacion').focus();
+                    return;
+                }
+            }
+
+            setLoadingState(true, accion === 'UPDATE' ? 'Actualizando' : 'Creando');
+            
+            try {
+                const formData = new FormData(form);
+                formData.append('action', accion); 
+                
+                // Si la acción es UPDATE, se requiere el ID de la actividad
+                if (accion === 'UPDATE') {
+                    formData.append('id', actividadId); 
+                }
+                
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+
+                setLoadingState(false);
+                
+                if (data.status === 'success') {
+                    if (actividadModal) actividadModal.hide();
+                    showFeedback(data.message, true);
+                    fetchActividades(); // Recargar datos de la tabla
+                    
+                } else {
+                    showFeedback(`Error (${accion}): ${data.message}`, false);
+                }
+
+            } catch (error) {
+                setLoadingState(false);
+                showFeedback(`Error de conexión al intentar ${accion}: ${error.message}`, false);
+            }
+        }
+        
+        /**
+         * Prepara el modal de confirmación para eliminar.
+         */
+        function confirmDelete(id, tipo, nombre) {
+            document.getElementById('deleteId').value = id;
+            document.getElementById('deleteTipo').value = tipo;
+            document.getElementById('deleteActividadInfo').textContent = `${nombre} (ID: ${id})`;
+            deleteConfirmModal.show();
+        }
+
+        /**
+         * Llama a Apps Script para eliminar una actividad.
+         */
+        async function deleteActividad(id, tipo) {
+            if (!id || !tipo) {
+                showFeedback('Error interno: ID o Tipo de actividad no definidos para eliminar.', false);
+                if (deleteConfirmModal) deleteConfirmModal.hide();
+                return;
+            }
+
+            setLoadingState(true, 'ELIMINANDO');
+
+            try {
+                const formData = new FormData();
+                formData.append('action', 'DELETE');
+                formData.append('id', id);
+                formData.append('actividadTipo', tipo);
+
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                setLoadingState(false);
+                
+                if (deleteConfirmModal) deleteConfirmModal.hide();
+
+                if (data.status === 'success') {
+                    // Feedback de éxito de eliminación
+                    showFeedback(data.message, true);
+                    fetchActividades(); 
+                    
+                } else {
+                    showFeedback(`Error al eliminar ${tipo} ${id}: ${data.message}`, false);
+                }
+                
+            } catch (error) {
+                setLoadingState(false);
+                if (deleteConfirmModal) deleteConfirmModal.hide();
+                showFeedback(`Error de conexión al eliminar: ${error.message}`, false);
+            }
+        }
+
+        // =================================================================
+        // FUNCIÓN PARA EL MODAL DE ACTIVIDADES DE HOY 
+        // =================================================================
+
+        /**
+         * Consulta a Apps Script por actividades de Programación activas para hoy y muestra el modal si hay.
+         */
+        async function checkTodayActivities() {
+            const today = new Date();
+            // Creamos la fecha en formato YYYY-MM-DD local (no UTC) para el fetch
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = today.getFullYear();
+            const formattedDate = `${year}-${month}-${day}`; // Formato YYYY-MM-DD para la query
+
+            // Formato de visualización
+            const todayDisplay = today.toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('todayDateDisplay').textContent = todayDisplay;
+
+            try {
+                // El backend (Código.gs) ahora compara correctamente solo la parte YYYY-MM-DD
+                const response = await fetch(`${WEB_APP_URL}?action=READ_PROGRAMACION_HOY&fechaHoy=${formattedDate}`);
+                const data = await response.json();
+                
+                // --- CAMBIO PARA DEBUGGING ---
+                console.log('Actividades de hoy (READ_PROGRAMACION_HOY) data:', data);
+                // -----------------------------
+
+                if (data.status === 'success' && data.actividades.length > 0) {
+                    const list = document.getElementById('actividadesHoyList');
+                    list.innerHTML = ''; // Limpiar lista
+                    
+                    // Ordenamos por hora, aunque no es estrictamente necesario, es mejor UX
+                    data.actividades.sort((a, b) => a.hora.localeCompare(b.hora));
+
+                    data.actividades.forEach(act => {
+                        const listItem = document.createElement('li');
+                        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        listItem.innerHTML = `
+                            <div>
+                                <h6 class="mb-0 text-dark">${act.titulo}</h6>
+                                <small class="text-muted">${act.detalle}</small>
+                            </div>
+                            <span class="badge bg-info text-dark rounded-pill">${act.hora}</span>
+                        `;
+                        list.appendChild(listItem);
+                    });
+                    
+                    if (actividadHoyModal) {
+                        actividadHoyModal.show();
+                    }
+                }
+            } catch (error) {
+                console.error('Error al chequear actividades de hoy:', error);
+            }
+        }
+
+
+        // =================================================================
+        // RENDERIZADO DE TABLAS
+        // =================================================================
+
+        function renderTable(actividades, tipo) {
+            const tableBody = document.getElementById(tipo === 'Muestra' ? 'muestrasTable' : 'programacionesTable').querySelector('tbody');
+            tableBody.innerHTML = ''; // Limpiar tabla
+
+            if (!actividades || actividades.length === 0) {
+                // Se ajusta el colspan porque la columna ID está oculta (6-1=5, 8-1=7)
+                const numCols = tipo === 'Muestra' ? 5 : 7; 
+                tableBody.innerHTML = `<tr><td colspan="${numCols}" class="text-center text-muted py-4">No hay actividades de ${tipo} registradas.</td></tr>`;
+                return;
+            }
+
+            actividades.forEach(actividad => {
+                const row = tableBody.insertRow();
+                
+                let nombrePrincipal = ''; // Para usar en la confirmación de eliminación
+
+                if (tipo === 'Muestra') {
+                    // MUESTRAS: 5 columnas + 1 (ID oculto) + 1 (acciones)
+                    nombrePrincipal = actividad.nombre;
+                    
+                    row.innerHTML = `
+                        <td style="display:none;">${actividad.id}</td>
+                        <td>${actividad.nombre}</td>
+                        <td>${actividad.periodo}</td>
+                        <td>${actividad.detalle}</td>
+                        <td><span class="badge ${actividad.ACTIVO_HTML === 'SI' ? 'bg-success' : 'bg-danger'}">${actividad.ACTIVO_HTML}</span></td>
+                        <td class="action-btns">
+                            <button class="btn btn-sm btn-primary" onclick="showModal('Muestra', '${actividad.id}')" title="Editar"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'Muestra', '${nombrePrincipal}')" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                        </td>
+                    `;
+                } else { // Programacion
+                    // PROGRAMACION: 7 columnas + 1 (ID oculto) + 1 (acciones)
+                    nombrePrincipal = actividad.titulo;
+                    
+                    const fechaDisplay = formatToDisplayDate(actividad.fecha);
+
+                    row.innerHTML = `
+                        <td style="display:none;">${actividad.id}</td>
+                        <td>${fechaDisplay}</td>
+                        <td>${actividad.hora}</td>
+                        <td>${actividad.titulo}</td>
+                        <td>${actividad.detalle}</td>
+                        <td>${actividad.costo}</td>
+                        <td><span class="badge ${actividad.ACTIVO_HTML === 'SI' ? 'bg-success' : 'bg-danger'}">${actividad.ACTIVO_HTML}</span></td>
+                        <td class="action-btns">
+                            <button class="btn btn-sm btn-primary" onclick="showModal('Programacion', '${actividad.id}')" title="Editar"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'Programacion', '${nombrePrincipal}')" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                        </td>
+                    `;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
