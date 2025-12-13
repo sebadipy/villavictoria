@@ -1,829 +1,380 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Muestras y Programación Villa Victoria</title>
-    <link rel="icon" href="logo favicon.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- CLAVE RESPONSIVE: Viewport meta tag para asegurar la adaptación en móvil -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Acceso - Villa Victoria</title>
+    <!-- Usa un logo genérico o el que tengas para Villa Victoria -->
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <!-- Incluimos Tailwind CSS para estilos rápidos -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Fuente Inter, tal como la usabas en el otro archivo -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
     <style>
+        /* Variables de color tomadas DIRECTAMENTE de movil_user.html */
         :root {
-            --color-primary: #4A5568; 
-            --color-accent: #30B5AA;  
-            --color-bg-light: #f3f4f6;
-            --color-card-bg: #ffffff;
-        }
-
-        html, body {
-            height: 100%; 
-            margin: 0;
-            padding: 0;
+            --color-primary: #4A5568;  /* Gris/Slate para texto/header/botón principal */
+            --color-accent: #30B5AA;   /* Teal/Menta para acentos (borde, notificaciones, etc) */
+            --color-bg-light: #f3f4f6; /* Fondo */
+            --color-card-bg: #ffffff;  /* Fondo de tarjeta/modal */
         }
         
         body {
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--color-bg-light);
-        }
-        
-        .app-container {
-            max-width: 520px; 
-            margin: 0 auto;
-            min-height: 100vh; 
-            background-color: var(--color-card-bg); 
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1); 
-            display: flex;
-            flex-direction: column; 
-        }
-        
-        #menuView, #dataView {
-            flex: 1; 
-            position: relative;
-        }
-
-        .flip-container {
-            width: 100%;
-            height: 100%; 
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
-        }
-        
-        .flip-container.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .flip-face {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%; 
-            backface-visibility: hidden;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto; 
-            -webkit-overflow-scrolling: touch; 
-        }
-        
-        .menu-button {
-             width: 100%; 
-             padding: 1.5rem; 
-             border-radius: 1rem; 
-             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); 
-             transition: transform 0.3s, box-shadow 0.3s;
-             background-color: white;
-             text-align: left;
-             border: 2px solid transparent;
-        }
-        
-        .menu-button:hover {
-            transform: scale(1.02);
-        }
-        
-        .back-face {
-             transform: rotateY(180deg);
-             align-items: center;
-             justify-content: center;
-             padding: 1rem;
-             color: var(--color-primary);
-             font-weight: 700;
-             text-align: center;
-        }
-
-        .muestra-card {
-            transition: all 0.3s ease-in-out;
-            cursor: pointer;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); 
-            border-radius: 0.75rem; 
-            overflow: hidden;
-            background-color: var(--color-card-bg);
-        }
-        
-        .muestra-card.bg-green-100-card {
-            background-color: #d1fae5 !important; 
-            border-color: #10b981 !important; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); 
-        }
-        
-        @keyframes blink-green {
-            0%, 100% { 
-                opacity: 1; 
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
-            }
-            50% { 
-                opacity: 0.7; 
-                box-shadow: 0 0 25px 8px #059669; 
-            }
-        }
-
-        .muestra-card.blinking-card {
-            animation: blink-green 1.5s ease-in-out infinite;
-        }
-        
-        .tag-badge.highlighted-badge {
-            padding: 0.5rem 0.8rem; 
-            font-size: 0.9rem; 
-            font-weight: 900; 
-            letter-spacing: 0.05em;
-            border: 2px solid #10b981; 
-            border-radius: 0.75rem;
-        }
-
-        .muestra-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.6s ease-in-out, padding 0.6s ease-in-out;
-            padding: 0 1.25rem;
-            background-color: #fcfcfc; 
-        }
-        
-        .muestra-card.open .muestra-content {
-            max-height: 1200px; 
-            padding: 1rem 1.25rem 1.5rem; 
-        }
-
-        .chevron {
-            transition: transform 0.4s ease-out; 
-            color: var(--color-primary); 
-            font-size: 1rem;
-        }
-        .muestra-card.open .chevron {
-            transform: rotate(180deg);
-        }
-
-        .header-title {
-            font-weight: 700; 
-            letter-spacing: -0.01em; 
-        }
-        
-        .detalle-content {
-            white-space: pre-wrap; 
-            word-wrap: break-word; 
-        }
-
-        .tag-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.2rem 0.6rem;
-            margin-right: 0.5rem;
-            border-radius: 0.5rem;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-shadow: 0 1px 1px rgba(0,0,0,0.05);
-        }
-
-        .table-container, .programacion-table, .programacion-table th, .programacion-table td {
-            display: none !important; 
-        }
-        
-        .large-logo {
-            width: 170px; 
-            height: 170px; 
-            margin-bottom: 0.75rem; 
-            filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(0, 0, 0, 0.3)); 
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
+            /* Fuente y Fondo del sistema */
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light); 
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 50; 
+            min-height: 100vh;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+
+        /* Utilidades de color custom */
+        .border-accent {
+            border-color: var(--color-accent);
+        }
+        .text-accent {
+            color: var(--color-accent);
+        }
+        
+        /* Estilos del Logo - GARANTIZAMOS ESTILO: Círculo Primary con texto blanco */
+        .logo-container {
+            width: 7rem; /* Tamaño del círculo */
+            height: 7rem;
+            border-radius: 50%; /* Redondeado perfecto */
+            background-color: var(--color-primary); /* Fondo gris del header */
+            box-shadow: 0 0 0 5px white, 0 6px 15px -3px rgba(0, 0, 0, 0.2); 
+            margin-top: -4rem; /* Elevamos para que sobresalga de la tarjeta */
+            /* Flexbox para centrar el contenido (el texto "VV") */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white; /* Color del texto "VV" */
+            font-size: 3rem; /* Tamaño del texto */
+            font-weight: 900;
+        }
+
+        /* Estilo para el botón - AHORA USA EL COLOR PRIMARY (#4A5568) */
+        .btn-primary {
+            transition: all 0.2s ease-in-out;
+            background-color: var(--color-primary); /* Fondo con color del encabezado */
+            color: white; /* Letra blanca como el header */
+            box-shadow: 0 4px 15px -3px rgba(74, 85, 104, 0.4); /* Sombra basada en Primary */
+            font-weight: 700; 
+        }
+        .btn-primary:hover {
+            background-color: #3C475A; /* Tono oscuro de Primary para hover */
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px -5px rgba(74, 85, 104, 0.6);
+        }
+        
+        /* Estilos de foco para inputs */
+        .input-text:focus {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 2px rgba(48, 181, 170, 0.5); /* Anillo de foco sutil con color Accent */
+            outline: none;
+        }
+
+        /* Modal Transitions */
+        .modal-enter {
             opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease-in-out;
+            transform: scale(0.95);
         }
-        
-        .modal-overlay.open {
+        .modal-enter-active {
             opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background-color: var(--color-primary);
-            max-width: 400px;
-            width: 90%;
-            padding: 1.5rem;
-            border-radius: 1rem; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
-            transform: scale(0.9);
-            transition: transform 0.3s ease-in-out;
-            color: white; 
-            border: 4px solid var(--color-accent); 
-        }
-
-        .modal-overlay.open .modal-content {
             transform: scale(1);
-        }
-        
-        .logo-modal {
-            filter: brightness(0) invert(1); 
-            width: 150px; 
-            height: 150px; 
-            border-radius: 50%;
-            box-shadow: none; 
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
         }
     </style>
 </head>
 <body>
 
-    <div id="welcomeModal" class="modal-overlay">
-        <div class="modal-content text-center">
-            <img 
-                src="logo.png" 
-                alt="Logo Villa Victoria" 
-                class="logo-modal mx-auto mb-4" 
-            />
-            <h3 class="text-2xl font-extrabold text-white mb-2">
-                ¡Bienvenido/a a Villa Victoria!
-            </h3>
-            
-            <div id="modalMessage" class="text-gray-200 mb-6 text-sm">
-                <p>Descubrí las muestras y la programación cultural que ofrece este espacio único en Mar del Plata. Esta es tu guía rápida y en tiempo real.</p>
-            </div>
-            
-            <button 
-                onclick="closeModal()" 
-                class="w-full py-2 px-4 bg-[var(--color-accent)] text-white font-bold rounded-lg shadow-md hover:bg-[#289E93] transition duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2"
-            >
-                Aceptar
-            </button>
-        </div>
-    </div>
-    <div class="app-container">
+    <!-- Tarjeta Principal: Le pusimos un padding extra arriba para el logo que sobresale. -->
+    <div class="w-full max-w-md pt-16 pb-8 px-8 bg-white rounded-xl shadow-2xl relative overflow-hidden">
         
-        <header class="p-5 bg-[var(--color-primary)] text-white shadow-xl flex-shrink-0 relative flex flex-col items-center">
-            
-            <img 
-                src="logo.png" 
-                alt="Logo Villa Victoria" 
-                class="large-logo" 
-            />
-
-            <div class="text-center">
-                <h1 class="header-title text-3xl sm:text-4xl">
-                    VILLA VICTORIA
-                </h1>
-                <p class="text-gray-300 text-sm font-light mt-1">
-                    Centro Cultural Victoria Ocampo - Villa Victoria - Mar del Plata - Batán - Partido de General Pueyrredon.
-                </p>
+        <!-- Franja de color Primary arriba, como si fuera el Header -->
+        <div class="absolute top-0 left-0 w-full h-16 bg-[var(--color-primary)]"></div>
+        
+        <header class="mb-8 flex flex-col items-center">
+            <!-- LOGO MODIFICADO: Ahora es una div con texto "VV" para asegurar el estilo -->
+            <div class="logo-container mb-4">
+                VV
             </div>
-            
+            <!-- Títulos con más peso visual (bold y Primary color) -->
+            <h1 class="text-3xl font-extrabold text-[var(--color-primary)] text-center mt-2">
+                Portal de Acceso
+            </h1>
+            <p class="text-gray-500 mt-1 text-sm text-center">
+                Centro Cultural Victoria Ocampo
+            </p>
         </header>
 
-        <div id="menuView" class="p-4 flex-1 flex flex-col items-center space-y-6 bg-[var(--color-bg-light)]">
-            
-            <p class="text-center text-xl font-bold text-gray-700 mt-4">Seleccione una opción</p>
-
-            <div class="w-full px-4" style="max-width: 384px; height: 120px;"> 
-                <div 
-                    id="muestraButtonFlip"
-                    onclick="animateButton(this, 'gestor_muestra')" 
-                    class="flip-container h-full"
+        <form id="login-form" class="space-y-6">
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Usuario (CUIL/DNI)</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    required 
+                    placeholder="Sin puntos ni guiones"
+                    class="input-text w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400"
                 >
-                    <div class="flip-face menu-button border-[var(--color-accent)] hover:border-[var(--color-accent)]">
-                        <div class="flex items-center">
-                            <i class="fas fa-camera-retro text-4xl text-[var(--color-accent)] mr-4"></i>
-                            <div>
-                                <span class="text-xl font-bold text-gray-900 block">Muestras</span>
-                                <span class="text-sm text-gray-500">Listado de muestras.</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="flip-face back-face bg-white shadow-xl">
-                        <p class="text-xl font-bold">Aguarde un instante...</p>
-                        <i class="fas fa-spinner fa-spin text-4xl mt-3 text-[var(--color-accent)]"></i>
-                    </div>
-                </div>
             </div>
-
-            <div class="w-full px-4" style="max-width: 384px; height: 120px;"> 
-                <div 
-                    id="programacionButtonFlip"
-                    onclick="animateButton(this, 'gestor_programacion')" 
-                    class="flip-container h-full"
+            
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    required 
+                    placeholder="Tu clave personal"
+                    class="input-text w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400"
                 >
-                    <div class="flip-face menu-button border-[var(--color-primary)] hover:border-[var(--color-primary)]">
-                        <div class="flex items-center">
-                            <i class="fas fa-calendar-check text-4xl text-[var(--color-primary)] mr-4"></i>
-                            <div>
-                                <span class="text-xl font-bold text-gray-900 block">Programaciones</span>
-                                <span class="text-sm text-gray-500">Actividades Programadas.</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="flip-face back-face bg-white shadow-xl">
-                        <p class="text-xl font-bold">Aguarde un instante...</p>
-                        <i class="fas fa-spinner fa-spin text-4xl mt-3 text-[var(--color-primary)]"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="flex-1"></div> </div>
-
-        <div id="dataView" class="hidden flex-1 relative bg-white overflow-y-auto">
-            
-            <div class="flex items-center justify-between p-3 border-b border-gray-200 sticky top-0 bg-white z-10 shadow-md flex-shrink-0">
-                <button onclick="changeView('menu')" class="text-gray-600 hover:text-[var(--color-primary)] transition duration-150 p-2 rounded-full">
-                    <i class="fas fa-arrow-left text-lg"></i>
-                    <span class="sr-only">Volver al menú</span>
-                </button>
-                <h2 id="sectionTitle" class="text-xl font-bold text-gray-800 flex-1 text-center pr-10">
-                    SECCIÓN
-                </h2>
             </div>
 
-            <div class="p-4">
-                <div id="dataList" class="space-y-4 pb-12">
-                    <div id="loadingSpinner" class="text-center p-12 bg-gray-100 rounded-lg shadow-inner">
-                        <i class="fas fa-spinner fa-spin text-5xl text-[var(--color-accent)]"></i>
-                        <p class="mt-4 text-gray-700 font-medium text-lg">Cargando datos...</p>
-                    </div>
-                </div>
 
-                <div id="noResults" class="hidden text-center p-10 bg-gray-100 rounded-lg shadow-md border border-gray-300 mt-6">
-                    <i class="fas fa-search-minus text-4xl text-gray-500"></i>
-                    <p class="mt-4 text-gray-700 font-bold">¡Uy! No hay datos activos para mostrar en esta sección.</p>
-                </div>
-            </div>
-            
-        </div>
+            <p id="error-message" class="text-red-600 font-medium text-sm hidden">
+                Usuario o Contraseña incorrectos. Por favor, verificá tus datos.
+            </p>
+
+            <button 
+                type="submit" 
+                class="btn-primary w-full py-2.5 px-4 rounded-lg text-lg font-bold tracking-wide focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+            >
+                Continuar como Socio
+            </button>
+        </form>
+
+        <p id="loading-message" class="text-center text-accent font-semibold mt-4 hidden">
+            Verificando credenciales... Por favor, esperá un toque.
+        </p>
         
-        <footer class="p-3 text-center text-xs text-gray-500 border-t mt-auto bg-gray-50 flex-shrink-0">
-            <p class="text-gray-600 font-medium mb-1">Villa Victoria</p>
-            <p class="mt-1">Matheu 1851, Mar del Plata, Argentina</p>
-            <p>Email: <a href="mailto:villavictoria100@gmail.com" class="hover:text-[var(--color-primary)] transition">villavictoria100@gmail.com</a></p>
-            <p>Web: <a href="http://mardelplata.gob.ar/centroculturalvictoriaocampo" target="_blank" class="hover:text-[var(--color-primary)] transition">mardelplata.gob.ar/centroculturalvictoriaocampo</a></p>
-            <p class="mt-2 text-gray-400">&copy; 2025 Villa Victoria.</p>
+        <!-- Footer simple y discreto como en movil_user.html -->
+        <footer class="mt-8 text-center text-xs text-gray-400">
+            <p>&copy; 2025 Villa Victoria.</p>
         </footer>
+
     </div>
-
+    
+    <!-- Modal de Bienvenida (con colores del sistema) -->
+    <div id="welcome-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden items-center justify-center transition-opacity duration-300 z-50">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-sm modal-enter" id="modal-content">
+            <div class="text-center">
+                <!-- Icono de Checkmark con color de acento -->
+                <svg class="mx-auto h-12 w-12 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 class="mt-4 text-2xl font-bold text-gray-900" id="modal-greeting">¡Login Exitoso!</h3>
+                <p class="mt-2 text-md text-gray-500">
+                    Bienvenido, tus credenciales fueron validadas correctamente:
+                </p>
+                <!-- Nombre completo que se muestra con color de acento -->
+                <p class="mt-1 text-xl font-extrabold text-accent" id="user-fullname">
+                    [Nombre Completo del Usuario]
+                </p>
+            </div>
+            <div class="mt-5 sm:mt-6">
+                <!-- El botón de continuar del modal también usa el estilo btn-primary modificado -->
+                <button type="button" id="modal-continue-btn" class="btn-primary w-full py-2.5 px-4 rounded-lg text-lg font-bold tracking-wide focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent">
+                    Continuar
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Lógica de autenticación y localStorage (La lógica funcional NO se toca) -->
     <script>
-        const APPSSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyAs_AnRW3nf_G8gz0FxYeQGAIMC5_uYM48kp4V7Op5NrD7-bj3aqTjdJOULye3hicNog/exec'; 
-
-        const dataList = document.getElementById('dataList');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const noResults = document.getElementById('noResults');
-        const sectionTitle = document.getElementById('sectionTitle');
-        const menuView = document.getElementById('menuView');
-        const dataView = document.getElementById('dataView');
-        const welcomeModal = document.getElementById('welcomeModal');
-        const modalMessage = document.getElementById('modalMessage'); 
+        // --- CONFIGURACIÓN DEL APPS SCRIPT ---
         
-        let allData = []; 
-        let currentSheet = null; 
+        // ¡IMPORTANTE! Reemplaza esta URL con la URL de tu Apps Script desplegado
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbybImPtLd8JSSJk-grUagTAfxBUVG8wsPp2zcedCmazDtqtycAjSP5x1jECfPKEmQ4FJg/exec'; 
         
-        function normalizeDate(dateValue) {
-            if (!dateValue) return null;
+        // Reemplaza con la ID real de tu hoja de cálculo
+        const SHEET_ID = '1h3Q3aOYEsXqKC3xN4qj7K7SmkwpFQtZdd0POsZF77Dg'; 
+        
+        // Nombre de la hoja donde se valida el usuario
+        const SHEET_NAME_FOR_VALIDATION = 'user'; 
+        
+        // ¡ATENCIÓN! ESTOS ÍNDICES DEBEN COINCIDIR CON LA ESTRUCTURA DE TU HOJA 'user'
+        // Indexación: A=0, B=1, C=2, D=3, E=4, F=5, etc.
+        const USERNAME_COLUMN_INDEX = 3; // Índice de la Columna D (Donde está el CUIL/DNI)
+        const PASSWORD_COLUMN_INDEX = 4; // Índice de la Columna E (Donde está la Contraseña)
+        // La columna del Nombre Completo y Permiso (User_Type) se gestiona desde el Apps Script, no necesita índice aquí.
+        
+        // Elementos de UI
+        const loginForm = document.getElementById('login-form');
+        const usernameInput = document.getElementById('username'); 
+        const passwordInput = document.getElementById('password'); 
+        const errorMessage = document.getElementById('error-message');
+        const loadingMessage = document.getElementById('loading-message');
+        
+        // Elementos de UI para el Modal
+        const welcomeModal = document.getElementById('welcome-modal');
+        const modalContent = document.getElementById('modal-content');
+        const userFullnameDisplay = document.getElementById('user-fullname');
+        const modalContinueBtn = document.getElementById('modal-continue-btn');
 
-            let dateObj;
 
-            if (dateValue instanceof Date) {
-                const year = dateValue.getFullYear();
-                const month = dateValue.getMonth();
-                const day = dateValue.getDate();
-                dateObj = new Date(year, month, day, 12); 
-            } 
-            else if (typeof dateValue === 'string') {
-                const dateOnly = String(dateValue).split(' ')[0].trim(); 
-                
-                if (dateOnly.includes('/')) {
-                    const parts = dateOnly.split('/');
-                    if (parts.length === 3) {
-                        dateObj = new Date(parts[2], parts[1] - 1, parts[0], 12); 
-                    }
-                } else if (dateOnly.includes('-')) {
-                     const cleanDate = dateOnly.replace(/T.*Z$/, ''); 
-                     dateObj = new Date(cleanDate + 'T12:00:00'); 
-                }
-            } 
+        /**
+         * Limpia el input de usuario (remueve espacios, puntos y guiones).
+         */
+        function cleanInput(value) {
+            return value.replace(/[-\s\.]/g, '').trim();
+        }
+
+
+        /**
+         * Muestra el modal de bienvenida con animación.
+         */
+        function showWelcomeModal(fullName) {
+            userFullnameDisplay.textContent = fullName;
+            welcomeModal.classList.remove('hidden');
+            welcomeModal.classList.add('flex');
             
-            if (dateObj && !isNaN(dateObj.getTime())) {
-                const year = dateObj.getFullYear();
-                const month = String(dateObj.getMonth() + 1).padStart(2, '0'); 
-                const day = String(dateObj.getDate()).padStart(2, '0');
-                return `${year}-${month}-${day}`;
-            }
-
-            return null; 
-        }
-
-        function formatDateForDisplay(dateValue) {
-            const normalized = normalizeDate(dateValue);
-            if (!normalized) return 'Sin Fecha';
-            
-            const parts = normalized.split('-');
-            if (parts.length === 3) {
-                 return `${parts[2]}/${parts[1]}/${parts[0]}`; 
-            }
-            return normalized;
-        }
-
-        function getTodayDateString() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-        
-        async function showWelcomeModal() {
-            if (!sessionStorage.getItem('welcomeModalShown')) {
-                
-                let todayEvent = null;
-                const todayStr = getTodayDateString(); 
-
-                try {
-                    const programacion = await fetchSheetData('gestor_programacion');
-                    
-                    if (programacion && programacion.length > 0) {
-                        todayEvent = programacion.find(item => 
-                            normalizeDate(item.fecha) === todayStr
-                        );
-                    }
-                } catch (error) {
-                    console.error('Error al cargar datos para el modal:', error);
-                }
-
-                if (todayEvent) {
-                    const titulo = todayEvent.titulo || 'Evento Cultural';
-                    const rawHora = todayEvent.hora || 'todo el día';
-                    const hora = rawHora.replace(/\s*hs/i, '').trim(); 
-                    
-                    modalMessage.innerHTML = `
-                        <p class="font-bold text-white mb-4">
-                            ¡Hoy te comentamos que está programado el evento:
-                            <span class="text-[var(--color-accent)]">${titulo}</span> a las <span class="text-[var(--color-accent)]">${hora}</span>!
-                        </p>
-                        <p class="text-gray-200 text-sm">
-                            Descubrí las muestras y la programación completa navegando por las secciones.
-                        </p>
-                    `;
-                } else {
-                    modalMessage.innerHTML = `
-                        <p>Descubrí las muestras y la programación cultural que ofrece este espacio único en Mar del Plata. Esta es tu guía rápida y en tiempo real.</p>
-                        <p class="mt-2 text-gray-300 text-xs">(Por el momento, no hay eventos de programación exclusivos para hoy).</p>
-                    `;
-                }
-                
-                welcomeModal.classList.add('open');
-            }
-        }
-        
-        function closeModal() {
-            welcomeModal.classList.remove('open');
-            sessionStorage.setItem('welcomeModalShown', 'true');
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            changeView('menu'); 
-            showWelcomeModal(); 
-        });
-        
-        function animateButton(flipContainer, sheetName) {
-            
-            flipContainer.classList.add('flipped');
-            
-            const buttons = document.querySelectorAll('.flip-container');
-            buttons.forEach(btn => btn.style.pointerEvents = 'none');
-
+            // Aplicar animación de entrada
             setTimeout(() => {
-                changeView('data', sheetName);
-                
-                flipContainer.classList.remove('flipped');
-                buttons.forEach(btn => btn.style.pointerEvents = 'auto');
-            }, 800); 
-        }
-
-        function changeView(viewName, sheetName = null) {
-            menuView.classList.add('hidden');
-            dataView.classList.add('hidden');
-
-            if (viewName === 'menu') {
-                menuView.classList.remove('hidden');
-                sectionTitle.textContent = 'SECCIÓN'; 
-                dataList.innerHTML = ''; 
-            } else if (viewName === 'data' && sheetName) {
-                dataView.classList.remove('hidden');
-                currentSheet = sheetName;
-                
-                if (sheetName === 'gestor_muestra') {
-                    sectionTitle.textContent = 'Listado de Muestras';
-                } else if (sheetName === 'gestor_programacion') {
-                    sectionTitle.textContent = 'Actividades Programadas';
-                }
-
-                fetchAndRenderData(sheetName);
-            }
-        }
-
-        async function fetchWithRetry(url, options = {}, maxRetries = 3, delay = 1000) {
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    const response = await fetch(url, options);
-                    if (!response.ok) {
-                        throw new Error(`HTTP Error: ${response.status}`);
-                    }
-                    return response;
-                } catch (error) {
-                    if (i === maxRetries - 1) {
-                        throw error;
-                    }
-                    await new Promise(resolve => setTimeout(resolve, delay * (2 ** i)));
-                }
-            }
+                modalContent.classList.remove('modal-enter');
+                modalContent.classList.add('modal-enter-active');
+            }, 10);
         }
         
-        async function fetchSheetData(sheetName) {
-            const url = `${APPSSCRIPT_URL}?action=READ_SHEET&sheetName=${sheetName}`;
-            const response = await fetchWithRetry(url);
-            const responseText = await response.text();
-            
-            let data = {};
-            try {
-                data = JSON.parse(responseText);
-            } catch(e) {
-                throw new Error(`Respuesta inválida (no JSON) al cargar ${sheetName}.`); 
-            }
-            
-            if (data.status === 'success' && Array.isArray(data.data)) {
-                // --- MODIFICACIÓN PARA FILTRAR POR CAMPO ACTIVO ("SI") ---
-                // Filtramos los datos para que solo pasen los que tienen "SI" en el campo ACTIVO
-                return data.data.filter(item => {
-                    const valorActivo = String(item.ACTIVO || '').toUpperCase().trim();
-                    return valorActivo === 'SI';
-                });
-            } else {
-                throw new Error(data.message || `Error en el status al cargar ${sheetName}.`);
-            }
+        /**
+         * Redirige al dashboard.
+         */
+        function redirectToDashboard() {
+            // ¡MODIFICADO! Redirige a 'index.html' en lugar de 'dashboard.html'
+            window.location.href = 'movil_user.html'; 
         }
 
-        async function fetchAndRenderData(sheetName) {
-            loadingSpinner.classList.remove('hidden');
-            dataList.innerHTML = '';
-            noResults.classList.add('hidden');
 
-            try {
-                const dataArray = await fetchSheetData(sheetName);
-                
-                dataArray.sort((a, b) => {
-                    const keyA = a.fecha || Object.values(a)[0] || '';
-                    const keyB = b.fecha || Object.values(b)[0] || '';
-                    
-                    const dateA = normalizeDate(keyA);
-                    const dateB = normalizeDate(keyB);
-                    
-                    if (dateA && dateB) {
-                        return dateA.localeCompare(dateB);
-                    }
-                    return String(keyA).localeCompare(String(keyB));
-                });
+        /**
+         * Maneja el envío del formulario y la validación con Apps Script.
+         */
+        async function handleLogin(event) {
+            event.preventDefault();
 
-                allData = dataArray;
-                renderData(allData, sheetName); 
-
-            } catch (error) {
-                console.error('Error al cargar la data:', error);
-                
-                dataList.innerHTML = `
-                    <div class="alert bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-md m-4" role="alert">
-                        <h4 class="font-bold">¡Error de Conexión o URL!</h4>
-                        <p>No se pudo cargar la data de <strong>${sheetName}</strong>. Detalle: ${error.message}</p>
-                        <p class="text-sm mt-1"><strong>ACLARACIÓN:</strong> Verifique la URL y el script de Apps Script.</p>
-                    </div>
-                `;
-            } finally {
-                loadingSpinner.classList.add('hidden');
-            }
-        }
-        
-        function getHoraColorClass(fechaStr, horaStr) {
-            const now = new Date();
-            let dateEvent = null;
-
-            let isoDateStr = normalizeDate(fechaStr);
+            // Ocultar mensaje de error anterior y mostrar cargando
+            errorMessage.classList.add('hidden');
+            loadingMessage.classList.remove('hidden');
             
-            if (!isoDateStr) {
-                 return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock', isHappening: false };
-            }
+            // Deshabilitar formulario durante la solicitud
+            usernameInput.disabled = true;
+            passwordInput.disabled = true;
+            loginForm.querySelector('button').disabled = true;
 
-            try {
-                const cleanedHoraStr = String(horaStr).replace(/\s*hs/i, '').trim(); 
-                let timeParts = cleanedHoraStr.split(':');
-                
-                if (timeParts.length === 2) {
-                    const h = String(parseInt(timeParts[0] || '0')).padStart(2, '0');
-                    const m = String(parseInt(timeParts[1] || '0')).padStart(2, '0');
-                    dateEvent = new Date(`${isoDateStr}T${h}:${m}:00`);
-                } else {
-                     dateEvent = new Date(`${isoDateStr}T23:59:00`); 
-                }
-            } catch(e) {
-                 dateEvent = new Date(`${isoDateStr}T23:59:00`);
-            }
+            const rawUsername = usernameInput.value;
+            const rawPassword = passwordInput.value;
 
-            if (isNaN(dateEvent.getTime())) {
-                return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock', isHappening: false };
-            }
+            const cleanUsername = cleanInput(rawUsername);
 
-            const nowDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            nowDay.setHours(0, 0, 0, 0); 
-            
-            const eventDay = new Date(dateEvent.getFullYear(), dateEvent.getMonth(), dateEvent.getDate());
-            eventDay.setHours(0, 0, 0, 0); 
-
-            const isToday = eventDay.getTime() === nowDay.getTime();
-            
-            if (eventDay.getTime() < nowDay.getTime()) {
-                return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-history', isHappening: false };
-            }
-            
-            if (isToday) {
-                const startTime = dateEvent.getTime();
-                const twoHoursLater = startTime + (2 * 60 * 60 * 1000); 
-                
-                if (now.getTime() < startTime) {
-                     return { 
-                        cardClass: 'bg-green-100-card blinking-card', 
-                        badgeClass: 'bg-green-600 text-white', 
-                        iconClass: 'fas fa-calendar-day',
-                        isHappening: true 
-                    };
-                } else if (now.getTime() >= startTime && now.getTime() < twoHoursLater) {
-                     return { 
-                        cardClass: 'bg-green-100-card blinking-card', 
-                        badgeClass: 'bg-green-600 text-white', 
-                        iconClass: 'fas fa-calendar-day',
-                        isHappening: true 
-                    };
-                } else {
-                     return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-check-circle', isHappening: false };
-                }
-            }
-            
-            return { cardClass: '', badgeClass: 'bg-blue-100 text-blue-700', iconClass: 'fas fa-clock', isHappening: false };
-        }
-
-        function renderData(data, sheetName) {
-            dataList.innerHTML = '';
-            
-            if (data.length === 0) { 
-                noResults.classList.remove('hidden');
+            if (!cleanUsername || !rawPassword) {
+                errorMessage.textContent = 'Por favor, ingresá tu Nombre de Usuario y Contraseña.';
+                errorMessage.classList.remove('hidden');
+                loadingMessage.classList.add('hidden');
+                usernameInput.disabled = false;
+                passwordInput.disabled = false;
+                loginForm.querySelector('button').disabled = false;
                 return;
             }
-            noResults.classList.add('hidden');
 
-            if (sheetName === 'gestor_muestra') {
-                renderMuestras(data);
-            } else if (sheetName === 'gestor_programacion') { 
-                renderProgramacion(data);
-            }
-        }
-
-        function renderMuestras(muestras) {
-            muestras.forEach(muestra => {
-                const nombre = muestra.Nombre || muestra.nombre || Object.values(muestra)[0] || 'Sin Nombre';
-                const periodo = muestra.Periodo || muestra.periodo || Object.values(muestra)[1] || 'Sin Período';
-                const detalle = muestra.Detalle || muestra.detalle || Object.values(muestra)[2] || 'Detalle no especificado.';
-                
-                const { cardClass } = getHoraColorClass(periodo, '23:59'); 
-                
-                const card = document.createElement('div');
-                card.className = `muestra-card ${cardClass}`; 
-
-                card.onclick = function() {
-                    toggleMuestra(this);
+            try {
+                // Preparamos los datos a enviar al Apps Script
+                const dataToSend = {
+                    sheetId: SHEET_ID,
+                    sheetName: SHEET_NAME_FOR_VALIDATION,
+                    username: cleanUsername, 
+                    password: rawPassword, 
+                    usernameColumnIndex: USERNAME_COLUMN_INDEX, 
+                    passwordColumnIndex: PASSWORD_COLUMN_INDEX
                 };
 
-                const headerBgClass = cardClass ? 'bg-white' : 'bg-white hover:bg-gray-50 active:bg-gray-100';
-
-                card.innerHTML = `
-                    <div class="p-4 flex items-start justify-between ${headerBgClass} transition duration-150 rounded-lg">
-                        <div class="flex-1 min-w-0 pr-4">
-                            <div class="flex items-center mb-2">
-                                <span class="tag-badge bg-green-100 text-green-700">
-                                    <i class="fas fa-calendar-alt mr-1"></i> ${periodo} 
-                                </span>
-                                </div>
-                            <h2 class="text-lg font-bold text-gray-900 mt-1">${nombre}</h2>
-                        </div>
-                        
-                        <div class="flex-shrink-0 pt-3">
-                            <i class="fas fa-chevron-down chevron text-gray-500"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="muestra-content">
-                        <div class="text-base text-gray-700 leading-relaxed">
-                            <h3 class="font-bold mb-3 border-b border-gray-200 pb-1 text-md text-[var(--color-primary)]">Detalle:</h3>
-                            <p class="text-sm detalle-content">${detalle}</p> 
-                        </div>
-                    </div>
-                `;
-                dataList.appendChild(card);
-            });
-        }
-        
-        function renderProgramacion(programacion) {
-            
-            const filteredProgramacion = programacion.filter(item => {
-                const { iconClass } = getHoraColorClass(item.fecha, item.hora);
+                // Función de reintento con backoff exponencial
+                const maxRetries = 3;
+                let attempt = 0;
+                let response = null;
                 
-                if (iconClass === 'fas fa-history' || iconClass === 'fas fa-check-circle') {
-                    return false;
+                while (attempt < maxRetries) {
+                    try {
+                        response = await fetch(APPS_SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'cors', 
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded' 
+                            },
+                            body: new URLSearchParams(dataToSend).toString()
+                        });
+
+                        if (response.ok) {
+                            break; 
+                        } else {
+                            throw new Error(`Error en la solicitud al servidor: ${response.statusText}`);
+                        }
+                    } catch (error) {
+                        attempt++;
+                        if (attempt >= maxRetries) {
+                            throw error; 
+                        }
+                        // Espera exponencial: 1s, 2s, 4s
+                        const delay = Math.pow(2, attempt) * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                }
+
+                if (!response) {
+                     throw new Error('No se pudo obtener una respuesta del servidor.');
                 }
                 
-                return true; 
-            });
+                const result = await response.json();
 
-            if (filteredProgramacion.length === 0) {
-                 noResults.classList.remove('hidden');
-                 return;
-            }
-
-            filteredProgramacion.forEach(item => {
-                const titulo = item.titulo || 'Sin Título';
-                const hora = item.hora || 'Sin Hora';
-                const costo = item.costo || 'Consultar Costo';
-                const detalle = item.detalle || 'Detalle no especificado.';
-                
-                const fechaDisplay = formatDateForDisplay(item.fecha); 
-                const fechaInput = item.fecha; 
-
-                const { cardClass, badgeClass, iconClass, isHappening } = getHoraColorClass(fechaInput, hora);
-
-                const highlightClass = isHappening ? 'highlighted-badge' : '';
-                
-                const card = document.createElement('div');
-                card.className = `muestra-card ${cardClass} ${isHappening ? 'blinking-card' : ''}`; 
-
-                card.onclick = function() {
-                    toggleMuestra(this); 
-                };
-
-                const headerBgClass = isHappening ? 'bg-white' : 'bg-white hover:bg-gray-50 active:bg-gray-100';
-
-                card.innerHTML = `
-                    <div class="p-4 flex items-start justify-between ${headerBgClass} transition duration-150 rounded-lg">
-                        <div class="flex-1 min-w-0 pr-4">
-                            <div class="flex items-center mb-2">
-                                <span class="tag-badge bg-indigo-100 text-indigo-700 ${highlightClass}">
-                                    <i class="fas fa-calendar-alt mr-1"></i> ${fechaDisplay} 
-                                </span>
-                                <span class="tag-badge ${badgeClass} ${highlightClass}">
-                                    <i class="${iconClass} mr-1"></i> ${hora} 
-                                </span>
-                            </div>
-                            <h2 class="text-lg font-bold text-gray-900 mt-1">${titulo}</h2>
-                        </div>
-                        
-                        <div class="flex-shrink-0 pt-3">
-                            <i class="fas fa-chevron-down chevron text-gray-500"></i>
-                        </div>
-                    </div>
+                // 2. Verificar el resultado devuelto por Apps Script
+                if (result.success) {
+                    // ¡USUARIO AUTORIZADO!
+                    localStorage.setItem('isAuthenticatedSTM', 'true'); 
                     
-                    <div class="muestra-content">
-                        <div class="text-base text-gray-700 leading-relaxed">
-                            <h3 class="font-bold mb-3 border-b border-gray-200 pb-1 text-md text-[var(--color-primary)]">Detalle:</h3>
-                            <p class="text-sm detalle-content">${detalle}</p> 
-                            <div class="mt-4 border-t border-gray-100 pt-3">
-                                <span class="tag-badge bg-red-100 text-red-700 text-sm">
-                                    <i class="fas fa-hand-holding-usd mr-1"></i> Costo: ${costo}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                dataList.appendChild(card);
-            });
-        }
+                    const fullName = result.fullName || 'Asociado Villa Victoria'; 
+                    
+                    // 🇦🇷 ¡CLAVE! Capturar y guardar el tipo de permiso
+                    const userType = result.user_type || 'USER'; 
+                    
+                    // Guardar los datos en localStorage
+                    localStorage.setItem('stm_username', fullName); 
+                    localStorage.setItem('stm_user_type', userType); // <-- GUARDANDO EL PERMISO
 
-        function toggleMuestra(card) {
-            const isOpen = card.classList.contains('open');
-
-            document.querySelectorAll('.muestra-card.open').forEach(openCard => {
-                if (openCard !== card) {
-                    openCard.classList.remove('open');
+                    showWelcomeModal(fullName);
+                    
+                } else {
+                    // Usuario no existe o credenciales incorrectas
+                    errorMessage.textContent = 'Usuario o Contraseña incorrectos. Por favor, verificá tus datos.';
+                    errorMessage.classList.remove('hidden');
                 }
-            });
 
-            if (!isOpen) {
-                card.classList.add('open');
-            } else {
-                card.classList.remove('open');
+            } catch (error) {
+                console.error('Error durante la verificación:', error);
+                errorMessage.textContent = `Error de conexión: ${error.message}. Asegurate de haber desplegado correctamente el Apps Script y de que la URL esté bien configurada.`;
+                errorMessage.classList.remove('hidden');
+            } finally {
+                // Solo re-habilitamos el formulario si el modal NO se mostró (login fallido)
+                if (!welcomeModal.classList.contains('flex')) {
+                    loadingMessage.classList.add('hidden');
+                    usernameInput.disabled = false;
+                    passwordInput.disabled = false;
+                    loginForm.querySelector('button').disabled = false;
+                } else {
+                    loadingMessage.classList.add('hidden'); // Ocultar solo el mensaje de carga en caso de éxito
+                }
             }
         }
+
+        // Asignar listeners
+        loginForm.addEventListener('submit', handleLogin);
+        modalContinueBtn.addEventListener('click', redirectToDashboard);
+
     </script>
 </body>
 </html>
