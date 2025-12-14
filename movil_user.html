@@ -15,7 +15,6 @@
             --color-accent: #30B5AA;  
             --color-bg-light: #f3f4f6;
             --color-card-bg: #ffffff;
-            --color-success: #10B981; /* Tailwind green-500 */
         }
 
         html, body {
@@ -94,7 +93,6 @@
              text-align: center;
         }
 
-        /* Estilos de las tarjetas de Muestras/Programacion */
         .muestra-card {
             transition: all 0.3s ease-in-out;
             cursor: pointer;
@@ -188,8 +186,7 @@
             margin-bottom: 0.75rem; 
             filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(0, 0, 0, 0.3)); 
         }
-        
-        /* Estilos base del modal */
+
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -235,22 +232,10 @@
             border-radius: 50%;
             box-shadow: none; 
         }
-        
-        /* Estilos específicos para el modal de éxito de pago */
-        #paymentSuccessModal .modal-content {
-            background-color: var(--color-success); /* Fondo verde para éxito */
-            border-color: #ffffff; /* Borde blanco */
-        }
-
-        #paymentSuccessModal .modal-content i {
-            color: #ffffff; /* Icono blanco */
-        }
-
     </style>
 </head>
 <body>
 
-    <!-- Modal de Bienvenida (Existente) -->
     <div id="welcomeModal" class="modal-overlay">
         <div class="modal-content text-center">
             <img 
@@ -267,35 +252,13 @@
             </div>
             
             <button 
-                onclick="closeModal('welcomeModal')" 
+                onclick="closeModal()" 
                 class="w-full py-2 px-4 bg-[var(--color-accent)] text-white font-bold rounded-lg shadow-md hover:bg-[#289E93] transition duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2"
             >
                 Aceptar
             </button>
         </div>
     </div>
-    
-    <!-- INICIO: Nuevo Modal de Éxito de Pago -->
-    <div id="paymentSuccessModal" class="modal-overlay">
-        <div class="modal-content text-center">
-            <i class="fas fa-check-circle text-6xl mx-auto mb-4"></i>
-            <h3 class="text-3xl font-extrabold text-white mb-2">
-                ¡Pago Informado!
-            </h3>
-            <p class="text-gray-100 mb-6 text-lg">
-                Se envió el comprobante por correo electrónico.
-            </p>
-            
-            <button 
-                onclick="closeModal('paymentSuccessModal')" 
-                class="w-full py-2 px-4 bg-white text-[var(--color-success)] font-bold rounded-lg shadow-md hover:bg-gray-100 transition duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
-            >
-                Entendido
-            </button>
-        </div>
-    </div>
-    <!-- FIN: Nuevo Modal de Éxito de Pago -->
-    
     <div class="app-container">
         
         <header class="p-5 bg-[var(--color-primary)] text-white shadow-xl flex-shrink-0 relative flex flex-col items-center">
@@ -372,7 +335,7 @@
                 </div>
             </div>
             
-            <!-- Botón de Registro de Pago (EXISTENTE) -->
+            <!-- INICIO: Botón de Registro de Pago (NUEVO) -->
             <div class="w-full px-4" style="max-width: 384px; height: 120px;"> 
                 <div 
                     id="pagoButtonFlip"
@@ -395,7 +358,7 @@
                     </div>
                 </div>
             </div>
-            <!-- FIN: Botón de Registro de Pago -->
+            <!-- FIN: Botón de Registro de Pago (NUEVO) -->
             
             <div class="flex-1"></div> </div>
 
@@ -412,7 +375,6 @@
             </div>
 
             <div class="p-4">
-                <!-- Contenedor genérico para listas de datos o el formulario de pago -->
                 <div id="dataList" class="space-y-4 pb-12">
                     <div id="loadingSpinner" class="text-center p-12 bg-gray-100 rounded-lg shadow-inner">
                         <i class="fas fa-spinner fa-spin text-5xl text-[var(--color-accent)]"></i>
@@ -424,94 +386,6 @@
                     <i class="fas fa-search-minus text-4xl text-gray-500"></i>
                     <p class="mt-4 text-gray-700 font-bold">¡Uy! No hay datos activos para mostrar en esta sección.</p>
                 </div>
-                
-                <!-- INICIO: Formulario de Registro de Pago (NUEVA SECCIÓN Y CAMPOS) -->
-                <div id="paymentFormContainer" class="hidden bg-gray-50 p-6 rounded-xl shadow-lg border border-gray-200">
-                    <h3 class="text-xl font-bold text-[var(--color-primary)] mb-4 border-b pb-2">Adjuntar Comprobante de Pago</h3>
-                    <p class="text-sm text-gray-600 mb-6">Por favor, complete los datos del pago y adjunte una imagen del comprobante. Se registrará en la tabla y se enviará por correo.</p>
-
-                    <form id="paymentForm" onsubmit="event.preventDefault(); handlePaymentSubmission();">
-                        
-                        <!-- NUEVO: Input Monto Pagado -->
-                        <div class="mb-4">
-                            <label for="paymentMonto" class="block text-sm font-medium text-gray-700 mb-2">Monto Pagado ($):</label>
-                            <input 
-                                type="number" 
-                                id="paymentMonto" 
-                                placeholder="Ej: 15000"
-                                required
-                                min="1"
-                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500"
-                            />
-                        </div>
-                        
-                        <!-- NUEVO: Input Referencia de Transacción -->
-                        <div class="mb-4">
-                            <label for="paymentReferencia" class="block text-sm font-medium text-gray-700 mb-2">Referencia de Transacción (Ej. CBU o Código):</label>
-                            <input 
-                                type="text" 
-                                id="paymentReferencia" 
-                                placeholder="Ej: CBU 12345678"
-                                required
-                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500"
-                            />
-                        </div>
-                        
-                        <!-- NUEVO: Input Método de Pago -->
-                        <div class="mb-6">
-                            <label for="paymentMetodo" class="block text-sm font-medium text-gray-700 mb-2">Método de Pago:</label>
-                            <input 
-                                type="text" 
-                                id="paymentMetodo" 
-                                placeholder="Ej: Transferencia, MercadoPago, etc."
-                                value="Transferencia"
-                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500"
-                            />
-                        </div>
-
-                        <!-- ARCHIVO COMPROBANTE -->
-                        <div class="mb-6">
-                            <label for="paymentFile" class="block text-sm font-medium text-gray-700 mb-2">Seleccionar Comprobante (Imagen/PDF):</label>
-                            <input 
-                                type="file" 
-                                id="paymentFile" 
-                                accept="image/*,application/pdf" 
-                                required
-                                class="w-full p-3 border border-gray-300 rounded-lg bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[var(--color-accent)] file:text-white hover:file:bg-[#289E93] transition duration-200 cursor-pointer"
-                            />
-                            <p id="fileError" class="text-xs text-red-600 mt-1 hidden">Por favor, cargue un archivo de imagen o PDF válido.</p>
-                        </div>
-                        
-                        <!-- Input de Comentario Opcional -->
-                        <div class="mb-6">
-                            <label for="paymentComment" class="block text-sm font-medium text-gray-700 mb-2">Comentario (Opcional):</label>
-                            <textarea
-                                id="paymentComment"
-                                rows="3"
-                                placeholder="Ej: Pago de cuota de Octubre."
-                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
-                            ></textarea>
-                        </div>
-
-                        <button 
-                            type="submit" 
-                            id="submitPaymentButton"
-                            class="w-full py-3 px-4 bg-amber-500 text-white font-bold rounded-lg shadow-md hover:bg-amber-600 transition duration-200 focus:outline-none focus:ring-4 focus:ring-amber-300 disabled:opacity-50"
-                        >
-                            <i class="fas fa-paper-plane mr-2"></i> Enviar Comprobante y Registrar
-                        </button>
-                        
-                        <div id="submissionLoading" class="hidden text-center mt-4 text-gray-700">
-                            <i class="fas fa-spinner fa-spin text-xl text-amber-500 mr-2"></i>
-                            Enviando y Registrando... por favor espere.
-                        </div>
-                        <div id="submissionError" class="hidden text-center mt-4 text-red-600 font-medium">
-                            <i class="fas fa-exclamation-triangle mr-2"></i> Error al enviar. Intente nuevamente.
-                        </div>
-                    </form>
-                </div>
-                <!-- FIN: Formulario de Registro de Pago -->
-
             </div>
             
         </div>
@@ -540,35 +414,13 @@
         const menuView = document.getElementById('menuView');
         const dataView = document.getElementById('dataView');
         const welcomeModal = document.getElementById('welcomeModal');
-        const paymentSuccessModal = document.getElementById('paymentSuccessModal'); 
         const modalMessage = document.getElementById('modalMessage'); 
         const userGreetingEl = document.getElementById('userGreeting'); 
-        const paymentFormContainer = document.getElementById('paymentFormContainer'); 
-        const submitPaymentButton = document.getElementById('submitPaymentButton'); 
-        const submissionLoading = document.getElementById('submissionLoading'); 
-        const submissionError = document.getElementById('submissionError'); 
         
         let allData = []; 
         let currentSheet = null; 
         let auth = null; 
 
-        // Función auxiliar para mostrar un modal
-        function showModal(modalElement) {
-            modalElement.classList.add('open');
-        }
-
-        // Función auxiliar para cerrar un modal (modificada para recibir el ID)
-        function closeModal(modalId) {
-            const modalElement = document.getElementById(modalId);
-            if (modalElement) {
-                modalElement.classList.remove('open');
-            }
-            // Al cerrar el modal de bienvenida, guarda en localStorage que ya se mostró
-            if (modalId === 'welcomeModal') {
-                localStorage.setItem('welcomeModalShown', 'true');
-            }
-        }
-        
         // Función para limpiar solo los datos de sesión relevantes en localStorage
         function clearSessionData() {
             // Asumo que 'fullName' y 'userEmail' son las claves que guardan la sesión
@@ -597,13 +449,18 @@
         async function showWelcomeModal(userName) {
             // Usa localStorage para que el modal se muestre solo la primera vez.
             if (!localStorage.getItem('welcomeModalShown')) {
+                
                 let todayEvent = null;
-                const todayStr = getTodayDateString();
+                const todayStr = getTodayDateString(); 
+
                 try {
                     // Intenta cargar la programación para ver si hay un evento hoy
                     const programacion = await fetchSheetData('gestor_programacion');
+                    
                     if (programacion && programacion.length > 0) {
-                        todayEvent = programacion.find(item => normalizeDate(item.fecha) === todayStr );
+                        todayEvent = programacion.find(item => 
+                            normalizeDate(item.fecha) === todayStr
+                        );
                     }
                 } catch (error) {
                     console.error('Error al cargar datos para el modal:', error);
@@ -614,13 +471,16 @@
                 const greetingText = userName === 'Invitado' ? '¡Bienvenido/a al Centro Cultural!' : `¡Hola, ${userName}!`;
                 welcomeModal.querySelector('h3').textContent = greetingText;
 
+
                 if (todayEvent) {
                     const titulo = todayEvent.titulo || 'Evento Cultural';
                     const rawHora = todayEvent.hora || 'todo el día';
-                    const hora = rawHora.replace(/\s*hs/i, '').trim();
+                    const hora = rawHora.replace(/\s*hs/i, '').trim(); 
+                    
                     modalMessage.innerHTML = `
                         <p class="font-bold text-white mb-4">
-                            ¡Hoy te comentamos que está programado el evento: <span class="text-[var(--color-accent)]">${titulo}</span> a las <span class="text-[var(--color-accent)]">${hora}</span>!
+                            ¡Hoy te comentamos que está programado el evento:
+                            <span class="text-[var(--color-accent)]">${titulo}</span> a las <span class="text-[var(--color-accent)]">${hora}</span>!
                         </p>
                         <p class="text-gray-200 text-sm">
                             Descubrí las muestras y la programación completa navegando por las secciones.
@@ -632,21 +492,29 @@
                         <p class="mt-2 text-gray-300 text-xs">(Por el momento, no hay eventos de programación exclusivos para hoy).</p>
                     `;
                 }
-                showModal(welcomeModal);
+                
+                welcomeModal.classList.add('open');
             }
-        } 
+        }
         
+        // Función modificada para guardar en localStorage
+        function closeModal() {
+            welcomeModal.classList.remove('open');
+            // Al cerrar, guarda en localStorage que ya se mostró
+            localStorage.setItem('welcomeModalShown', 'true');
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             // 1. Obtener nombre del usuario desde localStorage
             const storedName = localStorage.getItem('fullName');
-            let userName = storedName; 
+            let userName = storedName;
             
             // LÓGICA DE REDIRECCIÓN CLAVE: Si no hay nombre, redirigir
             if (!userName || userName === 'Invitado' || userName === '') {
-                // Si no hay sesión activa, redirige inmediatamente a la página de login
-                console.log("Sesión no encontrada. Redirigiendo a index.html.");
-                window.location.href = 'index.html';
-                return; // Detiene la ejecución del resto del script
+                 // Si no hay sesión activa, redirige inmediatamente a la página de login
+                 console.log("Sesión no encontrada. Redirigiendo a index.html.");
+                 window.location.href = 'index.html';
+                 return; // Detiene la ejecución del resto del script
             }
 
             // 2. Inicializar Firebase (solo por si se necesitan otros servicios)
@@ -660,51 +528,57 @@
             } catch (e) {
                 console.error("Fallo durante la inicialización de Firebase:", e);
             }
-
+            
             // 3. Mostrar saludo en el Header
             updateHeaderGreeting(userName);
-
+            
             // 4. Continuar con la carga de la vista y el modal de bienvenida
-            changeView('menu');
-            await showWelcomeModal(userName);
+            changeView('menu'); 
+            await showWelcomeModal(userName); 
         });
-
+        
         function normalizeDate(dateValue) {
             if (!dateValue) return null;
+
             let dateObj;
+
             if (dateValue instanceof Date) {
                 const year = dateValue.getFullYear();
                 const month = dateValue.getMonth();
                 const day = dateValue.getDate();
-                dateObj = new Date(year, month, day, 12);
-            } else if (typeof dateValue === 'string') {
-                const dateOnly = String(dateValue).split(' ')[0].trim();
+                dateObj = new Date(year, month, day, 12); 
+            } 
+            else if (typeof dateValue === 'string') {
+                const dateOnly = String(dateValue).split(' ')[0].trim(); 
+                
                 if (dateOnly.includes('/')) {
                     const parts = dateOnly.split('/');
                     if (parts.length === 3) {
-                        dateObj = new Date(parts[2], parts[1] - 1, parts[0], 12);
+                        dateObj = new Date(parts[2], parts[1] - 1, parts[0], 12); 
                     }
                 } else if (dateOnly.includes('-')) {
-                    const cleanDate = dateOnly.replace(/T.*Z$/, '');
-                    dateObj = new Date(cleanDate + 'T12:00:00');
+                     const cleanDate = dateOnly.replace(/T.*Z$/, ''); 
+                     dateObj = new Date(cleanDate + 'T12:00:00'); 
                 }
-            }
-
+            } 
+            
             if (dateObj && !isNaN(dateObj.getTime())) {
                 const year = dateObj.getFullYear();
-                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0'); 
                 const day = String(dateObj.getDate()).padStart(2, '0');
                 return `${year}-${month}-${day}`;
             }
-            return null;
+
+            return null; 
         }
 
         function formatDateForDisplay(dateValue) {
             const normalized = normalizeDate(dateValue);
             if (!normalized) return 'Sin Fecha';
+            
             const parts = normalized.split('-');
             if (parts.length === 3) {
-                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+                 return `${parts[2]}/${parts[1]}/${parts[0]}`; 
             }
             return normalized;
         }
@@ -716,148 +590,318 @@
             const day = String(now.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
         }
-
+        
         function animateButton(flipContainer, sheetName) {
+            
             flipContainer.classList.add('flipped');
+            
             const buttons = document.querySelectorAll('.flip-container');
             buttons.forEach(btn => btn.style.pointerEvents = 'none');
 
             setTimeout(() => {
                 changeView('data', sheetName);
+                
                 flipContainer.classList.remove('flipped');
                 buttons.forEach(btn => btn.style.pointerEvents = 'auto');
-            }, 800);
+            }, 800); 
         }
 
         function changeView(viewName, sheetName = null) {
             menuView.classList.add('hidden');
             dataView.classList.add('hidden');
-            paymentFormContainer.classList.add('hidden'); // Oculta el formulario por defecto
-            dataList.classList.remove('hidden'); // Muestra dataList por defecto (para muestras/programación)
 
             if (viewName === 'menu') {
                 menuView.classList.remove('hidden');
-                sectionTitle.textContent = 'SECCIÓN';
-                dataList.innerHTML = '';
+                sectionTitle.textContent = 'SECCIÓN'; 
+                dataList.innerHTML = ''; 
             } else if (viewName === 'data' && sheetName) {
                 dataView.classList.remove('hidden');
                 currentSheet = sheetName;
                 
-                // Lógica para mostrar la sección de Pago o la lista de datos
-                if (sheetName === 'registro_pago') {
-                    sectionTitle.textContent = 'Registro de Pago';
-                    // Nos aseguramos de ocultar los contenedores de listas/mensajes de error
-                    dataList.classList.add('hidden'); 
-                    loadingSpinner.classList.add('hidden'); 
-                    noResults.classList.add('hidden'); 
-                    paymentFormContainer.classList.remove('hidden'); // Muestra el formulario de pago
-                    
-                    // Resetear el formulario y los errores al abrir
-                    document.getElementById('paymentForm').reset();
-                    submissionError.classList.add('hidden');
+                if (sheetName === 'gestor_muestra') {
+                    sectionTitle.textContent = 'Listado de Muestras';
+                } else if (sheetName === 'gestor_programacion') {
+                    sectionTitle.textContent = 'Actividades Programadas';
+                } else if (sheetName === 'registro_pago') { // <-- NUEVO TITULO
+                    sectionTitle.textContent = 'Registro de Pagos';
+                }
 
-                } else {
-                    // Carga de Muestras o Programación (lógica existente)
-                    dataList.classList.remove('hidden');
-                    paymentFormContainer.classList.add('hidden'); 
-                    
-                    if (sheetName === 'gestor_muestra') {
-                        sectionTitle.textContent = 'Listado de Muestras';
-                        loadAndRenderData('gestor_muestra', renderMuestras);
-                    } else if (sheetName === 'gestor_programacion') {
-                        sectionTitle.textContent = 'Actividades Programadas';
-                        loadAndRenderData('gestor_programacion', renderProgramacion);
+                fetchAndRenderData(sheetName);
+            }
+        }
+
+        async function fetchWithRetry(url, options = {}, maxRetries = 3, delay = 1000) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        throw new Error(`HTTP Error: ${response.status}`);
                     }
+                    return response;
+                } catch (error) {
+                    if (i === maxRetries - 1) {
+                        throw error;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay * (2 ** i)));
                 }
             }
         }
         
         async function fetchSheetData(sheetName) {
-            const url = `${APPSSCRIPT_URL}?sheetName=${sheetName}`;
-            console.log(`Fetching data from: ${url}`);
+            const url = `${APPSSCRIPT_URL}?action=READ_SHEET&sheetName=${sheetName}`;
+            const response = await fetchWithRetry(url);
+            const responseText = await response.text();
             
-            // Simular respuesta exitosa si es 'registro_pago' para evitar errores de fetch al usar el mismo flujo de cambio de vista
-            if (sheetName === 'registro_pago') {
-                 return [];
-            }
-
+            let data = {};
             try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                console.log(`Data for ${sheetName}:`, data);
-                // La API de Google Sheets puede devolver un objeto con un array 'data'
-                return data.data || data; 
-            } catch (error) {
-                console.error(`Error fetching sheet data for ${sheetName}:`, error);
-                return []; 
+                data = JSON.parse(responseText);
+            } catch(e) {
+                throw new Error(`Respuesta inválida (no JSON) al cargar ${sheetName}.`); 
+            }
+            
+            if (data.status === 'success' && Array.isArray(data.data)) {
+                // Filtramos los datos para que solo pasen los que tienen "SI" en el campo ACTIVO
+                return data.data.filter(item => {
+                    const valorActivo = String(item.ACTIVO || '').toUpperCase().trim();
+                    return valorActivo === 'SI';
+                });
+            } else {
+                throw new Error(data.message || `Error en el status al cargar ${sheetName}.`);
             }
         }
 
-        async function loadAndRenderData(sheetName, renderFunction) {
-            dataList.innerHTML = ''; 
+        async function fetchAndRenderData(sheetName) {
             loadingSpinner.classList.remove('hidden');
+            dataList.innerHTML = '';
             noResults.classList.add('hidden');
-            
-            const data = await fetchSheetData(sheetName);
-            
-            loadingSpinner.classList.add('hidden');
 
-            if (data && data.length > 0) {
-                renderFunction(data);
-                noResults.classList.add('hidden');
-            } else {
-                noResults.classList.remove('hidden');
+            try {
+                const dataArray = await fetchSheetData(sheetName);
+                
+                dataArray.sort((a, b) => {
+                    const keyA = a.fecha || Object.values(a)[0] || '';
+                    const keyB = b.fecha || Object.values(b)[0] || '';
+                    
+                    const dateA = normalizeDate(keyA);
+                    const dateB = normalizeDate(keyB);
+                    
+                    if (dateA && dateB) {
+                        return dateA.localeCompare(dateB);
+                    }
+                    return String(keyA).localeCompare(String(keyB));
+                });
+
+                allData = dataArray;
+                renderData(allData, sheetName); 
+
+            } catch (error) {
+                console.error('Error al cargar la data:', error);
+                
+                dataList.innerHTML = `
+                    <div class="alert bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-md m-4" role="alert">
+                        <h4 class="font-bold">¡Error de Conexión o URL!</h4>
+                        <p>No se pudo cargar la data de <strong>${sheetName}</strong>. Detalle: ${error.message}</p>
+                        <p class="text-sm mt-1"><strong>ACLARACIÓN:</strong> Verifique la URL y el script de Apps Script.</p>
+                    </div>
+                `;
+            } finally {
+                loadingSpinner.classList.add('hidden');
             }
         }
         
-        function renderMuestras(data) {
+        function getHoraColorClass(fechaStr, horaStr) {
+            const now = new Date();
+            let dateEvent = null;
+
+            let isoDateStr = normalizeDate(fechaStr);
+            
+            if (!isoDateStr) {
+                 return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock', isHappening: false };
+            }
+
+            try {
+                const cleanedHoraStr = String(horaStr).replace(/\s*hs/i, '').trim(); 
+                let timeParts = cleanedHoraStr.split(':');
+                
+                if (timeParts.length === 2) {
+                    const h = String(parseInt(timeParts[0] || '0')).padStart(2, '0');
+                    const m = String(parseInt(timeParts[1] || '0')).padStart(2, '0');
+                    dateEvent = new Date(`${isoDateStr}T${h}:${m}:00`);
+                } else {
+                     dateEvent = new Date(`${isoDateStr}T23:59:00`); 
+                }
+            } catch(e) {
+                 dateEvent = new Date(`${isoDateStr}T23:59:00`);
+            }
+
+            if (isNaN(dateEvent.getTime())) {
+                return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock', isHappening: false };
+            }
+
+            const nowDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            nowDay.setHours(0, 0, 0, 0); 
+            
+            const eventDay = new Date(dateEvent.getFullYear(), dateEvent.getMonth(), dateEvent.getDate());
+            eventDay.setHours(0, 0, 0, 0); 
+
+            const isToday = eventDay.getTime() === nowDay.getTime();
+            
+            if (eventDay.getTime() < nowDay.getTime()) {
+                return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-history', isHappening: false };
+            }
+            
+            if (isToday) {
+                const startTime = dateEvent.getTime();
+                const twoHoursLater = startTime + (2 * 60 * 60 * 1000); 
+                
+                // Si todavía no empezó (y no está demasiado cerca del inicio)
+                if (now.getTime() < startTime) {
+                     return { 
+                        cardClass: 'bg-green-100-card blinking-card', 
+                        badgeClass: 'bg-green-600 text-white', 
+                        iconClass: 'fas fa-calendar-day',
+                        isHappening: true 
+                    };
+                // Si está pasando ahora o empezó hace menos de 2 horas
+                } else if (now.getTime() >= startTime && now.getTime() < twoHoursLater) {
+                     return { 
+                        cardClass: 'bg-green-100-card blinking-card', 
+                        badgeClass: 'bg-green-600 text-white', 
+                        iconClass: 'fas fa-calendar-day',
+                        isHappening: true 
+                    };
+                // Si ya pasó hoy
+                } else {
+                     return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-check-circle', isHappening: false };
+                }
+            }
+            
+            // Eventos futuros
+            return { cardClass: '', badgeClass: 'bg-blue-100 text-blue-700', iconClass: 'fas fa-clock', isHappening: false };
+        }
+
+        function renderData(data, sheetName) {
             dataList.innerHTML = '';
             
-            // Asigna los datos a la variable global para que toggleMuestra pueda usarlos si es necesario
-            allData = data; 
-            
-            data.forEach(muestra => {
-                const {
-                    titulo = 'Muestra sin título',
-                    autor = 'Autor Desconocido',
-                    detalle = 'Sin detalle disponible.',
-                    costo = 'Consultar',
-                    fecha_desde,
-                    fecha_hasta,
-                    tags = '' 
-                } = muestra;
+            if (data.length === 0) { 
+                noResults.classList.remove('hidden');
+                return;
+            }
+            noResults.classList.add('hidden');
+
+            if (sheetName === 'gestor_muestra') {
+                renderMuestras(data);
+            } else if (sheetName === 'gestor_programacion') { 
+                renderProgramacion(data);
+            }
+            // Si es 'registro_pago', cae aquí y utiliza la lógica genérica de noResults si no hay datos.
+        }
+
+        function renderMuestras(muestras) {
+            muestras.forEach(muestra => {
+                const nombre = muestra.Nombre || muestra.nombre || Object.values(muestra)[0] || 'Sin Nombre';
+                const periodo = muestra.Periodo || muestra.periodo || Object.values(muestra)[1] || 'Sin Período';
+                const detalle = muestra.Detalle || muestra.detalle || Object.values(muestra)[2] || 'Detalle no especificado.';
+                
+                const { cardClass } = getHoraColorClass(periodo, '23:59'); 
                 
                 const card = document.createElement('div');
-                card.className = 'muestra-card bg-white p-0 shadow-md';
-                card.onclick = () => toggleMuestra(card); 
-                
-                const fechaDisplay = (fecha_desde && fecha_hasta) 
-                    ? `${formatDateForDisplay(fecha_desde)} - ${formatDateForDisplay(fecha_hasta)}` 
-                    : 'Fechas disponibles';
+                card.className = `muestra-card ${cardClass}`; 
 
-                const tagBadges = tags.split(',').map(tag => {
-                    const trimmedTag = tag.trim();
-                    if (!trimmedTag) return '';
-                    const colorClass = ['bg-blue-100 text-blue-700', 'bg-purple-100 text-purple-700', 'bg-red-100 text-red-700', 'bg-yellow-100 text-yellow-700'][Math.floor(Math.random() * 4)];
-                    return `<span class="tag-badge ${colorClass}">${trimmedTag}</span>`;
-                }).join('');
+                card.onclick = function() {
+                    toggleMuestra(this);
+                };
+
+                const headerBgClass = cardClass ? 'bg-white' : 'bg-white hover:bg-gray-50 active:bg-gray-100';
 
                 card.innerHTML = `
-                    <div class="p-5 flex justify-between items-center select-none border-b border-gray-100">
-                        <div class="flex-1 min-w-0">
-                            <p class="text-xs font-medium text-gray-500 mb-1">${fechaDisplay}</p>
-                            <h3 class="text-lg font-extrabold text-[var(--color-primary)] truncate">${titulo}</h3>
-                            <p class="text-sm text-gray-600 font-light truncate">Por: ${autor}</p>
+                    <div class="p-4 flex items-start justify-between ${headerBgClass} transition duration-150 rounded-lg">
+                        <div class="flex-1 min-w-0 pr-4">
+                            <div class="flex items-center mb-2">
+                                <span class="tag-badge bg-green-100 text-green-700">
+                                    <i class="fas fa-calendar-alt mr-1"></i> ${periodo} 
+                                </span>
+                                </div>
+                            <h2 class="text-lg font-bold text-gray-900 mt-1">${nombre}</h2>
                         </div>
-                        <i class="fas fa-chevron-down chevron ml-4 flex-shrink-0"></i>
+                        
+                        <div class="flex-shrink-0 pt-3">
+                            <i class="fas fa-chevron-down chevron text-gray-500"></i>
+                        </div>
                     </div>
                     
                     <div class="muestra-content">
-                        <div class="space-y-3">
-                            ${tagBadges ? `<div class="mb-4">${tagBadges}</div>` : ''}
+                        <div class="text-base text-gray-700 leading-relaxed">
+                            <h3 class="font-bold mb-3 border-b border-gray-200 pb-1 text-md text-[var(--color-primary)]">Detalle:</h3>
+                            <p class="text-sm detalle-content">${detalle}</p> 
+                        </div>
+                    </div>
+                `;
+                dataList.appendChild(card);
+            });
+        }
+        
+        function renderProgramacion(programacion) {
+            
+            const filteredProgramacion = programacion.filter(item => {
+                const { iconClass } = getHoraColorClass(item.fecha, item.hora);
+                
+                // Oculta eventos ya finalizados
+                if (iconClass === 'fas fa-history' || iconClass === 'fas fa-check-circle') {
+                    return false;
+                }
+                
+                return true; 
+            });
+
+            if (filteredProgramacion.length === 0) {
+                 noResults.classList.remove('hidden');
+                 return;
+            }
+
+            filteredProgramacion.forEach(item => {
+                const titulo = item.titulo || 'Sin Título';
+                const hora = item.hora || 'Sin Hora';
+                const costo = item.costo || 'Consultar Costo';
+                const detalle = item.detalle || 'Detalle no especificado.';
+                
+                const fechaDisplay = formatDateForDisplay(item.fecha); 
+                const fechaInput = item.fecha; 
+
+                const { cardClass, badgeClass, iconClass, isHappening } = getHoraColorClass(fechaInput, hora);
+
+                const highlightClass = isHappening ? 'highlighted-badge' : '';
+                
+                const card = document.createElement('div');
+                card.className = `muestra-card ${cardClass} ${isHappening ? 'blinking-card' : ''}`; 
+
+                card.onclick = function() {
+                    toggleMuestra(this); 
+                };
+
+                const headerBgClass = isHappening ? 'bg-white' : 'bg-white hover:bg-gray-50 active:bg-gray-100';
+
+                card.innerHTML = `
+                    <div class="p-4 flex items-start justify-between ${headerBgClass} transition duration-150 rounded-lg">
+                        <div class="flex-1 min-w-0 pr-4">
+                            <div class="flex items-center mb-2">
+                                <span class="tag-badge bg-indigo-100 text-indigo-700 ${highlightClass}">
+                                    <i class="fas fa-calendar-alt mr-1"></i> ${fechaDisplay} 
+                                </span>
+                                <span class="tag-badge ${badgeClass} ${highlightClass}">
+                                    <i class="${iconClass} mr-1"></i> ${hora} 
+                                </span>
+                            </div>
+                            <h2 class="text-lg font-bold text-gray-900 mt-1">${titulo}</h2>
+                        </div>
+                        
+                        <div class="flex-shrink-0 pt-3">
+                            <i class="fas fa-chevron-down chevron text-gray-500"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="muestra-content">
+                        <div class="text-base text-gray-700 leading-relaxed">
                             <h3 class="font-bold mb-3 border-b border-gray-200 pb-1 text-md text-[var(--color-primary)]">Detalle:</h3>
                             <p class="text-sm detalle-content">${detalle}</p> 
                             <div class="mt-4 border-t border-gray-100 pt-3">
@@ -871,69 +915,16 @@
                 dataList.appendChild(card);
             });
         }
-        
-        function renderProgramacion(data) {
-            dataList.innerHTML = '';
-            
-            data.forEach(item => {
-                const {
-                    titulo = 'Evento sin título',
-                    fecha,
-                    hora,
-                    costo = 'Consultar',
-                    detalle = 'Sin detalle disponible.'
-                } = item;
-                
-                const card = document.createElement('div');
-                card.className = 'muestra-card bg-white p-0 shadow-md';
-                
-                const isToday = normalizeDate(fecha) === getTodayDateString();
-                
-                if (isToday) {
-                    card.classList.add('bg-green-100-card', 'blinking-card');
-                }
-
-                card.onclick = () => toggleMuestra(card); 
-                
-                const fechaDisplay = formatDateForDisplay(fecha) || 'Fecha Desconocida';
-                const horaDisplay = hora || 'Todo el día';
-
-                card.innerHTML = `
-                    <div class="p-5 flex justify-between items-center select-none border-b border-gray-100">
-                        <div class="flex-1 min-w-0">
-                            <p class="text-xs font-medium ${isToday ? 'text-green-700 font-bold' : 'text-gray-500'} mb-1">${isToday ? '¡HOY!' : fechaDisplay}</p>
-                            <h3 class="text-lg font-extrabold text-[var(--color-primary)] truncate">${titulo}</h3>
-                            <p class="text-sm text-gray-600 font-light truncate"><i class="far fa-clock mr-1"></i> ${horaDisplay}</p>
-                        </div>
-                        <i class="fas fa-chevron-down chevron ml-4 flex-shrink-0"></i>
-                    </div>
-                    
-                    <div class="muestra-content">
-                        <div class="space-y-3">
-                            <div class="mb-4">
-                                <span class="tag-badge bg-blue-100 text-blue-700 text-sm"><i class="fas fa-calendar-alt mr-1"></i> Fecha: ${fechaDisplay}</span>
-                                <span class="tag-badge bg-green-100 text-green-700 text-sm"><i class="fas fa-hand-holding-usd mr-1"></i> Costo: ${costo}</span>
-                            </div>
-                            <h3 class="font-bold mb-3 border-b border-gray-200 pb-1 text-md text-[var(--color-primary)]">Detalle:</h3>
-                            <p class="text-sm detalle-content">${detalle}</p> 
-                        </div>
-                    </div>
-                `;
-                dataList.appendChild(card);
-            });
-        }
 
         function toggleMuestra(card) {
             const isOpen = card.classList.contains('open');
 
-            // Cierra todas las otras tarjetas abiertas
             document.querySelectorAll('.muestra-card.open').forEach(openCard => {
                 if (openCard !== card) {
                     openCard.classList.remove('open');
                 }
             });
 
-            // Abre o cierra la tarjeta clickeada
             if (!isOpen) {
                 card.classList.add('open');
             } else {
@@ -941,126 +932,11 @@
             }
         }
         
-        // --- INICIO: LÓGICA DE REGISTRO DE PAGO (ACTUALIZADA CON NUEVOS CAMPOS) ---
-
-        /**
-         * Convierte el archivo adjunto a Base64.
-         * @param {File} file - El objeto File a convertir.
-         * @returns {Promise<string>} Promesa que resuelve con la cadena Base64.
-         */
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result.split(',')[1]); // Solo la data Base64
-                reader.onerror = error => reject(error);
-            });
-        }
-        
-        /**
-         * Maneja la subida del formulario de pago.
-         */
-        async function handlePaymentSubmission() {
-            const fileInput = document.getElementById('paymentFile');
-            const commentInput = document.getElementById('paymentComment');
-            const montoInput = document.getElementById('paymentMonto'); // NUEVO
-            const referenciaInput = document.getElementById('paymentReferencia'); // NUEVO
-            const metodoInput = document.getElementById('paymentMetodo'); // NUEVO
-            
-            const file = fileInput.files[0];
-            const userName = localStorage.getItem('fullName');
-            const userEmail = localStorage.getItem('userEmail'); // Asumo que el email también está en localStorage
-            
-            // 1. Validaciones básicas de campos
-            if (!file) {
-                document.getElementById('fileError').classList.remove('hidden');
-                return;
-            } else {
-                document.getElementById('fileError').classList.add('hidden');
-            }
-            
-            if (!userName || !userEmail) {
-                console.error("Error: No se pudo obtener el nombre o email del socio.");
-                submissionError.textContent = 'Error de sesión. Intente recargar la aplicación.';
-                submissionError.classList.remove('hidden');
-                return;
-            }
-            
-            if (!montoInput.value.trim() || !referenciaInput.value.trim()) {
-                submissionError.textContent = 'Por favor, complete el Monto Pagado y la Referencia de Transacción.';
-                submissionError.classList.remove('hidden');
-                return;
-            }
-
-
-            submitPaymentButton.disabled = true;
-            submissionLoading.classList.remove('hidden');
-            submissionError.classList.add('hidden');
-
-            try {
-                // 2. Convertir archivo a Base64
-                const base64Data = await fileToBase64(file);
-                
-                // 3. Preparar el payload para Apps Script (incluyendo los nuevos campos)
-                const payload = {
-                    action: 'informar_pago', // Acción para el Apps Script
-                    userName: userName,
-                    userEmail: userEmail,
-                    comment: commentInput.value.trim(),
-                    fileData: base64Data,
-                    fileName: file.name,
-                    mimeType: file.type,
-                    recipientEmail: 'sebadipy@hotmail.com',
-                    
-                    // CAMPOS NUEVOS PARA LA TABLA 'registro_pagos'
-                    monto: montoInput.value.trim(),
-                    metodoPago: metodoInput.value.trim() || 'Transferencia Bancaria',
-                    referenciaTransaccion: referenciaInput.value.trim()
-                };
-                
-                // 4. Enviar a Apps Script
-                const response = await fetch(APPSSCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams(payload)
-                });
-
-                const result = await response.json();
-
-                if (result.status === 'success') {
-                    // 5. Mostrar modal de éxito
-                    showModal(paymentSuccessModal);
-                    
-                    // 6. Limpiar el formulario
-                    document.getElementById('paymentForm').reset();
-                    submissionError.classList.add('hidden'); // Asegura que el error esté oculto si hubo éxito
-                } else {
-                    console.error('Error del servidor:', result.message || 'Error desconocido.');
-                    submissionError.textContent = result.message || 'Error al enviar el comprobante. Intente más tarde.';
-                    submissionError.classList.remove('hidden');
-                }
-
-            } catch (error) {
-                console.error('Error al procesar o enviar el pago:', error);
-                submissionError.textContent = 'Fallo en la conexión o procesamiento del archivo. Asegúrese de que el archivo no sea muy grande.';
-                submissionError.classList.remove('hidden');
-            } finally {
-                submitPaymentButton.disabled = false;
-                submissionLoading.classList.add('hidden');
-            }
-        }
-
-        // --- FIN: LÓGICA DE REGISTRO DE PAGO ---
-        
         // Hacemos las funciones necesarias accesibles globalmente 
         // para los manejadores de eventos 'onclick' en el HTML.
         window.closeModal = closeModal;
         window.changeView = changeView;
         window.animateButton = animateButton;
-        window.toggleMuestra = toggleMuestra;
-        window.handlePaymentSubmission = handlePaymentSubmission; // Exporta la nueva función
         
     </script>
 </body>
