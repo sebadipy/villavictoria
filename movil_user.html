@@ -270,6 +270,11 @@
             />
 
             <div class="text-center">
+                <!-- Saludo dinámico al usuario logueado -->
+                <p id="userGreeting" class="text-gray-400 text-sm font-medium mb-1">
+                    Cargando usuario...
+                </p>
+                
                 <h1 class="header-title text-3xl sm:text-4xl">
                     VILLA VICTORIA
                 </h1>
@@ -369,7 +374,12 @@
         </footer>
     </div>
 
-    <script>
+    <script type="module">
+        // Importaciones de Firebase (se mantienen solo para inicialización del entorno)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        
+        // URL de tu Apps Script
         const APPSSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyAs_AnRW3nf_G8gz0FxYeQGAIMC5_uYM48kp4V7Op5NrD7-bj3aqTjdJOULye3hicNog/exec'; 
 
         const dataList = document.getElementById('dataList');
@@ -380,9 +390,127 @@
         const dataView = document.getElementById('dataView');
         const welcomeModal = document.getElementById('welcomeModal');
         const modalMessage = document.getElementById('modalMessage'); 
+        const userGreetingEl = document.getElementById('userGreeting'); 
         
         let allData = []; 
         let currentSheet = null; 
+        let auth = null; 
+
+        // Función para limpiar solo los datos de sesión relevantes en localStorage
+        function clearSessionData() {
+            // Asumo que 'fullName' y 'userEmail' son las claves que guardan la sesión
+            localStorage.removeItem('fullName');
+            localStorage.removeItem('userEmail');
+            // NO limpiamos 'welcomeModalShown' para que no vuelva a aparecer el modal
+            console.log("Datos de sesión limpiados al cerrar/navegar.");
+        }
+        
+        // Listener para limpiar al cerrar/navegar
+        function clearLocalStorageOnClose() {
+            clearSessionData();
+        }
+
+        // 1. Añadir el listener para limpiar localStorage al cerrar o navegar
+        window.addEventListener('beforeunload', clearLocalStorageOnClose);
+
+        // Función para actualizar el saludo en el header
+        function updateHeaderGreeting(userName) {
+            if (userGreetingEl) {
+                userGreetingEl.textContent = `Usuario: ${userName}`;
+            }
+        }
+        
+        // Función modificada para mostrar el modal y obtener el nombre del usuario
+        async function showWelcomeModal(userName) {
+            // Usa localStorage para que el modal se muestre solo la primera vez.
+            if (!localStorage.getItem('welcomeModalShown')) {
+                
+                let todayEvent = null;
+                const todayStr = getTodayDateString(); 
+
+                try {
+                    // Intenta cargar la programación para ver si hay un evento hoy
+                    const programacion = await fetchSheetData('gestor_programacion');
+                    
+                    if (programacion && programacion.length > 0) {
+                        todayEvent = programacion.find(item => 
+                            normalizeDate(item.fecha) === todayStr
+                        );
+                    }
+                } catch (error) {
+                    console.error('Error al cargar datos para el modal:', error);
+                    // Continúa si falla, mostrando el mensaje por defecto
+                }
+
+                // Definir saludo principal usando el nombre pasado
+                const greetingText = userName === 'Invitado' ? '¡Bienvenido/a al Centro Cultural!' : `¡Hola, ${userName}!`;
+                welcomeModal.querySelector('h3').textContent = greetingText;
+
+
+                if (todayEvent) {
+                    const titulo = todayEvent.titulo || 'Evento Cultural';
+                    const rawHora = todayEvent.hora || 'todo el día';
+                    const hora = rawHora.replace(/\s*hs/i, '').trim(); 
+                    
+                    modalMessage.innerHTML = `
+                        <p class="font-bold text-white mb-4">
+                            ¡Hoy te comentamos que está programado el evento:
+                            <span class="text-[var(--color-accent)]">${titulo}</span> a las <span class="text-[var(--color-accent)]">${hora}</span>!
+                        </p>
+                        <p class="text-gray-200 text-sm">
+                            Descubrí las muestras y la programación completa navegando por las secciones.
+                        </p>
+                    `;
+                } else {
+                    modalMessage.innerHTML = `
+                        <p>Descubrí las muestras y la programación cultural que ofrece este espacio único en Mar del Plata. Esta es tu guía rápida y en tiempo real.</p>
+                        <p class="mt-2 text-gray-300 text-xs">(Por el momento, no hay eventos de programación exclusivos para hoy).</p>
+                    `;
+                }
+                
+                welcomeModal.classList.add('open');
+            }
+        }
+        
+        // Función modificada para guardar en localStorage
+        function closeModal() {
+            welcomeModal.classList.remove('open');
+            // Al cerrar, guarda en localStorage que ya se mostró
+            localStorage.setItem('welcomeModalShown', 'true');
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 1. Obtener nombre del usuario desde localStorage
+            const storedName = localStorage.getItem('fullName');
+            let userName = storedName;
+            
+            // LÓGICA DE REDIRECCIÓN CLAVE: Si no hay nombre, redirigir
+            if (!userName || userName === 'Invitado' || userName === '') {
+                 // Si no hay sesión activa, redirige inmediatamente a la página de login
+                 console.log("Sesión no encontrada. Redirigiendo a index.html.");
+                 window.location.href = 'index.html';
+                 return; // Detiene la ejecución del resto del script
+            }
+
+            // 2. Inicializar Firebase (solo por si se necesitan otros servicios)
+            try {
+                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+                if (firebaseConfig) {
+                    const app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    // Asume que el usuario está logueado, no hace falta sign-in anónimo aquí
+                }
+            } catch (e) {
+                console.error("Fallo durante la inicialización de Firebase:", e);
+            }
+            
+            // 3. Mostrar saludo en el Header
+            updateHeaderGreeting(userName);
+            
+            // 4. Continuar con la carga de la vista y el modal de bienvenida
+            changeView('menu'); 
+            await showWelcomeModal(userName); 
+        });
         
         function normalizeDate(dateValue) {
             if (!dateValue) return null;
@@ -437,59 +565,6 @@
             const day = String(now.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
         }
-        
-        async function showWelcomeModal() {
-            if (!sessionStorage.getItem('welcomeModalShown')) {
-                
-                let todayEvent = null;
-                const todayStr = getTodayDateString(); 
-
-                try {
-                    const programacion = await fetchSheetData('gestor_programacion');
-                    
-                    if (programacion && programacion.length > 0) {
-                        todayEvent = programacion.find(item => 
-                            normalizeDate(item.fecha) === todayStr
-                        );
-                    }
-                } catch (error) {
-                    console.error('Error al cargar datos para el modal:', error);
-                }
-
-                if (todayEvent) {
-                    const titulo = todayEvent.titulo || 'Evento Cultural';
-                    const rawHora = todayEvent.hora || 'todo el día';
-                    const hora = rawHora.replace(/\s*hs/i, '').trim(); 
-                    
-                    modalMessage.innerHTML = `
-                        <p class="font-bold text-white mb-4">
-                            ¡Hoy te comentamos que está programado el evento:
-                            <span class="text-[var(--color-accent)]">${titulo}</span> a las <span class="text-[var(--color-accent)]">${hora}</span>!
-                        </p>
-                        <p class="text-gray-200 text-sm">
-                            Descubrí las muestras y la programación completa navegando por las secciones.
-                        </p>
-                    `;
-                } else {
-                    modalMessage.innerHTML = `
-                        <p>Descubrí las muestras y la programación cultural que ofrece este espacio único en Mar del Plata. Esta es tu guía rápida y en tiempo real.</p>
-                        <p class="mt-2 text-gray-300 text-xs">(Por el momento, no hay eventos de programación exclusivos para hoy).</p>
-                    `;
-                }
-                
-                welcomeModal.classList.add('open');
-            }
-        }
-        
-        function closeModal() {
-            welcomeModal.classList.remove('open');
-            sessionStorage.setItem('welcomeModalShown', 'true');
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            changeView('menu'); 
-            showWelcomeModal(); 
-        });
         
         function animateButton(flipContainer, sheetName) {
             
@@ -558,7 +633,6 @@
             }
             
             if (data.status === 'success' && Array.isArray(data.data)) {
-                // --- MODIFICACIÓN PARA FILTRAR POR CAMPO ACTIVO ("SI") ---
                 // Filtramos los datos para que solo pasen los que tienen "SI" en el campo ACTIVO
                 return data.data.filter(item => {
                     const valorActivo = String(item.ACTIVO || '').toUpperCase().trim();
@@ -653,6 +727,7 @@
                 const startTime = dateEvent.getTime();
                 const twoHoursLater = startTime + (2 * 60 * 60 * 1000); 
                 
+                // Si todavía no empezó (y no está demasiado cerca del inicio)
                 if (now.getTime() < startTime) {
                      return { 
                         cardClass: 'bg-green-100-card blinking-card', 
@@ -660,6 +735,7 @@
                         iconClass: 'fas fa-calendar-day',
                         isHappening: true 
                     };
+                // Si está pasando ahora o empezó hace menos de 2 horas
                 } else if (now.getTime() >= startTime && now.getTime() < twoHoursLater) {
                      return { 
                         cardClass: 'bg-green-100-card blinking-card', 
@@ -667,11 +743,13 @@
                         iconClass: 'fas fa-calendar-day',
                         isHappening: true 
                     };
+                // Si ya pasó hoy
                 } else {
                      return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-check-circle', isHappening: false };
                 }
             }
             
+            // Eventos futuros
             return { cardClass: '', badgeClass: 'bg-blue-100 text-blue-700', iconClass: 'fas fa-clock', isHappening: false };
         }
 
@@ -740,6 +818,7 @@
             const filteredProgramacion = programacion.filter(item => {
                 const { iconClass } = getHoraColorClass(item.fecha, item.hora);
                 
+                // Oculta eventos ya finalizados
                 if (iconClass === 'fas fa-history' || iconClass === 'fas fa-check-circle') {
                     return false;
                 }
@@ -824,6 +903,13 @@
                 card.classList.remove('open');
             }
         }
+        
+        // Hacemos las funciones necesarias accesibles globalmente 
+        // para los manejadores de eventos 'onclick' en el HTML.
+        window.closeModal = closeModal;
+        window.changeView = changeView;
+        window.animateButton = animateButton;
+        
     </script>
 </body>
 </html>
