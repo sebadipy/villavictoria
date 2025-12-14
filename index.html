@@ -1,16 +1,21 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <!-- CLAVE RESPONSIVE: Viewport meta tag para asegurar la adaptación en móvil -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Acceso - Villa Victoria</title>
-    <!-- Usa un logo genérico o el que tengas para Villa Victoria -->
-    <link rel="icon" type="image/png" href="logo.png">
+    <!-- Icono tomado del movil_user.html -->
+    <link rel="icon" href="logo favicon.png" type="image/png">
+    
+    <!-- Fuente Inter, la misma usada en ambos archivos -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
     <!-- Incluimos Tailwind CSS para estilos rápidos -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fuente Inter, tal como la usabas en el otro archivo -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Incluimos Font Awesome 6.5.2 para íconos, igual que en movil_user.html -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
     <style>
         /* Variables de color tomadas DIRECTAMENTE de movil_user.html */
@@ -21,359 +26,375 @@
             --color-card-bg: #ffffff;  /* Fondo de tarjeta/modal */
         }
         
+        html, body {
+            height: 100%; 
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            /* Fuente y Fondo del sistema */
+            /* Fuente y Fondo */
             font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg-light); 
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-color: var(--color-bg-light);
+            /* Asegura que el cuerpo ocupe al menos el alto de la pantalla */
             min-height: 100vh;
-            padding: 1rem;
-            box-sizing: border-box;
-        }
-
-        /* Utilidades de color custom */
-        .border-accent {
-            border-color: var(--color-accent);
-        }
-        .text-accent {
-            color: var(--color-accent);
-        }
-        
-        /* Estilos del Logo - GARANTIZAMOS ESTILO: Círculo Primary con texto blanco */
-        .logo-container {
-            width: 7rem; /* Tamaño del círculo */
-            height: 7rem;
-            border-radius: 50%; /* Redondeado perfecto */
-            background-color: var(--color-primary); /* Fondo gris del header */
-            box-shadow: 0 0 0 5px white, 0 6px 15px -3px rgba(0, 0, 0, 0.2); 
-            margin-top: -4rem; /* Elevamos para que sobresalga de la tarjeta */
-            /* Flexbox para centrar el contenido (el texto "VV") */
+            /* Flex para centrar el contenido en caso de que sea corto, como la pantalla de login */
             display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white; /* Color del texto "VV" */
-            font-size: 3rem; /* Tamaño del texto */
-            font-weight: 900;
+            align-items: center; /* Centrado vertical */
+            justify-content: center; /* Centrado horizontal */
+            /* Padding base para evitar que el contenido toque los bordes en móvil */
+            padding: 1rem; 
         }
 
-        /* Estilo para el botón - AHORA USA EL COLOR PRIMARY (#4A5568) */
-        .btn-primary {
-            transition: all 0.2s ease-in-out;
-            background-color: var(--color-primary); /* Fondo con color del encabezado */
-            color: white; /* Letra blanca como el header */
-            box-shadow: 0 4px 15px -3px rgba(74, 85, 104, 0.4); /* Sombra basada en Primary */
-            font-weight: 700; 
+        /* Estilos específicos del formulario de login */
+        .login-card {
+            background-color: var(--color-card-bg);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 400px;
+            width: 100%;
         }
-        .btn-primary:hover {
-            background-color: #3C475A; /* Tono oscuro de Primary para hover */
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px -5px rgba(74, 85, 104, 0.6);
+
+        .login-button {
+            background-color: var(--color-primary);
+            transition: background-color 0.3s;
+        }
+
+        .login-button:hover:not(:disabled) {
+            background-color: var(--color-accent);
+        }
+
+        .login-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
         
-        /* Estilos de foco para inputs */
-        .input-text:focus {
-            border-color: var(--color-accent);
-            box-shadow: 0 0 0 2px rgba(48, 181, 170, 0.5); /* Anillo de foco sutil con color Accent */
-            outline: none;
+        .input-focus:focus {
+            border-color: var(--color-accent) !important;
+            box-shadow: 0 0 0 3px rgba(48, 181, 170, 0.5); /* Sombra de enfoque con color accent */
+        }
+        
+        .modal-btn-accent {
+            background-color: var(--color-accent);
+            transition: background-color 0.3s;
+        }
+        .modal-btn-accent:hover {
+            background-color: #27948a; /* Un tono más oscuro para el hover */
+        }
+        
+        /* --- CLASES COPIADAS DE movil_user.html PARA EL ENCABEZADO --- */
+        
+        .large-logo {
+            width: 170px; 
+            height: 170px; 
+            margin-bottom: 0.75rem; 
+            /* Este filtro es CLAVE: hace el logo blanco y le da una sombra */
+            filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(0, 0, 0, 0.3)); 
         }
 
-        /* Modal Transitions */
-        .modal-enter {
-            opacity: 0;
-            transform: scale(0.95);
+        .header-title {
+            font-weight: 700; 
+            letter-spacing: -0.01em; 
         }
-        .modal-enter-active {
-            opacity: 1;
-            transform: scale(1);
-            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        
+        /* Las demás clases pasadas no se usan en este archivo (muestras, modal, tags) */
+
     </style>
 </head>
 <body>
-
-    <!-- Tarjeta Principal: Le pusimos un padding extra arriba para el logo que sobresale. -->
-    <div class="w-full max-w-md pt-16 pb-8 px-8 bg-white rounded-xl shadow-2xl relative overflow-hidden">
-        
-        <!-- Franja de color Primary arriba, como si fuera el Header -->
-        <div class="absolute top-0 left-0 w-full h-16 bg-[var(--color-primary)]"></div>
-        
-        <header class="mb-8 flex flex-col items-center">
-            <!-- LOGO MODIFICADO: Ahora es una div con texto "VV" para asegurar el estilo -->
-            <div class="logo-container mb-4">
-                VV
-            </div>
-            <!-- Títulos con más peso visual (bold y Primary color) -->
-            <h1 class="text-3xl font-extrabold text-[var(--color-primary)] text-center mt-2">
-                Portal de Acceso
-            </h1>
-            <p class="text-gray-500 mt-1 text-sm text-center">
-                Centro Cultural Victoria Ocampo
-            </p>
-        </header>
-
-        <form id="login-form" class="space-y-6">
-            <div>
-                <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Usuario (CUIL/DNI)</label>
-                <input 
-                    type="text" 
-                    id="username" 
-                    name="username" 
-                    required 
-                    placeholder="Sin puntos ni guiones"
-                    class="input-text w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400"
-                >
-            </div>
+    
+    <!-- Contenedor Principal (Login Card) -->
+    <div class="login-card p-8 rounded-lg">
+        <!-- SIMULAMOS EL COLOR DEL HEADER DE movil_user.html para el fondo de este bloque de branding -->
+        <div class="text-center bg-[var(--color-primary)] p-5 -mx-8 -mt-8 rounded-t-lg text-white shadow-xl">
             
+            <!-- LOGO GRANDE Y TÍTULO COMPLETO: Replicando la estructura del header de movil_user.html -->
+            <img 
+                src="logo.png" 
+                alt="Logo Villa Victoria" 
+                class="large-logo mx-auto" 
+                onerror="this.onerror=null; this.src='https://placehold.co/170x170/30B5AA/ffffff?text=Logo';" 
+            />
+            
+            <div class="text-center">
+                <h1 class="header-title text-3xl sm:text-4xl uppercase">
+                    VILLA VICTORIA
+                </h1>
+                <p class="text-gray-300 text-sm font-light mt-1 px-2">
+                    Centro Cultural Victoria Ocampo - Villa Victoria - Mar del Plata - Batán - Partido de General Pueyrredon.
+                </p>
+            </div>
+        </div>
+
+        <!-- Contenido del formulario de Acceso -->
+        <div class="text-center mt-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-700">Acceso</h2>
+            <p class="text-gray-500 mt-2">Ingresá tus credenciales para continuar.</p>
+        </div>
+
+        <form id="loginForm" class="space-y-4">
+            <!-- Campo de Nombre de Usuario -->
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
+                <input type="text" id="username" name="username" required
+                       class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+                       placeholder="Tu nombre de usuario o email" autocomplete="username">
+            </div>
+
+            <!-- Campo de Contraseña -->
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    name="password" 
-                    required 
-                    placeholder="Tu clave personal"
-                    class="input-text w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400"
-                >
+                <input type="password" id="password" name="password" required
+                       class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+                       placeholder="Tu contraseña" autocomplete="current-password">
             </div>
 
+            <!-- Mensaje de Error (Inicialmente oculto) -->
+            <!-- MANTENEMOS ESTO OCULTO, AHORA USAMOS EL MODAL -->
+            <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm" role="alert">
+                <span id="errorText"></span>
+            </div>
 
-            <p id="error-message" class="text-red-600 font-medium text-sm hidden">
-                Usuario o Contraseña incorrectos. Por favor, verificá tus datos.
-            </p>
-
-            <button 
-                type="submit" 
-                class="btn-primary w-full py-2.5 px-4 rounded-lg text-lg font-bold tracking-wide focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
-            >
-                Continuar como Socio
+            <!-- Mensaje de Carga (Inicialmente oculto) -->
+            <div id="loadingMessage" class="hidden text-center text-[var(--color-primary)] text-sm">
+                <i class="fas fa-spinner fa-spin mr-2"></i> Verificando credenciales...
+            </div>
+            
+            <!-- Botón de Acceso -->
+            <button type="submit" 
+                    class="login-button w-full text-white font-semibold py-2 px-4 rounded-md shadow-lg hover:shadow-xl transition duration-300 ease-in-out"
+                    aria-live="polite">
+                <i class="fas fa-sign-in-alt mr-2"></i> Acceder
             </button>
         </form>
-
-        <p id="loading-message" class="text-center text-accent font-semibold mt-4 hidden">
-            Verificando credenciales... Por favor, esperá un toque.
-        </p>
-        
-        <!-- Footer simple y discreto como en movil_user.html -->
-        <footer class="mt-8 text-center text-xs text-gray-400">
-            <p>&copy; 2025 Villa Victoria.</p>
-        </footer>
-
     </div>
-    
-    <!-- Modal de Bienvenida (con colores del sistema) -->
-    <div id="welcome-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden items-center justify-center transition-opacity duration-300 z-50">
-        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-sm modal-enter" id="modal-content">
+
+    <!-- Modal de Bienvenida (ÉXITO) -->
+    <div id="welcomeModal" class="hidden fixed inset-0 z-50 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 transform transition-all duration-300">
             <div class="text-center">
-                <!-- Icono de Checkmark con color de acento -->
-                <svg class="mx-auto h-12 w-12 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <h3 class="mt-4 text-2xl font-bold text-gray-900" id="modal-greeting">¡Login Exitoso!</h3>
-                <p class="mt-2 text-md text-gray-500">
-                    Bienvenido, tus credenciales fueron validadas correctamente:
-                </p>
-                <!-- Nombre completo que se muestra con color de acento -->
-                <p class="mt-1 text-xl font-extrabold text-accent" id="user-fullname">
-                    [Nombre Completo del Usuario]
-                </p>
+                <!-- Icono de Confirmación -->
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                    <i class="fas fa-check text-green-600 text-xl"></i>
+                </div>
+                
+                <h3 class="mt-4 text-xl leading-6 font-bold text-[var(--color-primary)]">
+                    ¡Bienvenido/a!
+                </h3>
+                
+                <div class="mt-2">
+                    <p id="welcomeMessage" class="text-sm text-gray-500">
+                        Hola, [Nombre Completo]. ¡Acceso exitoso! Estás siendo redirigido al panel principal.
+                    </p>
+                </div>
             </div>
+            
             <div class="mt-5 sm:mt-6">
-                <!-- El botón de continuar del modal también usa el estilo btn-primary modificado -->
-                <button type="button" id="modal-continue-btn" class="btn-primary w-full py-2.5 px-4 rounded-lg text-lg font-bold tracking-wide focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent">
-                    Continuar
+                <button type="button" id="modalContinueBtn"
+                    class="modal-btn-accent inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-accent)] sm:text-sm">
+                    Continuar como socio <i class="fas fa-arrow-right ml-2 mt-0.5"></i>
                 </button>
             </div>
         </div>
     </div>
     
-    <!-- Lógica de autenticación y localStorage (La lógica funcional NO se toca) -->
-    <script>
-        // --- CONFIGURACIÓN DEL APPS SCRIPT ---
-        
-        // ¡IMPORTANTE! Reemplaza esta URL con la URL de tu Apps Script desplegado
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbybImPtLd8JSSJk-grUagTAfxBUVG8wsPp2zcedCmazDtqtycAjSP5x1jECfPKEmQ4FJg/exec'; 
-        
-        // Reemplaza con la ID real de tu hoja de cálculo
-        const SHEET_ID = '1h3Q3aOYEsXqKC3xN4qj7K7SmkwpFQtZdd0POsZF77Dg'; 
-        
-        // Nombre de la hoja donde se valida el usuario
-        const SHEET_NAME_FOR_VALIDATION = 'user'; 
-        
-        // ¡ATENCIÓN! ESTOS ÍNDICES DEBEN COINCIDIR CON LA ESTRUCTURA DE TU HOJA 'user'
-        // Indexación: A=0, B=1, C=2, D=3, E=4, F=5, etc.
-        const USERNAME_COLUMN_INDEX = 3; // Índice de la Columna D (Donde está el CUIL/DNI)
-        const PASSWORD_COLUMN_INDEX = 4; // Índice de la Columna E (Donde está la Contraseña)
-        // La columna del Nombre Completo y Permiso (User_Type) se gestiona desde el Apps Script, no necesita índice aquí.
-        
-        // Elementos de UI
-        const loginForm = document.getElementById('login-form');
-        const usernameInput = document.getElementById('username'); 
-        const passwordInput = document.getElementById('password'); 
-        const errorMessage = document.getElementById('error-message');
-        const loadingMessage = document.getElementById('loading-message');
-        
-        // Elementos de UI para el Modal
-        const welcomeModal = document.getElementById('welcome-modal');
-        const modalContent = document.getElementById('modal-content');
-        const userFullnameDisplay = document.getElementById('user-fullname');
-        const modalContinueBtn = document.getElementById('modal-continue-btn');
+    <!-- Modal de Error (FALLO) -->
+    <div id="failureModal" class="hidden fixed inset-0 z-50 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 transform transition-all duration-300">
+            <div class="text-center">
+                <!-- Icono de Error -->
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                    <i class="fas fa-times text-red-600 text-xl"></i>
+                </div>
+                
+                <h3 class="mt-4 text-xl leading-6 font-bold text-red-700">
+                    Error de Acceso
+                </h3>
+                
+                <div class="mt-2">
+                    <p id="failureMessage" class="text-sm text-gray-500">
+                        Mensaje de error.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-5 sm:mt-6">
+                <button type="button" id="modalFailureBtn"
+                    class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm">
+                    Aceptar
+                </button>
+            </div>
+        </div>
+    </div>
 
+
+    <script type="module">
+        // Variables globales para la configuración de la API del Apps Script
+        // Asegurate de reemplazar con tu URL REAL del script desplegado!
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxQ14RjL8qChoYZsurvp3ryXkdt_WYfOOj7ZRJCwfsIEjJVOahLQ5SoeaC6MtR216DG6Q/exec"; 
+        
+        // Elementos del DOM
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorMessage = document.getElementById('errorMessage'); // Mantener para ocultar
+        const errorText = document.getElementById('errorText');     // Mantener para ocultar
+        const loadingMessage = document.getElementById('loadingMessage');
+        const welcomeModal = document.getElementById('welcomeModal');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const modalContinueBtn = document.getElementById('modalContinueBtn');
+        // NUEVOS ELEMENTOS DEL MODAL DE FALLO
+        const failureModal = document.getElementById('failureModal');
+        const failureMessage = document.getElementById('failureMessage');
+        const modalFailureBtn = document.getElementById('modalFailureBtn');
 
         /**
-         * Limpia el input de usuario (remueve espacios, puntos y guiones).
-         */
-        function cleanInput(value) {
-            return value.replace(/[-\s\.]/g, '').trim();
-        }
-
-
-        /**
-         * Muestra el modal de bienvenida con animación.
+         * Muestra el modal de bienvenida con el nombre completo del usuario.
+         * @param {string} fullName - El nombre completo del usuario.
          */
         function showWelcomeModal(fullName) {
-            userFullnameDisplay.textContent = fullName;
+            welcomeMessage.innerHTML = `Hola, <strong class="text-[var(--color-primary)]">${fullName}</strong>. ¡Acceso exitoso! Está siendo redirigido a nuestra programación cultural.`;
             welcomeModal.classList.remove('hidden');
             welcomeModal.classList.add('flex');
             
-            // Aplicar animación de entrada
-            setTimeout(() => {
-                modalContent.classList.remove('modal-enter');
-                modalContent.classList.add('modal-enter-active');
-            }, 10);
+            // Opcional: Centrar el foco en el botón para accesibilidad
+            modalContinueBtn.focus();
         }
-        
+
         /**
-         * Redirige al dashboard.
+         * Muestra el modal de fallo con el mensaje de error.
+         * @param {string} message - El mensaje de error a mostrar.
+         */
+        function showFailureModal(message) {
+            failureMessage.textContent = message;
+            failureModal.classList.remove('hidden');
+            failureModal.classList.add('flex');
+            modalFailureBtn.focus();
+        }
+
+        /**
+         * Re-habilita el formulario y cierra el modal de error.
+         */
+        function enableLoginFormAndDismissModal() {
+            failureModal.classList.remove('flex');
+            failureModal.classList.add('hidden');
+            
+            // Habilitar formulario para reintento
+            usernameInput.disabled = false;
+            passwordInput.disabled = false;
+            loginForm.querySelector('button').disabled = false;
+            
+            // Enfocar el campo de usuario para reintento rápido
+            usernameInput.focus();
+        }
+
+
+        /**
+         * Redirige al usuario al dashboard (simulado).
          */
         function redirectToDashboard() {
-            // ¡MODIFICADO! Redirige a 'index.html' en lugar de 'dashboard.html'
+            // En un entorno real, esta parte redirigiría la página.
+            console.log("¡Redirección al dashboard simulada!");
+
+            // Redirigir al archivo movil_user.html (el dashboard de verdad)
             window.location.href = 'movil_user.html'; 
         }
 
-
         /**
-         * Maneja el envío del formulario y la validación con Apps Script.
+         * Maneja el evento de envío del formulario de login.
+         * @param {Event} e - El evento de formulario.
          */
-        async function handleLogin(event) {
-            event.preventDefault();
-
-            // Ocultar mensaje de error anterior y mostrar cargando
-            errorMessage.classList.add('hidden');
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            // Asegurarse de ocultar cualquier mensaje anterior (aunque el modal lo reemplaza)
+            errorMessage.classList.add('hidden'); 
+            
             loadingMessage.classList.remove('hidden');
             
-            // Deshabilitar formulario durante la solicitud
+            // Deshabilitar formulario mientras carga
             usernameInput.disabled = true;
             passwordInput.disabled = true;
             loginForm.querySelector('button').disabled = true;
 
-            const rawUsername = usernameInput.value;
-            const rawPassword = passwordInput.value;
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
 
-            const cleanUsername = cleanInput(rawUsername);
+            // Usamos un loop de reintento para manejar fallos de conexión (backoff exponencial)
+            const MAX_RETRIES = 3;
+            let currentRetry = 0;
 
-            if (!cleanUsername || !rawPassword) {
-                errorMessage.textContent = 'Por favor, ingresá tu Nombre de Usuario y Contraseña.';
-                errorMessage.classList.remove('hidden');
-                loadingMessage.classList.add('hidden');
-                usernameInput.disabled = false;
-                passwordInput.disabled = false;
-                loginForm.querySelector('button').disabled = false;
-                return;
-            }
+            const makeRequest = async () => {
+                 const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors', // Necesario para llamadas entre dominios
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'login',
+                        username: username,
+                        password: password
+                    })
+                });
 
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+
+                return response.json();
+            };
+            
             try {
-                // Preparamos los datos a enviar al Apps Script
-                const dataToSend = {
-                    sheetId: SHEET_ID,
-                    sheetName: SHEET_NAME_FOR_VALIDATION,
-                    username: cleanUsername, 
-                    password: rawPassword, 
-                    usernameColumnIndex: USERNAME_COLUMN_INDEX, 
-                    passwordColumnIndex: PASSWORD_COLUMN_INDEX
-                };
-
-                // Función de reintento con backoff exponencial
-                const maxRetries = 3;
-                let attempt = 0;
-                let response = null;
-                
-                while (attempt < maxRetries) {
+                let data;
+                while (currentRetry < MAX_RETRIES) {
                     try {
-                        response = await fetch(APPS_SCRIPT_URL, {
-                            method: 'POST',
-                            mode: 'cors', 
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded' 
-                            },
-                            body: new URLSearchParams(dataToSend).toString()
-                        });
-
-                        if (response.ok) {
-                            break; 
-                        } else {
-                            throw new Error(`Error en la solicitud al servidor: ${response.statusText}`);
-                        }
+                        data = await makeRequest();
+                        break; // Éxito, salir del bucle
                     } catch (error) {
-                        attempt++;
-                        if (attempt >= maxRetries) {
-                            throw error; 
+                        currentRetry++;
+                        if (currentRetry >= MAX_RETRIES) {
+                             throw error; // Lanza el error si es el último reintento
                         }
-                        // Espera exponencial: 1s, 2s, 4s
-                        const delay = Math.pow(2, attempt) * 1000;
+                        // Espera con backoff exponencial
+                        const delay = Math.pow(2, currentRetry) * 1000;
                         await new Promise(resolve => setTimeout(resolve, delay));
                     }
                 }
-
-                if (!response) {
-                     throw new Error('No se pudo obtener una respuesta del servidor.');
-                }
                 
-                const result = await response.json();
+                // Procesar la respuesta del Apps Script
+                const success = data.success;
+                const fullName = data.fullName;
 
-                // 2. Verificar el resultado devuelto por Apps Script
-                if (result.success) {
-                    // ¡USUARIO AUTORIZADO!
-                    localStorage.setItem('isAuthenticatedSTM', 'true'); 
+                if (success) {
+                    // Usuario verificado: Mostrar modal de éxito
+                    localStorage.setItem('userLoggedIn', 'true');
+                    localStorage.setItem('fullName', fullName);
                     
-                    const fullName = result.fullName || 'Asociado Villa Victoria'; 
-                    
-                    // 🇦🇷 ¡CLAVE! Capturar y guardar el tipo de permiso
-                    const userType = result.user_type || 'USER'; 
-                    
-                    // Guardar los datos en localStorage
-                    localStorage.setItem('stm_username', fullName); 
-                    localStorage.setItem('stm_user_type', userType); // <-- GUARDANDO EL PERMISO
-
                     showWelcomeModal(fullName);
                     
                 } else {
-                    // Usuario no existe o credenciales incorrectas
-                    errorMessage.textContent = 'Usuario o Contraseña incorrectos. Por favor, verificá tus datos.';
-                    errorMessage.classList.remove('hidden');
+                    // Credenciales incorrectas: Mostrar modal de fallo
+                    showFailureModal('Usuario o Contraseña incorrectos. Por favor, verificá tus datos.');
                 }
 
             } catch (error) {
                 console.error('Error durante la verificación:', error);
-                errorMessage.textContent = `Error de conexión: ${error.message}. Asegurate de haber desplegado correctamente el Apps Script y de que la URL esté bien configurada.`;
-                errorMessage.classList.remove('hidden');
+                // Error de conexión: Mostrar modal de fallo
+                showFailureModal(`Error de conexión: ${error.message}. Asegurate de haber desplegado correctamente el Apps Script y de que la URL esté bien configurada.`);
             } finally {
-                // Solo re-habilitamos el formulario si el modal NO se mostró (login fallido)
-                if (!welcomeModal.classList.contains('flex')) {
-                    loadingMessage.classList.add('hidden');
-                    usernameInput.disabled = false;
-                    passwordInput.disabled = false;
-                    loginForm.querySelector('button').disabled = false;
-                } else {
-                    loadingMessage.classList.add('hidden'); // Ocultar solo el mensaje de carga en caso de éxito
-                }
+                // Ocultar el mensaje de carga SIEMPRE.
+                loadingMessage.classList.add('hidden');
+
+                // Si se mostró el modal de éxito, el formulario queda deshabilitado hasta la redirección.
+                // Si se mostró el modal de fallo, el formulario queda deshabilitado hasta que el usuario 
+                // presione "Aceptar" en el modal (lo maneja la función enableLoginFormAndDismissModal).
             }
         }
 
         // Asignar listeners
         loginForm.addEventListener('submit', handleLogin);
         modalContinueBtn.addEventListener('click', redirectToDashboard);
+        modalFailureBtn.addEventListener('click', enableLoginFormAndDismissModal); // NUEVO LISTENER DE ERROR
 
     </script>
 </body>
