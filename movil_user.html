@@ -429,14 +429,12 @@
                             <input type="date" id="pagoFecha" name="fecha_pago" required>
                         </div>
                         
-                        <div class="form-group mb-4">
-                            <label for="pagoUserid">UserID</label>
-                            <input type="text" id="pagoUserid" name="userid" placeholder="ID de usuario/email (si aplica)" class="input-disabled" required readonly>
-                        </div>
+                        <input type="hidden" id="pagoUserid" name="userid" required>
+
 
                         <div class="form-group mb-4">
-                            <label for="pagoReferencia">Referencia de Transacción</label>
-                            <input type="text" id="pagoReferencia" name="referenciaTransaccion" placeholder="Ej: Factura #1234, ID de transacción" required>
+                            <label for="pagoReferencia">Referencia de Transacción <span class="text-gray-500 font-normal text-sm">(Opcional)</span></label>
+                            <input type="text" id="pagoReferencia" name="referenciaTransaccion" placeholder="Ej: Factura #1234, ID de transacción">
                         </div>
                         
                         <div class="form-group mb-6">
@@ -491,24 +489,24 @@
         const welcomeModal = document.getElementById('welcomeModal');
         const modalMessage = document.getElementById('modalMessage'); 
         const userGreetingEl = document.getElementById('userGreeting'); 
-        const pagoFormContainer = document.getElementById('pagoFormContainer'); // NUEVO
-        const pagoSocioInput = document.getElementById('pagoSocio'); // NUEVO
-        const pagoUseridInput = document.getElementById('pagoUserid'); // NUEVO
-        const pagoMessageEl = document.getElementById('pagoMessage'); // NUEVO
-        const submitPagoButton = document.getElementById('submitPagoButton'); // NUEVO
+        const pagoFormContainer = document.getElementById('pagoFormContainer'); 
+        const pagoSocioInput = document.getElementById('pagoSocio'); 
+        const pagoUseridInput = document.getElementById('pagoUserid'); 
+        const pagoFechaInput = document.getElementById('pagoFecha'); // Necesario para precargar la fecha
+        const pagoMessageEl = document.getElementById('pagoMessage'); 
+        const submitPagoButton = document.getElementById('submitPagoButton'); 
         
         let allData = []; 
         let currentSheet = null; 
         let auth = null; 
-        let loggedInUserName = 'Invitado'; // Variable para almacenar el nombre del socio
-        let loggedInUserEmail = ''; // Variable para almacenar el email/ID del socio
+        let loggedInUserName = 'Invitado'; 
+        let loggedInUserEmail = ''; 
 
         // Función para limpiar solo los datos de sesión relevantes en localStorage
         function clearSessionData() {
             // Asumo que 'fullName' y 'userEmail' son las claves que guardan la sesión
             localStorage.removeItem('fullName');
             localStorage.removeItem('userEmail');
-            // NO limpiamos 'welcomeModalShown' para que no vuelva a aparecer el modal
             console.log("Datos de sesión limpiados al cerrar/navegar.");
         }
         
@@ -621,7 +619,7 @@
             
             // 4. Precargar campos del formulario de pagos
             pagoSocioInput.value = loggedInUserName;
-            pagoUseridInput.value = loggedInUserEmail;
+            pagoUseridInput.value = loggedInUserEmail; // El input está oculto, pero el valor se setea
             pagoFechaInput.value = getTodayDateString(); // Establecer la fecha actual por defecto
 
             // 5. Continuar con la carga de la vista y el modal de bienvenida
@@ -703,8 +701,8 @@
             dataView.classList.add('hidden');
             
             // Ocultar el formulario de pagos por defecto al cambiar de vista
-            pagoFormContainer.classList.add('hidden'); // NUEVO: Oculta el form
-            dataList.classList.remove('hidden'); // NUEVO: Muestra la lista de datos
+            pagoFormContainer.classList.add('hidden'); 
+            dataList.classList.remove('hidden'); 
 
             if (viewName === 'menu') {
                 menuView.classList.remove('hidden');
@@ -720,7 +718,7 @@
                 } else if (sheetName === 'gestor_programacion') {
                     sectionTitle.textContent = 'Actividades Programadas';
                     fetchAndRenderData(sheetName);
-                } else if (sheetName === 'registro_pago') { // NUEVA SECCIÓN
+                } else if (sheetName === 'registro_pago') { 
                     sectionTitle.textContent = 'Registro de Pagos';
                     // Ocultar lista de datos y mostrar formulario
                     dataList.classList.add('hidden');
@@ -1042,7 +1040,7 @@
             }
         }
         
-        // Función para manejar el envío del formulario de pagos (NUEVA)
+        // Función para manejar el envío del formulario de pagos
         async function handlePagoSubmit(event) {
             event.preventDefault();
             
@@ -1054,12 +1052,15 @@
             const formData = new FormData(form);
             
             // Recolectar datos del formulario
+            const montoValue = formData.get('monto');
+            
             const pagoData = {
                 // El campo "id" y "fecha_registro" los generará el Apps Script
                 socio: formData.get('socio'),
-                monto: parseFloat(formData.get('monto')).toFixed(2),
+                // Asegurar que monto sea un número con 2 decimales, o enviar un string vacío si está vacío (aunque es requerido)
+                monto: montoValue ? parseFloat(montoValue).toFixed(2) : '', 
                 fecha_pago: formData.get('fecha_pago'),
-                userid: formData.get('userid'),
+                userid: formData.get('userid'), // Valor viene del campo hidden
                 referenciaTransaccion: formData.get('referenciaTransaccion'),
                 tipoPago: formData.get('tipoPago')
             };
@@ -1113,7 +1114,7 @@
         window.closeModal = closeModal;
         window.changeView = changeView;
         window.animateButton = animateButton;
-        window.handlePagoSubmit = handlePagoSubmit; // NUEVO
+        window.handlePagoSubmit = handlePagoSubmit;
         
     </script>
 </body>
