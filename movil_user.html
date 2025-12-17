@@ -233,7 +233,6 @@
             box-shadow: none; 
         }
         
-        /* Estilos del Formulario de Pagos */
         .form-group label {
             display: block;
             font-weight: 600;
@@ -363,7 +362,7 @@
             <div class="w-full px-4" style="max-width: 384px; height: 120px;"> 
                 <div 
                     id="pagosButtonFlip"
-                    onclick="animateButton(this, 'registro_pago')" 
+                    onclick="animateButton(this, 'registro_pagos')" 
                     class="flip-container h-full"
                 >
                     <div class="flip-face menu-button border-red-500 hover:border-red-500">
@@ -431,7 +430,6 @@
                         
                         <input type="hidden" id="pagoUserid" name="userid" required>
 
-
                         <div class="form-group mb-4">
                             <label for="pagoReferencia">Referencia de Transacción <span class="text-gray-500 font-normal text-sm">(Opcional)</span></label>
                             <input type="text" id="pagoReferencia" name="referenciaTransaccion" placeholder="Ej: Factura #1234, ID de transacción">
@@ -473,12 +471,10 @@
     </div>
 
     <script type="module">
-        // Importaciones de Firebase (se mantienen solo para inicialización del entorno)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         
-        // URL de tu Apps Script
-        const APPSSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz8lLiM19KZp6RJlZ5eq28OUcuw01lKSa0fGHj_sX3SCshGDr1gx21ItAkZNocenKBR/exec'; 
+        const APPSSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkiP6vV8oQpnMBBcZWsi9cqtHYA1m91XUP-qkE3hOWQ7V-FeUp0ppOvNhIQqz5BIG2Gg/exec'; 
 
         const dataList = document.getElementById('dataList');
         const loadingSpinner = document.getElementById('loadingSpinner');
@@ -492,7 +488,7 @@
         const pagoFormContainer = document.getElementById('pagoFormContainer'); 
         const pagoSocioInput = document.getElementById('pagoSocio'); 
         const pagoUseridInput = document.getElementById('pagoUserid'); 
-        const pagoFechaInput = document.getElementById('pagoFecha'); // Necesario para precargar la fecha
+        const pagoFechaInput = document.getElementById('pagoFecha'); 
         const pagoMessageEl = document.getElementById('pagoMessage'); 
         const submitPagoButton = document.getElementById('submitPagoButton'); 
         
@@ -502,39 +498,31 @@
         let loggedInUserName = 'Invitado'; 
         let loggedInUserEmail = ''; 
 
-        // Función para limpiar solo los datos de sesión relevantes en localStorage
         function clearSessionData() {
-            // Asumo que 'fullName' y 'userEmail' son las claves que guardan la sesión
             localStorage.removeItem('fullName');
             localStorage.removeItem('userEmail');
             console.log("Datos de sesión limpiados al cerrar/navegar.");
         }
         
-        // Listener para limpiar al cerrar/navegar
         function clearLocalStorageOnClose() {
             clearSessionData();
         }
 
-        // 1. Añadir el listener para limpiar localStorage al cerrar o navegar
         window.addEventListener('beforeunload', clearLocalStorageOnClose);
 
-        // Función para actualizar el saludo en el header
         function updateHeaderGreeting(userName) {
             if (userGreetingEl) {
                 userGreetingEl.textContent = `Socio: ${userName}`;
             }
         }
         
-        // Función modificada para mostrar el modal y obtener el nombre del usuario
         async function showWelcomeModal(userName) {
-            // Usa localStorage para que el modal se muestre solo la primera vez.
             if (!localStorage.getItem('welcomeModalShown')) {
                 
                 let todayEvent = null;
                 const todayStr = getTodayDateString(); 
 
                 try {
-                    // Intenta cargar la programación para ver si hay un evento hoy
                     const programacion = await fetchSheetData('gestor_programacion');
                     
                     if (programacion && programacion.length > 0) {
@@ -544,10 +532,8 @@
                     }
                 } catch (error) {
                     console.error('Error al cargar datos para el modal:', error);
-                    // Continúa si falla, mostrando el mensaje por defecto
                 }
 
-                // Definir saludo principal usando el nombre pasado
                 const greetingText = userName === 'Invitado' ? '¡Bienvenido/a al Centro Cultural!' : `¡Hola, ${userName}!`;
                 welcomeModal.querySelector('h3').textContent = greetingText;
 
@@ -577,52 +563,41 @@
             }
         }
         
-        // Función modificada para guardar en localStorage
         function closeModal() {
             welcomeModal.classList.remove('open');
-            // Al cerrar, guarda en localStorage que ya se mostró
             localStorage.setItem('welcomeModalShown', 'true');
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // 1. Obtener nombre del usuario desde localStorage
             const storedName = localStorage.getItem('fullName');
             const storedEmail = localStorage.getItem('userEmail');
             let userName = storedName;
             
-            // LÓGICA DE REDIRECCIÓN CLAVE: Si no hay nombre, redirigir
             if (!userName || userName === 'Invitado' || userName === '') {
-                 // Si no hay sesión activa, redirige inmediatamente a la página de login
                  console.log("Sesión no encontrada. Redirigiendo a index.html.");
                  window.location.href = 'index.html';
-                 return; // Detiene la ejecución del resto del script
+                 return; 
             }
             
-            // Almacenar el nombre y email del socio logueado
             loggedInUserName = userName;
             loggedInUserEmail = storedEmail || 'Sin ID/Email';
 
-            // 2. Inicializar Firebase (solo por si se necesitan otros servicios)
             try {
                 const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
                 if (firebaseConfig) {
                     const app = initializeApp(firebaseConfig);
                     auth = getAuth(app);
-                    // Asume que el usuario está logueado, no hace falta sign-in anónimo aquí
                 }
             } catch (e) {
                 console.error("Fallo durante la inicialización de Firebase:", e);
             }
             
-            // 3. Mostrar saludo en el Header
             updateHeaderGreeting(loggedInUserName);
             
-            // 4. Precargar campos del formulario de pagos
             pagoSocioInput.value = loggedInUserName;
-            pagoUseridInput.value = loggedInUserEmail; // El input está oculto, pero el valor se setea
-            pagoFechaInput.value = getTodayDateString(); // Establecer la fecha actual por defecto
+            pagoUseridInput.value = loggedInUserEmail; 
+            pagoFechaInput.value = getTodayDateString(); 
 
-            // 5. Continuar con la carga de la vista y el modal de bienvenida
             changeView('menu'); 
             await showWelcomeModal(loggedInUserName); 
         });
@@ -700,7 +675,6 @@
             menuView.classList.add('hidden');
             dataView.classList.add('hidden');
             
-            // Ocultar el formulario de pagos por defecto al cambiar de vista
             pagoFormContainer.classList.add('hidden'); 
             dataList.classList.remove('hidden'); 
 
@@ -718,9 +692,8 @@
                 } else if (sheetName === 'gestor_programacion') {
                     sectionTitle.textContent = 'Actividades Programadas';
                     fetchAndRenderData(sheetName);
-                } else if (sheetName === 'registro_pago') { 
+                } else if (sheetName === 'registro_pagos') { 
                     sectionTitle.textContent = 'Registro de Pagos';
-                    // Ocultar lista de datos y mostrar formulario
                     dataList.classList.add('hidden');
                     loadingSpinner.classList.add('hidden');
                     noResults.classList.add('hidden');
@@ -759,14 +732,12 @@
             }
             
             if (data.status === 'success' && Array.isArray(data.data)) {
-                // Filtramos los datos para que solo pasen los que tienen "SI" en el campo ACTIVO
                 return data.data.filter(item => {
                     const valorActivo = String(item.ACTIVO || '').toUpperCase().trim();
-                    // Solo se aplica a las hojas que manejan el campo ACTIVO (Muestras y Programación)
                     if (sheetName === 'gestor_muestra' || sheetName === 'gestor_programacion') {
                         return valorActivo === 'SI';
                     }
-                    return true; // No filtrar otras hojas como registro_pago (aunque en este caso no se usa)
+                    return true; 
                 });
             } else {
                 throw new Error(data.message || `Error en el status al cargar ${sheetName}.`);
@@ -775,7 +746,7 @@
 
         async function fetchAndRenderData(sheetName) {
             
-            if (sheetName === 'registro_pago') return; // No cargar datos en la vista de Pagos (solo el formulario)
+            if (sheetName === 'registro_pagos') return; 
             
             loadingSpinner.classList.remove('hidden');
             dataList.classList.remove('hidden');
@@ -862,7 +833,6 @@
                 const startTime = dateEvent.getTime();
                 const twoHoursLater = startTime + (2 * 60 * 60 * 1000); 
                 
-                // Si todavía no empezó (y no está demasiado cerca del inicio)
                 if (now.getTime() < startTime) {
                      return { 
                         cardClass: 'bg-green-100-card blinking-card', 
@@ -870,7 +840,6 @@
                         iconClass: 'fas fa-calendar-day',
                         isHappening: true 
                     };
-                // Si está pasando ahora o empezó hace menos de 2 horas
                 } else if (now.getTime() >= startTime && now.getTime() < twoHoursLater) {
                      return { 
                         cardClass: 'bg-green-100-card blinking-card', 
@@ -878,13 +847,11 @@
                         iconClass: 'fas fa-calendar-day',
                         isHappening: true 
                     };
-                // Si ya pasó hoy
                 } else {
                      return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-check-circle', isHappening: false };
                 }
             }
             
-            // Eventos futuros
             return { cardClass: '', badgeClass: 'bg-blue-100 text-blue-700', iconClass: 'fas fa-clock', isHappening: false };
         }
 
@@ -902,7 +869,6 @@
             } else if (sheetName === 'gestor_programacion') { 
                 renderProgramacion(data);
             }
-            // No hay renderización para registro_pago
         }
 
         function renderMuestras(muestras) {
@@ -954,7 +920,6 @@
             const filteredProgramacion = programacion.filter(item => {
                 const { iconClass } = getHoraColorClass(item.fecha, item.hora);
                 
-                // Oculta eventos ya finalizados
                 if (iconClass === 'fas fa-history' || iconClass === 'fas fa-check-circle') {
                     return false;
                 }
@@ -1040,7 +1005,6 @@
             }
         }
         
-        // Función para manejar el envío del formulario de pagos
         async function handlePagoSubmit(event) {
             event.preventDefault();
             
@@ -1051,21 +1015,18 @@
             const form = event.target;
             const formData = new FormData(form);
             
-            // Recolectar datos del formulario
             const montoValue = formData.get('monto');
             
             const pagoData = {
-                // El campo "id" y "fecha_registro" los generará el Apps Script
                 socio: formData.get('socio'),
-                // Asegurar que monto sea un número con 2 decimales, o enviar un string vacío si está vacío (aunque es requerido)
                 monto: montoValue ? parseFloat(montoValue).toFixed(2) : '', 
                 fecha_pago: formData.get('fecha_pago'),
-                userid: formData.get('userid'), // Valor viene del campo hidden
+                userid: formData.get('userid'), 
                 referenciaTransaccion: formData.get('referenciaTransaccion'),
                 tipoPago: formData.get('tipoPago')
             };
 
-            const url = `${APPSSCRIPT_URL}?action=CREATE_RECORD&sheetName=registro_pago`;
+            const url = `${APPSSCRIPT_URL}?action=CREATE_RECORD&sheetName=registro_pagos`;
             
             try {
                 const response = await fetchWithRetry(url, {
@@ -1089,7 +1050,6 @@
                     pagoMessageEl.classList.add('bg-green-100', 'text-green-700');
                     pagoMessageEl.innerHTML = `<i class="fas fa-check-circle mr-2"></i> ${result.message || 'Pago registrado con éxito.'}`;
                     form.reset();
-                    // Volver a precargar campos de solo lectura
                     pagoSocioInput.value = loggedInUserName;
                     pagoUseridInput.value = loggedInUserEmail;
                     pagoFechaInput.value = getTodayDateString(); 
@@ -1109,8 +1069,6 @@
             }
         }
 
-        // Hacemos las funciones necesarias accesibles globalmente 
-        // para los manejadores de eventos 'onclick' en el HTML.
         window.closeModal = closeModal;
         window.changeView = changeView;
         window.animateButton = animateButton;
