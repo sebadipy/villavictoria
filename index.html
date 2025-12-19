@@ -2,19 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- CLAVE RESPONSIVE: Viewport meta tag para asegurar la adaptación en móvil -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Acceso - Villa Victoria</title>
-    <!-- Icono tomado del movil_user.html -->
     <link rel="icon" href="logo favicon.png" type="image/png">
     
-    <!-- Fuente Inter, la misma usada en ambos archivos -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
-    <!-- Incluimos Tailwind CSS para estilos rápidos -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Incluimos Font Awesome 6.5.2 para íconos, igual que en movil_user.html -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
     <style>
@@ -102,12 +97,9 @@
 </head>
 <body>
     
-    <!-- Contenedor Principal (Login Card) -->
     <div class="login-card p-8 rounded-lg">
-        <!-- SIMULAMOS EL COLOR DEL HEADER DE movil_user.html para el fondo de este bloque de branding -->
         <div class="text-center bg-[var(--color-primary)] p-5 -mx-8 -mt-8 rounded-t-lg text-white shadow-xl">
             
-            <!-- LOGO GRANDE Y TÍTULO COMPLETO: Replicando la estructura del header de movil_user.html -->
             <img 
                 src="logo.png" 
                 alt="Logo Villa Victoria" 
@@ -125,14 +117,12 @@
             </div>
         </div>
 
-        <!-- Contenido del formulario de Acceso -->
         <div class="text-center mt-6 mb-6">
             <h2 class="text-xl font-bold text-gray-700">Acceso</h2>
             <p class="text-gray-500 mt-2">Ingresá tus credenciales para continuar.</p>
         </div>
 
         <form id="loginForm" class="space-y-4">
-            <!-- Campo de Nombre de Usuario -->
             <div>
                 <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
                 <input type="text" id="username" name="username" required
@@ -140,7 +130,6 @@
                        placeholder="Tu nombre de usuario o email" autocomplete="username">
             </div>
 
-            <!-- Campo de Contraseña -->
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
                 <input type="password" id="password" name="password" required
@@ -148,18 +137,14 @@
                        placeholder="Tu contraseña" autocomplete="current-password">
             </div>
 
-            <!-- Mensaje de Error (Inicialmente oculto) -->
-            <!-- MANTENEMOS ESTO OCULTO, AHORA USAMOS EL MODAL -->
             <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm" role="alert">
                 <span id="errorText"></span>
             </div>
 
-            <!-- Mensaje de Carga (Inicialmente oculto) -->
             <div id="loadingMessage" class="hidden text-center text-[var(--color-primary)] text-sm">
                 <i class="fas fa-spinner fa-spin mr-2"></i> Verificando credenciales...
             </div>
             
-            <!-- Botón de Acceso -->
             <button type="submit" 
                     class="login-button w-full text-white font-semibold py-2 px-4 rounded-md shadow-lg hover:shadow-xl transition duration-300 ease-in-out"
                     aria-live="polite">
@@ -168,11 +153,9 @@
         </form>
     </div>
 
-    <!-- Modal de Bienvenida (ÉXITO) -->
     <div id="welcomeModal" class="hidden fixed inset-0 z-50 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 transform transition-all duration-300">
             <div class="text-center">
-                <!-- Icono de Confirmación -->
                 <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
                     <i class="fas fa-check text-green-600 text-xl"></i>
                 </div>
@@ -197,11 +180,9 @@
         </div>
     </div>
     
-    <!-- Modal de Error (FALLO) -->
     <div id="failureModal" class="hidden fixed inset-0 z-50 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 transform transition-all duration-300">
             <div class="text-center">
-                <!-- Icono de Error -->
                 <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
                     <i class="fas fa-times text-red-600 text-xl"></i>
                 </div>
@@ -230,7 +211,7 @@
     <script type="module">
         // Variables globales para la configuración de la API del Apps Script
         // Asegurate de reemplazar con tu URL REAL del script desplegado!
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxQ14RjL8qChoYZsurvp3ryXkdt_WYfOOj7ZRJCwfsIEjJVOahLQ5SoeaC6MtR216DG6Q/exec"; 
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqIjYRjylV75YYeUlQOAmFvBiWpgAxxdLDa3gQk1NkVlFjRZoT8S0smXm8m9mMLfTP/exec"; 
         
         // Elementos del DOM
         const loginForm = document.getElementById('loginForm');
@@ -363,20 +344,18 @@
                 
                 // Procesar la respuesta del Apps Script
                 const success = data.success;
-                const fullName = data.fullName;
 
                 if (success) {
-                    // Usuario verificado: Mostrar modal de éxito
+                    // --- GUARDAMOS LOS DATOS SOLICITADOS ---
                     localStorage.setItem('userLoggedIn', 'true');
-                    localStorage.setItem('fullName', fullName);
+                    localStorage.setItem('fullName', data.fullName); // Nombre y Apellido
+                    localStorage.setItem('userId', data.userId);     // CORRECCIÓN: Usamos data.userId del Apps Script
+                    localStorage.setItem('userName', username);      // Nombre de usuario ingresado
                     
-                    showWelcomeModal(fullName);
-                    
+                    showWelcomeModal(data.fullName);
                 } else {
-                    // Credenciales incorrectas: Mostrar modal de fallo
                     showFailureModal('Usuario o Contraseña incorrectos. Por favor, verificá tus datos.');
                 }
-
             } catch (error) {
                 console.error('Error durante la verificación:', error);
                 // Error de conexión: Mostrar modal de fallo

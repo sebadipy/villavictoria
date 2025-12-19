@@ -370,7 +370,7 @@
                             <i class="fas fa-file-invoice-dollar text-4xl text-red-500 mr-4"></i>
                             <div>
                                 <span class="text-xl font-bold text-gray-900 block">Registro de Pagos</span>
-                                <span class="text-sm text-gray-500">Registrar un nuevo pago.</span>
+                                <span class="text-sm text-gray-500">Informar un nuevo pago.</span>
                             </div>
                         </div>
                     </div>
@@ -428,8 +428,6 @@
                             <input type="date" id="pagoFecha" name="fecha_pago" required>
                         </div>
                         
-                        <input type="hidden" id="pagoUserid" name="userid" required>
-
                         <div class="form-group mb-4">
                             <label for="pagoReferencia">Referencia de Transacción <span class="text-gray-500 font-normal text-sm">(Opcional)</span></label>
                             <input type="text" id="pagoReferencia" name="referenciaTransaccion" placeholder="Ej: Factura #1234, ID de transacción">
@@ -472,9 +470,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         
-        const APPSSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkiP6vV8oQpnMBBcZWsi9cqtHYA1m91XUP-qkE3hOWQ7V-FeUp0ppOvNhIQqz5BIG2Gg/exec'; 
+        const APPSSCRIPT_URL = 'https://script.google.com/macros/s/AKfycby3oI7BvzZgqoKsCrPxEkS3-DY2rENwih6QqJCmWGVzSDBPXnksGCxD9pD6eok5fwDgQw/exec'; 
 
         const dataList = document.getElementById('dataList');
         const loadingSpinner = document.getElementById('loadingSpinner');
@@ -487,7 +485,6 @@
         const userGreetingEl = document.getElementById('userGreeting'); 
         const pagoFormContainer = document.getElementById('pagoFormContainer'); 
         const pagoSocioInput = document.getElementById('pagoSocio'); 
-        const pagoUseridInput = document.getElementById('pagoUserid'); 
         const pagoFechaInput = document.getElementById('pagoFecha'); 
         const pagoMessageEl = document.getElementById('pagoMessage'); 
         const submitPagoButton = document.getElementById('submitPagoButton'); 
@@ -496,11 +493,10 @@
         let currentSheet = null; 
         let auth = null; 
         let loggedInUserName = 'Invitado'; 
-        let loggedInUserEmail = ''; 
 
         function clearSessionData() {
             localStorage.removeItem('fullName');
-            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userId');
             console.log("Datos de sesión limpiados al cerrar/navegar.");
         }
         
@@ -570,7 +566,6 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             const storedName = localStorage.getItem('fullName');
-            const storedEmail = localStorage.getItem('userEmail');
             let userName = storedName;
             
             if (!userName || userName === 'Invitado' || userName === '') {
@@ -580,7 +575,6 @@
             }
             
             loggedInUserName = userName;
-            loggedInUserEmail = storedEmail || 'Sin ID/Email';
 
             try {
                 const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
@@ -595,7 +589,6 @@
             updateHeaderGreeting(loggedInUserName);
             
             pagoSocioInput.value = loggedInUserName;
-            pagoUseridInput.value = loggedInUserEmail; 
             pagoFechaInput.value = getTodayDateString(); 
 
             changeView('menu'); 
@@ -1021,9 +1014,9 @@
                 socio: formData.get('socio'),
                 monto: montoValue ? parseFloat(montoValue).toFixed(2) : '', 
                 fecha_pago: formData.get('fecha_pago'),
-                userid: formData.get('userid'), 
                 referenciaTransaccion: formData.get('referenciaTransaccion'),
-                tipoPago: formData.get('tipoPago')
+                tipoPago: formData.get('tipoPago'),
+                userId: localStorage.getItem('userId')
             };
 
             const url = `${APPSSCRIPT_URL}?action=CREATE_RECORD&sheetName=registro_pagos`;
@@ -1051,7 +1044,6 @@
                     pagoMessageEl.innerHTML = `<i class="fas fa-check-circle mr-2"></i> ${result.message || 'Pago registrado con éxito.'}`;
                     form.reset();
                     pagoSocioInput.value = loggedInUserName;
-                    pagoUseridInput.value = loggedInUserEmail;
                     pagoFechaInput.value = getTodayDateString(); 
 
                 } else {
