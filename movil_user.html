@@ -470,7 +470,14 @@
                                 <option value="Otro">Otro</option>
                             </select>
                         </div>
-
+                        <div class="form-group mb-4">
+                            <label class="flex items-center">
+                                <i class="fas fa-paperclip mr-2"></i> Subir Comprobante (Imagen/PDF)
+                            </label>
+                            <input type="file" id="pagoArchivo" accept="image/*,.pdf"
+                                class="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[var(--color-accent)] file:text-white hover:file:bg-[#289E93]">
+                            <p id="fileNameDisplay" class="text-[10px] text-gray-500 mt-1 italic"></p>
+                        </div>
                         <button type="button" onclick="fetchAndRenderHistory()"
                             class="w-full mb-4 py-3 px-4 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 transition duration-200 flex items-center justify-center gap-2">
                             <i class="fas fa-history"></i> Ver historial de pagos
@@ -504,7 +511,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        const APPSSCRIPT_URL = 'https://script.google.com/macros/s/AKfycby3oI7BvzZgqoKsCrPxEkS3-DY2rENwih6QqJCmWGVzSDBPXnksGCxD9pD6eok5fwDgQw/exec';
+        const APPSSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwL1RpCbeNhzimjHPUR8WAi8hd9ImwWpO19B2lfAG8m6tfq84xQ_QC1TRJydDobA1_lsQ/exec';
 
         const dataList = document.getElementById('dataList');
         const loadingSpinner = document.getElementById('loadingSpinner');
@@ -1031,98 +1038,131 @@
         }
 
         async function handlePagoSubmit(event) {
-            event.preventDefault();
+    event.preventDefault();
 
-            submitPagoButton.disabled = true;
-            submitPagoButton.textContent = 'Enviando...';
-            pagoMessageEl.classList.add('hidden');
+    const submitPagoButton = document.getElementById('submitPagoButton');
+    const pagoMessageEl = document.getElementById('pagoMessage');
+    const fileInput = document.getElementById('pagoArchivo'); // Asegurate que tu input de archivo tenga este ID
 
-            const form = event.target;
-            const formData = new FormData(form);
+    submitPagoButton.disabled = true;
+    submitPagoButton.textContent = 'Procesando...';
+    pagoMessageEl.classList.add('hidden');
 
-            const montoValue = formData.get('monto');
+    const form = event.target;
+    const formData = new FormData(form);
 
-            const pagoData = {
-                socio: formData.get('socio'),
-                monto: montoValue ? parseFloat(montoValue).toFixed(2) : '',
-                fecha_pago: formData.get('fecha_pago'),
-                referenciaTransaccion: formData.get('referenciaTransaccion'),
-                tipoPago: formData.get('tipoPago'),
-                userId: localStorage.getItem('userId')
-            };
+    let base64File = "";
+    let fileName = "";
 
-            const url = `${APPSSCRIPT_URL}?action=CREATE_RECORD&sheetName=registro_pagos`;
+    // --- LÓGICA PARA PROCESAR EL ARCHIVO ---
+    if (fileInput && fileInput.files.length > 0) {
+        submitPagoButton.textContent = 'Leyendo archivo...';
+        const file = fileInput.files[0];
+        fileName = file.name;
+        
+        // Convertimos el archivo a Base64
+        base64File = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]); // Extrae solo la data
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(file);
+        });
+    }
 
-            try {
-                const response = await fetchWithRetry(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({ data: JSON.stringify(pagoData) })
-                });
+    const montoValue = formData.get('monto');
 
-                const resultText = await response.text();
-                let result = {};
-                try {
-                    result = JSON.parse(resultText);
-                } catch (e) {
-                    throw new Error(`Respuesta inválida (no JSON) del Apps Script: ${resultText}`);
-                }
+    const pagoData = {
+        socio: localStorage.getItem('fullName'), // Lo sacamos del localStorage por seguridad
+        monto: montoValue ? parseFloat(montoValue).toFixed(2) : '',
+        fecha_pago: formData.get('fecha_pago'),
+        referenciaTransaccion: formData.get('referenciaTransaccion'),
+        tipoPago: formData.get('tipoPago'),
+        userId: localStorage.getItem('userId'),
+        archivoData: base64File,    // Enviamos la data del archivo
+        archivoNombre: fileName     // Enviamos el nombre del archivo
+    };
 
-                if (result.status === 'success') {
-                    pagoMessageEl.classList.remove('hidden', 'bg-red-100', 'text-red-700');
-                    pagoMessageEl.classList.add('bg-green-100', 'text-green-700');
-                    pagoMessageEl.innerHTML = `<i class="fas fa-check-circle mr-2"></i> ${result.message || 'Pago registrado con éxito.'}`;
-                    form.reset();
-                    pagoSocioInput.value = loggedInUserName;
-                    pagoFechaInput.value = getTodayDateString();
+    const url = `${APPSSCRIPT_URL}?action=CREATE_RECORD&sheetName=registro_pagos`;
 
-                } else {
-                    throw new Error(result.message || 'Error desconocido al registrar el pago.');
-                }
-
-            } catch (error) {
-                console.error('Error en el registro de pago:', error);
-                pagoMessageEl.classList.remove('hidden', 'bg-green-100', 'text-green-700');
-                pagoMessageEl.classList.add('bg-red-100', 'text-red-700');
-                pagoMessageEl.innerHTML = `<i class="fas fa-times-circle mr-2"></i> Error: ${error.message}`;
-            } finally {
-                submitPagoButton.disabled = false;
-                submitPagoButton.textContent = 'Registrar Pago';
-            }
-        }
-
-        async function fetchAndRenderHistory() {
-    const historyModal = document.getElementById('historyModal');
-    const historyList = document.getElementById('historyList');
-    const currentUserId = localStorage.getItem('userId'); 
-
-    historyModal.classList.add('open');
-    historyList.innerHTML = `<div class="text-center py-6"><i class="fas fa-spinner fa-spin text-3xl text-[var(--color-accent)]"></i></div>`;
+    submitPagoButton.textContent = 'Enviando pago...';
 
     try {
-        const url = `${APPSSCRIPT_URL}?action=READ_SHEET&sheetName=registro_pagos`;
-        const response = await fetch(url);
-        const result = await response.json();
+        // Usamos fetch normal (o fetchWithRetry si lo tenés definido)
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({ data: JSON.stringify(pagoData) })
+        });
+
+        const resultText = await response.text();
+        let result = {};
+        try {
+            result = JSON.parse(resultText);
+        } catch (e) {
+            throw new Error(`Respuesta inválida del servidor: ${resultText}`);
+        }
 
         if (result.status === 'success') {
-            // USAMOS userId o id_user, lo que encuentre en el objeto
-            const misPagos = result.data.filter(p => {
-                const idEnFila = p.userId || p.id_user; // Probamos ambas por las dudas
-                return String(idEnFila).trim() === String(currentUserId).trim();
-            });
+            pagoMessageEl.classList.remove('hidden', 'bg-red-100', 'text-red-700');
+            pagoMessageEl.classList.add('bg-green-100', 'text-green-700');
+            pagoMessageEl.innerHTML = `<i class="fas fa-check-circle mr-2"></i> ${result.message || 'Pago registrado con éxito.'}`;
+            
+            form.reset();
+            
+            // Volvemos a poner los datos por defecto
+            const loggedInUserName = localStorage.getItem('fullName');
+            const socioInput = document.getElementById('pagoSocio');
+            const fechaInput = document.getElementById('pagoFecha');
+            
+            if(socioInput) socioInput.value = loggedInUserName;
+            if(fechaInput) fechaInput.value = new Date().toISOString().split('T')[0];
 
-            if (misPagos.length === 0) {
-                historyList.innerHTML = '<p class="text-center text-gray-300 text-sm py-4">No tenés pagos registrados todavía.</p>';
-            } else {
-                historyList.innerHTML = '';
-                misPagos.sort((a, b) => new Date(b.fecha_pago) - new Date(a.fecha_pago));
+        } else {
+            throw new Error(result.message || 'Error desconocido al registrar el pago.');
+        }
 
-                misPagos.forEach(p => {
-                    const item = document.createElement('div');
-                    item.className = "bg-white/10 p-3 rounded-lg border border-white/10 flex justify-between items-center mb-2";
-                    item.innerHTML = `
+    } catch (error) {
+        console.error('Error en el registro de pago:', error);
+        pagoMessageEl.classList.remove('hidden', 'bg-green-100', 'text-green-700');
+        pagoMessageEl.classList.add('bg-red-100', 'text-red-700');
+        pagoMessageEl.innerHTML = `<i class="fas fa-times-circle mr-2"></i> Error: ${error.message}`;
+    } finally {
+        submitPagoButton.disabled = false;
+        submitPagoButton.textContent = 'Registrar Pago';
+    }
+}
+        async function fetchAndRenderHistory() {
+            const historyModal = document.getElementById('historyModal');
+            const historyList = document.getElementById('historyList');
+            const currentUserId = localStorage.getItem('userId');
+
+            historyModal.classList.add('open');
+            historyList.innerHTML = `<div class="text-center py-6"><i class="fas fa-spinner fa-spin text-3xl text-[var(--color-accent)]"></i></div>`;
+
+            try {
+                const url = `${APPSSCRIPT_URL}?action=READ_SHEET&sheetName=registro_pagos`;
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    // USAMOS userId o id_user, lo que encuentre en el objeto
+                    const misPagos = result.data.filter(p => {
+                        const idEnFila = p.userId || p.id_user; // Probamos ambas por las dudas
+                        return String(idEnFila).trim() === String(currentUserId).trim();
+                    });
+
+                    if (misPagos.length === 0) {
+                        historyList.innerHTML = '<p class="text-center text-gray-300 text-sm py-4">No tenés pagos registrados todavía.</p>';
+                    } else {
+                        historyList.innerHTML = '';
+                        misPagos.sort((a, b) => new Date(b.fecha_pago) - new Date(a.fecha_pago));
+
+                        misPagos.forEach(p => {
+                            const item = document.createElement('div');
+                            item.className = "bg-white/10 p-3 rounded-lg border border-white/10 flex justify-between items-center mb-2";
+                            item.innerHTML = `
                         <div>
                             <p class="text-[10px] text-gray-400 uppercase font-bold">${formatDateForDisplay(p.fecha_pago)}</p>
                             <p class="text-lg font-bold text-[var(--color-accent)]">$ ${p.monto}</p>
@@ -1132,15 +1172,15 @@
                                 ${p.tipo_pago || p.tipoPago || 'Pago'}
                             </span>
                         </div>`;
-                    historyList.appendChild(item);
-                });
+                            historyList.appendChild(item);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                historyList.innerHTML = '<p class="text-red-400 text-xs text-center">Error al conectar con el servidor.</p>';
             }
         }
-    } catch (error) {
-        console.error(error);
-        historyList.innerHTML = '<p class="text-red-400 text-xs text-center">Error al conectar con el servidor.</p>';
-    }
-}
 
         // Función para cerrar el modal
         function closeHistoryModal() {
