@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,50 +8,53 @@
     <link rel="icon" href="logo favicon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <style>
         :root {
-            --color-primary: #4A5568; 
-            --color-accent: #30B5AA;  
+            --color-primary: #4A5568;
+            --color-accent: #30B5AA;
             --color-bg-light: #f3f4f6;
             --color-card-bg: #ffffff;
         }
 
-        html, body {
-            height: 100%; 
+        html,
+        body {
+            height: 100%;
             margin: 0;
             padding: 0;
         }
-        
+
         body {
-            font-family: 'Inter', sans-serif; 
+            font-family: 'Inter', sans-serif;
             background-color: var(--color-bg-light);
         }
-        
+
         .app-container {
-            max-width: 520px; 
+            max-width: 520px;
             margin: 0 auto;
-            min-height: 100vh; 
-            background-color: var(--color-card-bg); 
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1); 
+            min-height: 100vh;
+            background-color: var(--color-card-bg);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
             display: flex;
-            flex-direction: column; 
+            flex-direction: column;
         }
-        
-        #menuView, #dataView {
-            flex: 1; 
+
+        #menuView,
+        #dataView {
+            flex: 1;
             position: relative;
         }
 
         .flip-container {
             width: 100%;
-            height: 100%; 
+            height: 100%;
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
         }
-        
+
         .flip-container.flipped {
             transform: rotateY(180deg);
         }
@@ -60,76 +64,79 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%; 
+            height: 100%;
             backface-visibility: hidden;
             display: flex;
             flex-direction: column;
-            overflow-y: auto; 
-            -webkit-overflow-scrolling: touch; 
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
-        
+
         .menu-button {
-             width: 100%; 
-             padding: 1.5rem; 
-             border-radius: 1rem; 
-             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); 
-             transition: transform 0.3s, box-shadow 0.3s;
-             background-color: white;
-             text-align: left;
-             border: 2px solid transparent;
+            width: 100%;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            background-color: white;
+            text-align: left;
+            border: 2px solid transparent;
         }
-        
+
         .menu-button:hover {
             transform: scale(1.02);
         }
-        
+
         .back-face {
-             transform: rotateY(180deg);
-             align-items: center;
-             justify-content: center;
-             padding: 1rem;
-             color: var(--color-primary);
-             font-weight: 700;
-             text-align: center;
+            transform: rotateY(180deg);
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            color: var(--color-primary);
+            font-weight: 700;
+            text-align: center;
         }
 
         .muestra-card {
             transition: all 0.3s ease-in-out;
             cursor: pointer;
             border: 1px solid #e5e7eb;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); 
-            border-radius: 0.75rem; 
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            border-radius: 0.75rem;
             overflow: hidden;
             background-color: var(--color-card-bg);
         }
-        
+
         .muestra-card.bg-green-100-card {
-            background-color: #d1fae5 !important; 
-            border-color: #10b981 !important; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); 
+            background-color: #d1fae5 !important;
+            border-color: #10b981 !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
         }
-        
+
         @keyframes blink-green {
-            0%, 100% { 
-                opacity: 1; 
+
+            0%,
+            100% {
+                opacity: 1;
                 box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
             }
-            50% { 
-                opacity: 0.7; 
-                box-shadow: 0 0 25px 8px #059669; 
+
+            50% {
+                opacity: 0.7;
+                box-shadow: 0 0 25px 8px #059669;
             }
         }
 
         .muestra-card.blinking-card {
             animation: blink-green 1.5s ease-in-out infinite;
         }
-        
+
         .tag-badge.highlighted-badge {
-            padding: 0.5rem 0.8rem; 
-            font-size: 0.9rem; 
-            font-weight: 900; 
+            padding: 0.5rem 0.8rem;
+            font-size: 0.9rem;
+            font-weight: 900;
             letter-spacing: 0.05em;
-            border: 2px solid #10b981; 
+            border: 2px solid #10b981;
             border-radius: 0.75rem;
         }
 
@@ -138,31 +145,32 @@
             overflow: hidden;
             transition: max-height 0.6s ease-in-out, padding 0.6s ease-in-out;
             padding: 0 1.25rem;
-            background-color: #fcfcfc; 
+            background-color: #fcfcfc;
         }
-        
+
         .muestra-card.open .muestra-content {
-            max-height: 1200px; 
-            padding: 1rem 1.25rem 1.5rem; 
+            max-height: 1200px;
+            padding: 1rem 1.25rem 1.5rem;
         }
 
         .chevron {
-            transition: transform 0.4s ease-out; 
-            color: var(--color-primary); 
+            transition: transform 0.4s ease-out;
+            color: var(--color-primary);
             font-size: 1rem;
         }
+
         .muestra-card.open .chevron {
             transform: rotate(180deg);
         }
 
         .header-title {
-            font-weight: 700; 
-            letter-spacing: -0.01em; 
+            font-weight: 700;
+            letter-spacing: -0.01em;
         }
-        
+
         .detalle-content {
-            white-space: pre-wrap; 
-            word-wrap: break-word; 
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
 
         .tag-badge {
@@ -176,15 +184,18 @@
             text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
         }
 
-        .table-container, .programacion-table, .programacion-table th, .programacion-table td {
-            display: none !important; 
+        .table-container,
+        .programacion-table,
+        .programacion-table th,
+        .programacion-table td {
+            display: none !important;
         }
-        
+
         .large-logo {
-            width: 170px; 
-            height: 170px; 
-            margin-bottom: 0.75rem; 
-            filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(0, 0, 0, 0.3)); 
+            width: 170px;
+            height: 170px;
+            margin-bottom: 0.75rem;
+            filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(0, 0, 0, 0.3));
         }
 
         .modal-overlay {
@@ -197,12 +208,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 50; 
+            z-index: 50;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease-in-out;
         }
-        
+
         .modal-overlay.open {
             opacity: 1;
             visibility: visible;
@@ -213,33 +224,36 @@
             max-width: 400px;
             width: 90%;
             padding: 1.5rem;
-            border-radius: 1rem; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             transform: scale(0.9);
             transition: transform 0.3s ease-in-out;
-            color: white; 
-            border: 4px solid var(--color-accent); 
+            color: white;
+            border: 4px solid var(--color-accent);
         }
 
         .modal-overlay.open .modal-content {
             transform: scale(1);
         }
-        
+
         .logo-modal {
-            filter: brightness(0) invert(1); 
-            width: 150px; 
-            height: 150px; 
+            filter: brightness(0) invert(1);
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
-            box-shadow: none; 
+            box-shadow: none;
         }
-        
+
         .form-group label {
             display: block;
             font-weight: 600;
             margin-bottom: 0.25rem;
             color: var(--color-primary);
         }
-        .form-group input, .form-group select, .form-group textarea {
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 0.75rem;
             border: 1px solid #d1d5db;
@@ -247,11 +261,15 @@
             box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
             transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             border-color: var(--color-accent);
             outline: 0;
-            box-shadow: 0 0 0 3px rgba(48, 181, 170, 0.5); 
+            box-shadow: 0 0 0 3px rgba(48, 181, 170, 0.5);
         }
+
         .input-disabled {
             background-color: #e5e7eb;
             color: #6b7280;
@@ -259,66 +277,72 @@
         }
     </style>
 </head>
-<body>
 
+<body>
+    <div id="historyModal" class="modal-overlay">
+        <div class="modal-content overflow-hidden flex flex-col" style="max-height: 80vh;">
+            <h3 class="text-xl font-extrabold text-white mb-4 border-b border-[var(--color-accent)] pb-2">
+                Mi Historial de Pagos
+            </h3>
+
+            <div id="historyList" class="overflow-y-auto pr-2 space-y-3 mb-6 custom-scrollbar">
+                <p class="text-sm text-gray-300 italic">Cargando movimientos...</p>
+            </div>
+
+            <button onclick="closeHistoryModal()"
+                class="w-full py-2 px-4 bg-[var(--color-accent)] text-white font-bold rounded-lg shadow-md hover:bg-[#289E93] transition duration-200">
+                Cerrar
+            </button>
+        </div>
+    </div>
     <div id="welcomeModal" class="modal-overlay">
         <div class="modal-content text-center">
-            <img 
-                src="logo.png" 
-                alt="Logo Villa Victoria" 
-                class="logo-modal mx-auto mb-4" 
-            />
+            <img src="logo.png" alt="Logo Villa Victoria" class="logo-modal mx-auto mb-4" />
             <h3 class="text-2xl font-extrabold text-white mb-2">
                 ¡Bienvenido/a a Villa Victoria!
             </h3>
-            
+
             <div id="modalMessage" class="text-gray-200 mb-6 text-sm">
-                <p>Descubrí las muestras y la programación cultural que ofrece este espacio único en Mar del Plata. Esta es tu guía rápida y en tiempo real.</p>
+                <p>Descubrí las muestras y la programación cultural que ofrece este espacio único en Mar del Plata. Esta
+                    es tu guía rápida y en tiempo real.</p>
             </div>
-            
-            <button 
-                onclick="closeModal()" 
-                class="w-full py-2 px-4 bg-[var(--color-accent)] text-white font-bold rounded-lg shadow-md hover:bg-[#289E93] transition duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2"
-            >
+
+            <button onclick="closeModal()"
+                class="w-full py-2 px-4 bg-[var(--color-accent)] text-white font-bold rounded-lg shadow-md hover:bg-[#289E93] transition duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2">
                 Aceptar
             </button>
         </div>
     </div>
     <div class="app-container">
-        
-        <header class="p-5 bg-[var(--color-primary)] text-white shadow-xl flex-shrink-0 relative flex flex-col items-center">
-            
-            <img 
-                src="logo.png" 
-                alt="Logo Villa Victoria" 
-                class="large-logo" 
-            />
+
+        <header
+            class="p-5 bg-[var(--color-primary)] text-white shadow-xl flex-shrink-0 relative flex flex-col items-center">
+
+            <img src="logo.png" alt="Logo Villa Victoria" class="large-logo" />
 
             <div class="text-center">
                 <p id="userGreeting" class="text-gray-400 text-sm font-medium mb-1">
                     Cargando socio...
                 </p>
-                
+
                 <h1 class="header-title text-3xl sm:text-4xl">
                     VILLA VICTORIA
                 </h1>
                 <p class="text-gray-300 text-sm font-light mt-1">
-                    Centro Cultural Victoria Ocampo - Villa Victoria - Mar del Plata - Batán - Partido de General Pueyrredon.
+                    Centro Cultural Victoria Ocampo - Villa Victoria - Mar del Plata - Batán - Partido de General
+                    Pueyrredon.
                 </p>
             </div>
-            
+
         </header>
 
         <div id="menuView" class="p-4 flex-1 flex flex-col items-center space-y-6 bg-[var(--color-bg-light)]">
-            
+
             <p class="text-center text-xl font-bold text-gray-700 mt-4">Seleccione una opción</p>
 
-            <div class="w-full px-4" style="max-width: 384px; height: 120px;"> 
-                <div 
-                    id="muestraButtonFlip"
-                    onclick="animateButton(this, 'gestor_muestra')" 
-                    class="flip-container h-full"
-                >
+            <div class="w-full px-4" style="max-width: 384px; height: 120px;">
+                <div id="muestraButtonFlip" onclick="animateButton(this, 'gestor_muestra')"
+                    class="flip-container h-full">
                     <div class="flip-face menu-button border-[var(--color-accent)] hover:border-[var(--color-accent)]">
                         <div class="flex items-center">
                             <i class="fas fa-camera-retro text-4xl text-[var(--color-accent)] mr-4"></i>
@@ -328,7 +352,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="flip-face back-face bg-white shadow-xl">
                         <p class="text-xl font-bold">Aguarde un instante...</p>
                         <i class="fas fa-spinner fa-spin text-4xl mt-3 text-[var(--color-accent)]"></i>
@@ -336,13 +360,11 @@
                 </div>
             </div>
 
-            <div class="w-full px-4" style="max-width: 384px; height: 120px;"> 
-                <div 
-                    id="programacionButtonFlip"
-                    onclick="animateButton(this, 'gestor_programacion')" 
-                    class="flip-container h-full"
-                >
-                    <div class="flip-face menu-button border-[var(--color-primary)] hover:border-[var(--color-primary)]">
+            <div class="w-full px-4" style="max-width: 384px; height: 120px;">
+                <div id="programacionButtonFlip" onclick="animateButton(this, 'gestor_programacion')"
+                    class="flip-container h-full">
+                    <div
+                        class="flip-face menu-button border-[var(--color-primary)] hover:border-[var(--color-primary)]">
                         <div class="flex items-center">
                             <i class="fas fa-calendar-check text-4xl text-[var(--color-primary)] mr-4"></i>
                             <div>
@@ -351,20 +373,16 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="flip-face back-face bg-white shadow-xl">
                         <p class="text-xl font-bold">Aguarde un instante...</p>
                         <i class="fas fa-spinner fa-spin text-4xl mt-3 text-[var(--color-primary)]"></i>
                     </div>
                 </div>
             </div>
-            
-            <div class="w-full px-4" style="max-width: 384px; height: 120px;"> 
-                <div 
-                    id="pagosButtonFlip"
-                    onclick="animateButton(this, 'registro_pagos')" 
-                    class="flip-container h-full"
-                >
+
+            <div class="w-full px-4" style="max-width: 384px; height: 120px;">
+                <div id="pagosButtonFlip" onclick="animateButton(this, 'registro_pagos')" class="flip-container h-full">
                     <div class="flip-face menu-button border-red-500 hover:border-red-500">
                         <div class="flex items-center">
                             <i class="fas fa-file-invoice-dollar text-4xl text-red-500 mr-4"></i>
@@ -374,19 +392,22 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="flip-face back-face bg-white shadow-xl">
                         <p class="text-xl font-bold">Aguarde un instante...</p>
                         <i class="fas fa-spinner fa-spin text-4xl mt-3 text-red-500"></i>
                     </div>
                 </div>
             </div>
-            <div class="flex-1"></div> </div>
+            <div class="flex-1"></div>
+        </div>
 
         <div id="dataView" class="hidden flex-1 relative bg-white overflow-y-auto">
-            
-            <div class="flex items-center justify-between p-3 border-b border-gray-200 sticky top-0 bg-white z-10 shadow-md flex-shrink-0">
-                <button onclick="changeView('menu')" class="text-gray-600 hover:text-[var(--color-primary)] transition duration-150 p-2 rounded-full">
+
+            <div
+                class="flex items-center justify-between p-3 border-b border-gray-200 sticky top-0 bg-white z-10 shadow-md flex-shrink-0">
+                <button onclick="changeView('menu')"
+                    class="text-gray-600 hover:text-[var(--color-primary)] transition duration-150 p-2 rounded-full">
                     <i class="fas fa-arrow-left text-lg"></i>
                     <span class="sr-only">Volver al menú</span>
                 </button>
@@ -403,36 +424,42 @@
                     </div>
                 </div>
 
-                <div id="noResults" class="hidden text-center p-10 bg-gray-100 rounded-lg shadow-md border border-gray-300 mt-6">
+                <div id="noResults"
+                    class="hidden text-center p-10 bg-gray-100 rounded-lg shadow-md border border-gray-300 mt-6">
                     <i class="fas fa-search-minus text-4xl text-gray-500"></i>
                     <p class="mt-4 text-gray-700 font-bold">¡Uy! No hay datos activos para mostrar en esta sección.</p>
                 </div>
-                
+
                 <div id="pagoFormContainer" class="hidden p-4 bg-white rounded-lg shadow-xl border border-gray-200">
-                    <h3 class="text-2xl font-extrabold text-[var(--color-primary)] mb-6 text-center">Registrar Nuevo Pago</h3>
+                    <h3 class="text-2xl font-extrabold text-[var(--color-primary)] mb-6 text-center">Registrar Nuevo
+                        Pago</h3>
                     <form id="pagoForm" onsubmit="handlePagoSubmit(event)">
-                        
+
                         <div class="form-group mb-4">
                             <label for="pagoSocio">Socio</label>
                             <input type="text" id="pagoSocio" name="socio" class="input-disabled" required readonly>
-                            <p class="text-xs text-gray-500 mt-1">Este campo se completa automáticamente con tu nombre.</p>
+                            <p class="text-xs text-gray-500 mt-1">Este campo se completa automáticamente con tu nombre.
+                            </p>
                         </div>
 
                         <div class="form-group mb-4">
                             <label for="pagoMonto">Monto ($)</label>
-                            <input type="number" id="pagoMonto" name="monto" min="0.01" step="0.01" placeholder="Ej: 1500.50" required>
+                            <input type="number" id="pagoMonto" name="monto" min="0.01" step="0.01"
+                                placeholder="Ej: 1500.50" required>
                         </div>
 
                         <div class="form-group mb-4">
                             <label for="pagoFecha">Fecha de Pago</label>
                             <input type="date" id="pagoFecha" name="fecha_pago" required>
                         </div>
-                        
+
                         <div class="form-group mb-4">
-                            <label for="pagoReferencia">Referencia de Transacción <span class="text-gray-500 font-normal text-sm">(Opcional)</span></label>
-                            <input type="text" id="pagoReferencia" name="referenciaTransaccion" placeholder="Ej: Factura #1234, ID de transacción">
+                            <label for="pagoReferencia">Referencia de Transacción <span
+                                    class="text-gray-500 font-normal text-sm">(Opcional)</span></label>
+                            <input type="text" id="pagoReferencia" name="referenciaTransaccion"
+                                placeholder="Ej: Factura #1234, ID de transacción">
                         </div>
-                        
+
                         <div class="form-group mb-6">
                             <label for="pagoTipo">Tipo de Pago</label>
                             <select id="pagoTipo" name="tipoPago" required>
@@ -444,26 +471,31 @@
                             </select>
                         </div>
 
-                        <button 
-                            type="submit" 
-                            id="submitPagoButton"
-                            class="w-full py-3 px-4 bg-red-500 text-white font-bold rounded-lg shadow-lg hover:bg-red-600 transition duration-200 focus:outline-none focus:ring-4 focus:ring-red-300 disabled:bg-gray-400"
-                        >
+                        <button type="button" onclick="fetchAndRenderHistory()"
+                            class="w-full mb-4 py-3 px-4 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 transition duration-200 flex items-center justify-center gap-2">
+                            <i class="fas fa-history"></i> Ver historial de pagos
+                        </button>
+
+                        <button type="submit" id="submitPagoButton"
+                            class="w-full py-3 px-4 bg-red-500 text-white font-bold rounded-lg shadow-lg hover:bg-red-600 transition duration-200 focus:outline-none focus:ring-4 focus:ring-red-300 disabled:bg-gray-400">
                             Registrar Pago
                         </button>
                     </form>
-                    
+
                     <div id="pagoMessage" class="mt-4 p-3 rounded-lg text-sm font-medium hidden"></div>
                 </div>
             </div>
-            
+
         </div>
-        
+
         <footer class="p-3 text-center text-xs text-gray-500 border-t mt-auto bg-gray-50 flex-shrink-0">
             <p class="text-gray-600 font-medium mb-1">Villa Victoria</p>
             <p class="mt-1">Matheu 1851, Mar del Plata, Argentina</p>
-            <p>Email: <a href="mailto:villavictoria100@gmail.com" class="hover:text-[var(--color-primary)] transition">villavictoria100@gmail.com</a></p>
-            <p>Web: <a href="http://mardelplata.gob.ar/centroculturalvictoriaocampo" target="_blank" class="hover:text-[var(--color-primary)] transition">mardelplata.gob.ar/centroculturalvictoriaocampo</a></p>
+            <p>Email: <a href="mailto:villavictoria100@gmail.com"
+                    class="hover:text-[var(--color-primary)] transition">villavictoria100@gmail.com</a></p>
+            <p>Web: <a href="http://mardelplata.gob.ar/centroculturalvictoriaocampo" target="_blank"
+                    class="hover:text-[var(--color-primary)] transition">mardelplata.gob.ar/centroculturalvictoriaocampo</a>
+            </p>
             <p class="mt-2 text-gray-400">&copy; 2025 Villa Victoria.</p>
         </footer>
     </div>
@@ -471,8 +503,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        
-        const APPSSCRIPT_URL = 'https://script.google.com/macros/s/AKfycby3oI7BvzZgqoKsCrPxEkS3-DY2rENwih6QqJCmWGVzSDBPXnksGCxD9pD6eok5fwDgQw/exec'; 
+
+        const APPSSCRIPT_URL = 'https://script.google.com/macros/s/AKfycby3oI7BvzZgqoKsCrPxEkS3-DY2rENwih6QqJCmWGVzSDBPXnksGCxD9pD6eok5fwDgQw/exec';
 
         const dataList = document.getElementById('dataList');
         const loadingSpinner = document.getElementById('loadingSpinner');
@@ -481,25 +513,25 @@
         const menuView = document.getElementById('menuView');
         const dataView = document.getElementById('dataView');
         const welcomeModal = document.getElementById('welcomeModal');
-        const modalMessage = document.getElementById('modalMessage'); 
-        const userGreetingEl = document.getElementById('userGreeting'); 
-        const pagoFormContainer = document.getElementById('pagoFormContainer'); 
-        const pagoSocioInput = document.getElementById('pagoSocio'); 
-        const pagoFechaInput = document.getElementById('pagoFecha'); 
-        const pagoMessageEl = document.getElementById('pagoMessage'); 
-        const submitPagoButton = document.getElementById('submitPagoButton'); 
-        
-        let allData = []; 
-        let currentSheet = null; 
-        let auth = null; 
-        let loggedInUserName = 'Invitado'; 
+        const modalMessage = document.getElementById('modalMessage');
+        const userGreetingEl = document.getElementById('userGreeting');
+        const pagoFormContainer = document.getElementById('pagoFormContainer');
+        const pagoSocioInput = document.getElementById('pagoSocio');
+        const pagoFechaInput = document.getElementById('pagoFecha');
+        const pagoMessageEl = document.getElementById('pagoMessage');
+        const submitPagoButton = document.getElementById('submitPagoButton');
+
+        let allData = [];
+        let currentSheet = null;
+        let auth = null;
+        let loggedInUserName = 'Invitado';
 
         function clearSessionData() {
             localStorage.removeItem('fullName');
             localStorage.removeItem('userId');
             console.log("Datos de sesión limpiados al cerrar/navegar.");
         }
-        
+
         function clearLocalStorageOnClose() {
             clearSessionData();
         }
@@ -511,18 +543,18 @@
                 userGreetingEl.textContent = `Socio: ${userName}`;
             }
         }
-        
+
         async function showWelcomeModal(userName) {
             if (!localStorage.getItem('welcomeModalShown')) {
-                
+
                 let todayEvent = null;
-                const todayStr = getTodayDateString(); 
+                const todayStr = getTodayDateString();
 
                 try {
                     const programacion = await fetchSheetData('gestor_programacion');
-                    
+
                     if (programacion && programacion.length > 0) {
-                        todayEvent = programacion.find(item => 
+                        todayEvent = programacion.find(item =>
                             normalizeDate(item.fecha) === todayStr
                         );
                     }
@@ -537,8 +569,8 @@
                 if (todayEvent) {
                     const titulo = todayEvent.titulo || 'Evento Cultural';
                     const rawHora = todayEvent.hora || 'todo el día';
-                    const hora = rawHora.replace(/\s*hs/i, '').trim(); 
-                    
+                    const hora = rawHora.replace(/\s*hs/i, '').trim();
+
                     modalMessage.innerHTML = `
                         <p class="font-bold text-white mb-4">
                             ¡Hoy te comentamos que está programado el evento:
@@ -554,11 +586,11 @@
                         <p class="mt-2 text-gray-300 text-xs">(Por el momento, no hay eventos de programación exclusivos para hoy).</p>
                     `;
                 }
-                
+
                 welcomeModal.classList.add('open');
             }
         }
-        
+
         function closeModal() {
             welcomeModal.classList.remove('open');
             localStorage.setItem('welcomeModalShown', 'true');
@@ -567,13 +599,13 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const storedName = localStorage.getItem('fullName');
             let userName = storedName;
-            
+
             if (!userName || userName === 'Invitado' || userName === '') {
-                 console.log("Sesión no encontrada. Redirigiendo a index.html.");
-                 window.location.href = 'index.html';
-                 return; 
+                console.log("Sesión no encontrada. Redirigiendo a index.html.");
+                window.location.href = 'index.html';
+                return;
             }
-            
+
             loggedInUserName = userName;
 
             try {
@@ -585,16 +617,16 @@
             } catch (e) {
                 console.error("Fallo durante la inicialización de Firebase:", e);
             }
-            
-            updateHeaderGreeting(loggedInUserName);
-            
-            pagoSocioInput.value = loggedInUserName;
-            pagoFechaInput.value = getTodayDateString(); 
 
-            changeView('menu'); 
-            await showWelcomeModal(loggedInUserName); 
+            updateHeaderGreeting(loggedInUserName);
+
+            pagoSocioInput.value = loggedInUserName;
+            pagoFechaInput.value = getTodayDateString();
+
+            changeView('menu');
+            await showWelcomeModal(loggedInUserName);
         });
-        
+
         function normalizeDate(dateValue) {
             if (!dateValue) return null;
 
@@ -604,39 +636,39 @@
                 const year = dateValue.getFullYear();
                 const month = dateValue.getMonth();
                 const day = dateValue.getDate();
-                dateObj = new Date(year, month, day, 12); 
-            } 
+                dateObj = new Date(year, month, day, 12);
+            }
             else if (typeof dateValue === 'string') {
-                const dateOnly = String(dateValue).split(' ')[0].trim(); 
-                
+                const dateOnly = String(dateValue).split(' ')[0].trim();
+
                 if (dateOnly.includes('/')) {
                     const parts = dateOnly.split('/');
                     if (parts.length === 3) {
-                        dateObj = new Date(parts[2], parts[1] - 1, parts[0], 12); 
+                        dateObj = new Date(parts[2], parts[1] - 1, parts[0], 12);
                     }
                 } else if (dateOnly.includes('-')) {
-                     const cleanDate = dateOnly.replace(/T.*Z$/, ''); 
-                     dateObj = new Date(cleanDate + 'T12:00:00'); 
+                    const cleanDate = dateOnly.replace(/T.*Z$/, '');
+                    dateObj = new Date(cleanDate + 'T12:00:00');
                 }
-            } 
-            
+            }
+
             if (dateObj && !isNaN(dateObj.getTime())) {
                 const year = dateObj.getFullYear();
-                const month = String(dateObj.getMonth() + 1).padStart(2, '0'); 
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
                 const day = String(dateObj.getDate()).padStart(2, '0');
                 return `${year}-${month}-${day}`;
             }
 
-            return null; 
+            return null;
         }
 
         function formatDateForDisplay(dateValue) {
             const normalized = normalizeDate(dateValue);
             if (!normalized) return 'Sin Fecha';
-            
+
             const parts = normalized.split('-');
             if (parts.length === 3) {
-                 return `${parts[2]}/${parts[1]}/${parts[0]}`; 
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
             }
             return normalized;
         }
@@ -648,44 +680,44 @@
             const day = String(now.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
         }
-        
+
         function animateButton(flipContainer, sheetName) {
-            
+
             flipContainer.classList.add('flipped');
-            
+
             const buttons = document.querySelectorAll('.flip-container');
             buttons.forEach(btn => btn.style.pointerEvents = 'none');
 
             setTimeout(() => {
                 changeView('data', sheetName);
-                
+
                 flipContainer.classList.remove('flipped');
                 buttons.forEach(btn => btn.style.pointerEvents = 'auto');
-            }, 800); 
+            }, 800);
         }
 
         function changeView(viewName, sheetName = null) {
             menuView.classList.add('hidden');
             dataView.classList.add('hidden');
-            
-            pagoFormContainer.classList.add('hidden'); 
-            dataList.classList.remove('hidden'); 
+
+            pagoFormContainer.classList.add('hidden');
+            dataList.classList.remove('hidden');
 
             if (viewName === 'menu') {
                 menuView.classList.remove('hidden');
-                sectionTitle.textContent = 'SECCIÓN'; 
-                dataList.innerHTML = ''; 
+                sectionTitle.textContent = 'SECCIÓN';
+                dataList.innerHTML = '';
             } else if (viewName === 'data' && sheetName) {
                 dataView.classList.remove('hidden');
                 currentSheet = sheetName;
-                
+
                 if (sheetName === 'gestor_muestra') {
                     sectionTitle.textContent = 'Listado de Muestras';
                     fetchAndRenderData(sheetName);
                 } else if (sheetName === 'gestor_programacion') {
                     sectionTitle.textContent = 'Actividades Programadas';
                     fetchAndRenderData(sheetName);
-                } else if (sheetName === 'registro_pagos') { 
+                } else if (sheetName === 'registro_pagos') {
                     sectionTitle.textContent = 'Registro de Pagos';
                     dataList.classList.add('hidden');
                     loadingSpinner.classList.add('hidden');
@@ -711,26 +743,26 @@
                 }
             }
         }
-        
+
         async function fetchSheetData(sheetName) {
             const url = `${APPSSCRIPT_URL}?action=READ_SHEET&sheetName=${sheetName}`;
             const response = await fetchWithRetry(url);
             const responseText = await response.text();
-            
+
             let data = {};
             try {
                 data = JSON.parse(responseText);
-            } catch(e) {
-                throw new Error(`Respuesta inválida (no JSON) al cargar ${sheetName}.`); 
+            } catch (e) {
+                throw new Error(`Respuesta inválida (no JSON) al cargar ${sheetName}.`);
             }
-            
+
             if (data.status === 'success' && Array.isArray(data.data)) {
                 return data.data.filter(item => {
                     const valorActivo = String(item.ACTIVO || '').toUpperCase().trim();
                     if (sheetName === 'gestor_muestra' || sheetName === 'gestor_programacion') {
                         return valorActivo === 'SI';
                     }
-                    return true; 
+                    return true;
                 });
             } else {
                 throw new Error(data.message || `Error en el status al cargar ${sheetName}.`);
@@ -738,9 +770,9 @@
         }
 
         async function fetchAndRenderData(sheetName) {
-            
-            if (sheetName === 'registro_pagos') return; 
-            
+
+            if (sheetName === 'registro_pagos') return;
+
             loadingSpinner.classList.remove('hidden');
             dataList.classList.remove('hidden');
             pagoFormContainer.classList.add('hidden');
@@ -749,14 +781,14 @@
 
             try {
                 const dataArray = await fetchSheetData(sheetName);
-                
+
                 dataArray.sort((a, b) => {
                     const keyA = a.fecha || Object.values(a)[0] || '';
                     const keyB = b.fecha || Object.values(b)[0] || '';
-                    
+
                     const dateA = normalizeDate(keyA);
                     const dateB = normalizeDate(keyB);
-                    
+
                     if (dateA && dateB) {
                         return dateA.localeCompare(dateB);
                     }
@@ -764,11 +796,11 @@
                 });
 
                 allData = dataArray;
-                renderData(allData, sheetName); 
+                renderData(allData, sheetName);
 
             } catch (error) {
                 console.error('Error al cargar la data:', error);
-                
+
                 dataList.innerHTML = `
                     <div class="alert bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-md m-4" role="alert">
                         <h4 class="font-bold">¡Error de Conexión o URL!</h4>
@@ -780,30 +812,30 @@
                 loadingSpinner.classList.add('hidden');
             }
         }
-        
+
         function getHoraColorClass(fechaStr, horaStr) {
             const now = new Date();
             let dateEvent = null;
 
             let isoDateStr = normalizeDate(fechaStr);
-            
+
             if (!isoDateStr) {
-                 return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock', isHappening: false };
+                return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock', isHappening: false };
             }
 
             try {
-                const cleanedHoraStr = String(horaStr).replace(/\s*hs/i, '').trim(); 
+                const cleanedHoraStr = String(horaStr).replace(/\s*hs/i, '').trim();
                 let timeParts = cleanedHoraStr.split(':');
-                
+
                 if (timeParts.length === 2) {
                     const h = String(parseInt(timeParts[0] || '0')).padStart(2, '0');
                     const m = String(parseInt(timeParts[1] || '0')).padStart(2, '0');
                     dateEvent = new Date(`${isoDateStr}T${h}:${m}:00`);
                 } else {
-                     dateEvent = new Date(`${isoDateStr}T23:59:00`); 
+                    dateEvent = new Date(`${isoDateStr}T23:59:00`);
                 }
-            } catch(e) {
-                 dateEvent = new Date(`${isoDateStr}T23:59:00`);
+            } catch (e) {
+                dateEvent = new Date(`${isoDateStr}T23:59:00`);
             }
 
             if (isNaN(dateEvent.getTime())) {
@@ -811,47 +843,47 @@
             }
 
             const nowDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            nowDay.setHours(0, 0, 0, 0); 
-            
+            nowDay.setHours(0, 0, 0, 0);
+
             const eventDay = new Date(dateEvent.getFullYear(), dateEvent.getMonth(), dateEvent.getDate());
-            eventDay.setHours(0, 0, 0, 0); 
+            eventDay.setHours(0, 0, 0, 0);
 
             const isToday = eventDay.getTime() === nowDay.getTime();
-            
+
             if (eventDay.getTime() < nowDay.getTime()) {
                 return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-history', isHappening: false };
             }
-            
+
             if (isToday) {
                 const startTime = dateEvent.getTime();
-                const twoHoursLater = startTime + (2 * 60 * 60 * 1000); 
-                
+                const twoHoursLater = startTime + (2 * 60 * 60 * 1000);
+
                 if (now.getTime() < startTime) {
-                     return { 
-                        cardClass: 'bg-green-100-card blinking-card', 
-                        badgeClass: 'bg-green-600 text-white', 
+                    return {
+                        cardClass: 'bg-green-100-card blinking-card',
+                        badgeClass: 'bg-green-600 text-white',
                         iconClass: 'fas fa-calendar-day',
-                        isHappening: true 
+                        isHappening: true
                     };
                 } else if (now.getTime() >= startTime && now.getTime() < twoHoursLater) {
-                     return { 
-                        cardClass: 'bg-green-100-card blinking-card', 
-                        badgeClass: 'bg-green-600 text-white', 
+                    return {
+                        cardClass: 'bg-green-100-card blinking-card',
+                        badgeClass: 'bg-green-600 text-white',
                         iconClass: 'fas fa-calendar-day',
-                        isHappening: true 
+                        isHappening: true
                     };
                 } else {
-                     return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-check-circle', isHappening: false };
+                    return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-check-circle', isHappening: false };
                 }
             }
-            
+
             return { cardClass: '', badgeClass: 'bg-blue-100 text-blue-700', iconClass: 'fas fa-clock', isHappening: false };
         }
 
         function renderData(data, sheetName) {
             dataList.innerHTML = '';
-            
-            if (data.length === 0) { 
+
+            if (data.length === 0) {
                 noResults.classList.remove('hidden');
                 return;
             }
@@ -859,7 +891,7 @@
 
             if (sheetName === 'gestor_muestra') {
                 renderMuestras(data);
-            } else if (sheetName === 'gestor_programacion') { 
+            } else if (sheetName === 'gestor_programacion') {
                 renderProgramacion(data);
             }
         }
@@ -869,13 +901,13 @@
                 const nombre = muestra.Nombre || muestra.nombre || Object.values(muestra)[0] || 'Sin Nombre';
                 const periodo = muestra.Periodo || muestra.periodo || Object.values(muestra)[1] || 'Sin Período';
                 const detalle = muestra.Detalle || muestra.detalle || Object.values(muestra)[2] || 'Detalle no especificado.';
-                
-                const { cardClass } = getHoraColorClass(periodo, '23:59'); 
-                
-                const card = document.createElement('div');
-                card.className = `muestra-card ${cardClass}`; 
 
-                card.onclick = function() {
+                const { cardClass } = getHoraColorClass(periodo, '23:59');
+
+                const card = document.createElement('div');
+                card.className = `muestra-card ${cardClass}`;
+
+                card.onclick = function () {
                     toggleMuestra(this);
                 };
 
@@ -907,22 +939,22 @@
                 dataList.appendChild(card);
             });
         }
-        
+
         function renderProgramacion(programacion) {
-            
+
             const filteredProgramacion = programacion.filter(item => {
                 const { iconClass } = getHoraColorClass(item.fecha, item.hora);
-                
+
                 if (iconClass === 'fas fa-history' || iconClass === 'fas fa-check-circle') {
                     return false;
                 }
-                
-                return true; 
+
+                return true;
             });
 
             if (filteredProgramacion.length === 0) {
-                 noResults.classList.remove('hidden');
-                 return;
+                noResults.classList.remove('hidden');
+                return;
             }
 
             filteredProgramacion.forEach(item => {
@@ -930,19 +962,19 @@
                 const hora = item.hora || 'Sin Hora';
                 const costo = item.costo || 'Consultar Costo';
                 const detalle = item.detalle || 'Detalle no especificado.';
-                
-                const fechaDisplay = formatDateForDisplay(item.fecha); 
-                const fechaInput = item.fecha; 
+
+                const fechaDisplay = formatDateForDisplay(item.fecha);
+                const fechaInput = item.fecha;
 
                 const { cardClass, badgeClass, iconClass, isHappening } = getHoraColorClass(fechaInput, hora);
 
                 const highlightClass = isHappening ? 'highlighted-badge' : '';
-                
-                const card = document.createElement('div');
-                card.className = `muestra-card ${cardClass} ${isHappening ? 'blinking-card' : ''}`; 
 
-                card.onclick = function() {
-                    toggleMuestra(this); 
+                const card = document.createElement('div');
+                card.className = `muestra-card ${cardClass} ${isHappening ? 'blinking-card' : ''}`;
+
+                card.onclick = function () {
+                    toggleMuestra(this);
                 };
 
                 const headerBgClass = isHappening ? 'bg-white' : 'bg-white hover:bg-gray-50 active:bg-gray-100';
@@ -997,22 +1029,22 @@
                 card.classList.remove('open');
             }
         }
-        
+
         async function handlePagoSubmit(event) {
             event.preventDefault();
-            
+
             submitPagoButton.disabled = true;
             submitPagoButton.textContent = 'Enviando...';
             pagoMessageEl.classList.add('hidden');
-            
+
             const form = event.target;
             const formData = new FormData(form);
-            
+
             const montoValue = formData.get('monto');
-            
+
             const pagoData = {
                 socio: formData.get('socio'),
-                monto: montoValue ? parseFloat(montoValue).toFixed(2) : '', 
+                monto: montoValue ? parseFloat(montoValue).toFixed(2) : '',
                 fecha_pago: formData.get('fecha_pago'),
                 referenciaTransaccion: formData.get('referenciaTransaccion'),
                 tipoPago: formData.get('tipoPago'),
@@ -1020,7 +1052,7 @@
             };
 
             const url = `${APPSSCRIPT_URL}?action=CREATE_RECORD&sheetName=registro_pagos`;
-            
+
             try {
                 const response = await fetchWithRetry(url, {
                     method: 'POST',
@@ -1034,7 +1066,7 @@
                 let result = {};
                 try {
                     result = JSON.parse(resultText);
-                } catch(e) {
+                } catch (e) {
                     throw new Error(`Respuesta inválida (no JSON) del Apps Script: ${resultText}`);
                 }
 
@@ -1044,12 +1076,12 @@
                     pagoMessageEl.innerHTML = `<i class="fas fa-check-circle mr-2"></i> ${result.message || 'Pago registrado con éxito.'}`;
                     form.reset();
                     pagoSocioInput.value = loggedInUserName;
-                    pagoFechaInput.value = getTodayDateString(); 
+                    pagoFechaInput.value = getTodayDateString();
 
                 } else {
                     throw new Error(result.message || 'Error desconocido al registrar el pago.');
                 }
-                
+
             } catch (error) {
                 console.error('Error en el registro de pago:', error);
                 pagoMessageEl.classList.remove('hidden', 'bg-green-100', 'text-green-700');
@@ -1061,11 +1093,72 @@
             }
         }
 
+        async function fetchAndRenderHistory() {
+            const historyModal = document.getElementById('historyModal');
+            const historyList = document.getElementById('historyList');
+            const currentUserId = localStorage.getItem('userId'); // Filtro solicitado
+
+            // 1. Abrimos el modal inmediatamente
+            historyModal.classList.add('open');
+            historyList.innerHTML = `
+        <div class="text-center py-6">
+            <i class="fas fa-spinner fa-spin text-3xl text-[var(--color-accent)]"></i>
+            <p class="text-xs mt-3 text-gray-300">Buscando tus registros...</p>
+        </div>`;
+
+            try {
+                const url = `${APPSSCRIPT_URL}?action=READ_SHEET&sheetName=registro_pagos`;
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    // Filtramos por userId coincidente con localStorage
+                    const misPagos = result.data.filter(p => String(p.userId) === String(currentUserId));
+
+                    if (misPagos.length === 0) {
+                        historyList.innerHTML = '<p class="text-center text-gray-300 text-sm py-4">No tenés pagos registrados.</p>';
+                    } else {
+                        historyList.innerHTML = '';
+                        // Ordenamos: el más nuevo arriba
+                        misPagos.sort((a, b) => new Date(b.fecha_pago) - new Date(a.fecha_pago));
+
+                        misPagos.forEach(p => {
+                            const item = document.createElement('div');
+                            item.className = "bg-white/10 p-3 rounded-lg border border-white/10 flex justify-between items-center";
+                            item.innerHTML = `
+                        <div>
+                            <p class="text-[10px] text-gray-400 uppercase font-bold">${formatDateForDisplay(p.fecha_pago)}</p>
+                            <p class="text-lg font-bold text-[var(--color-accent)]">$ ${p.monto}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[9px] bg-white/20 text-white px-2 py-1 rounded">
+                                ${p.tipoPago || 'Pago'}
+                            </span>
+                        </div>`;
+                            historyList.appendChild(item);
+                        });
+                    }
+                }
+            } catch (error) {
+                historyList.innerHTML = '<p class="text-red-400 text-xs text-center">Error al cargar datos.</p>';
+            }
+        }
+
+        // Función para cerrar el modal
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.remove('open');
+        }
+
+        // Vinculamos a window para que el HTML los vea
+        window.fetchAndRenderHistory = fetchAndRenderHistory;
+        window.closeHistoryModal = closeHistoryModal;
+
         window.closeModal = closeModal;
         window.changeView = changeView;
         window.animateButton = animateButton;
         window.handlePagoSubmit = handlePagoSubmit;
-        
+
     </script>
 </body>
+
 </html>
