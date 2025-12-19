@@ -1094,55 +1094,53 @@
         }
 
         async function fetchAndRenderHistory() {
-            const historyModal = document.getElementById('historyModal');
-            const historyList = document.getElementById('historyList');
-            const currentUserId = localStorage.getItem('userId'); // Filtro solicitado
+    const historyModal = document.getElementById('historyModal');
+    const historyList = document.getElementById('historyList');
+    const currentUserId = localStorage.getItem('userId'); 
 
-            // 1. Abrimos el modal inmediatamente
-            historyModal.classList.add('open');
-            historyList.innerHTML = `
-        <div class="text-center py-6">
-            <i class="fas fa-spinner fa-spin text-3xl text-[var(--color-accent)]"></i>
-            <p class="text-xs mt-3 text-gray-300">Buscando tus registros...</p>
-        </div>`;
+    historyModal.classList.add('open');
+    historyList.innerHTML = `<div class="text-center py-6"><i class="fas fa-spinner fa-spin text-3xl text-[var(--color-accent)]"></i></div>`;
 
-            try {
-                const url = `${APPSSCRIPT_URL}?action=READ_SHEET&sheetName=registro_pagos`;
-                const response = await fetch(url);
-                const result = await response.json();
+    try {
+        const url = `${APPSSCRIPT_URL}?action=READ_SHEET&sheetName=registro_pagos`;
+        const response = await fetch(url);
+        const result = await response.json();
 
-                if (result.status === 'success') {
-                    // Filtramos por userId coincidente con localStorage
-                    const misPagos = result.data.filter(p => String(p.userId) === String(currentUserId));
+        if (result.status === 'success') {
+            // USAMOS userId o id_user, lo que encuentre en el objeto
+            const misPagos = result.data.filter(p => {
+                const idEnFila = p.userId || p.id_user; // Probamos ambas por las dudas
+                return String(idEnFila).trim() === String(currentUserId).trim();
+            });
 
-                    if (misPagos.length === 0) {
-                        historyList.innerHTML = '<p class="text-center text-gray-300 text-sm py-4">No tenés pagos registrados.</p>';
-                    } else {
-                        historyList.innerHTML = '';
-                        // Ordenamos: el más nuevo arriba
-                        misPagos.sort((a, b) => new Date(b.fecha_pago) - new Date(a.fecha_pago));
+            if (misPagos.length === 0) {
+                historyList.innerHTML = '<p class="text-center text-gray-300 text-sm py-4">No tenés pagos registrados todavía.</p>';
+            } else {
+                historyList.innerHTML = '';
+                misPagos.sort((a, b) => new Date(b.fecha_pago) - new Date(a.fecha_pago));
 
-                        misPagos.forEach(p => {
-                            const item = document.createElement('div');
-                            item.className = "bg-white/10 p-3 rounded-lg border border-white/10 flex justify-between items-center";
-                            item.innerHTML = `
+                misPagos.forEach(p => {
+                    const item = document.createElement('div');
+                    item.className = "bg-white/10 p-3 rounded-lg border border-white/10 flex justify-between items-center mb-2";
+                    item.innerHTML = `
                         <div>
                             <p class="text-[10px] text-gray-400 uppercase font-bold">${formatDateForDisplay(p.fecha_pago)}</p>
                             <p class="text-lg font-bold text-[var(--color-accent)]">$ ${p.monto}</p>
                         </div>
                         <div class="text-right">
                             <span class="text-[9px] bg-white/20 text-white px-2 py-1 rounded">
-                                ${p.tipoPago || 'Pago'}
+                                ${p.tipo_pago || p.tipoPago || 'Pago'}
                             </span>
                         </div>`;
-                            historyList.appendChild(item);
-                        });
-                    }
-                }
-            } catch (error) {
-                historyList.innerHTML = '<p class="text-red-400 text-xs text-center">Error al cargar datos.</p>';
+                    historyList.appendChild(item);
+                });
             }
         }
+    } catch (error) {
+        console.error(error);
+        historyList.innerHTML = '<p class="text-red-400 text-xs text-center">Error al conectar con el servidor.</p>';
+    }
+}
 
         // Función para cerrar el modal
         function closeHistoryModal() {
