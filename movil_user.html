@@ -235,6 +235,36 @@
         .modal-overlay.open .modal-content {
             transform: scale(1);
         }
+        
+        /* Estilo específico para el modal de carga (fondo blanco para mantener diseño original) */
+        .upload-modal-content {
+            background-color: white;
+            max-width: 400px;
+            width: 90%;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .modal-overlay.open .upload-modal-content {
+            transform: scale(1);
+        }
+
+        /* Estilo específico para el modal de estado de carga (similar a up_loadform.html) */
+        .upload-status-content {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            color: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 350px;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
 
         .logo-modal {
             filter: brightness(0) invert(1);
@@ -275,10 +305,24 @@
             color: #6b7280;
             cursor: not-allowed;
         }
+
+        /* Estilos específicos para el input file del upload form */
+        input[type="file"]::-webkit-file-upload-button {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+        }
     </style>
 </head>
 
 <body>
+    <!-- Modal de Historial (Existente) -->
     <div id="historyModal" class="modal-overlay">
         <div class="modal-content overflow-hidden flex flex-col" style="max-height: 80vh;">
             <h3 class="text-xl font-extrabold text-white mb-4 border-b border-[var(--color-accent)] pb-2">
@@ -295,6 +339,51 @@
             </button>
         </div>
     </div>
+
+    <!-- Nuevo Modal de Carga de Comprobante (Integrado) -->
+    <div id="uploadModal" class="modal-overlay">
+        <div class="upload-modal-content">
+            <button onclick="closeUploadModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 transition p-2">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+
+            <div class="mb-6 text-center">
+                <div class="w-16 h-16 bg-[#30B5AA]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-file-invoice-dollar text-[#30B5AA] text-2xl"></i>
+                </div>
+                <h1 class="text-xl font-bold text-gray-800">Seleccionar comprobante</h1>
+                <p class="text-gray-500 text-sm mt-1">Informar comprobante de pago</p>
+            </div>
+
+            <form id="uploadForm" class="space-y-6">
+                <div class="text-left">
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2 ml-1">Seleccionar comprobante</label>
+                    <input type="file" id="myFile" required 
+                        class="w-full text-sm text-gray-500 border border-gray-200 rounded-xl p-3 focus:outline-none focus:border-[#30B5AA]">
+                </div>
+
+                <button type="submit" id="btnUploadSubmit" class="w-full py-4 rounded-2xl font-bold text-sm text-white bg-[#30B5AA] shadow-lg shadow-[#30B5AA]/20 flex items-center justify-center gap-2 hover:bg-[#289E93] transition-all">
+                    <span>Continuar</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Nuevo Modal de Estado de Carga (Integrado) -->
+    <div id="uploadStatusModal" class="modal-overlay">
+        <div class="upload-status-content">
+            <div id="uploadModalIcon" class="text-4xl mb-4">
+                <i class="fa-solid fa-circle-check text-[#30B5AA]"></i>
+            </div>
+            <h3 id="uploadModalTitle" class="text-xl font-bold mb-2">¡Éxito!</h3>
+            <p id="uploadModalMessage" class="text-gray-300 text-sm mb-6">El comprobante se envió correctamente.</p>
+            <button onclick="closeUploadStatusModal()" class="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold text-xs transition-colors text-white border border-white/20">
+                ENTENDIDO
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Bienvenida (Existente) -->
     <div id="welcomeModal" class="modal-overlay">
         <div class="modal-content text-center">
             <img src="logo.png" alt="Logo Villa Victoria" class="logo-modal mx-auto mb-4" />
@@ -470,14 +559,13 @@
                                 <option value="Otro">Otro</option>
                             </select>
                         </div>
-                        <div class="form-group mb-4">
-                            <label class="flex items-center">
-                                <i class="fas fa-paperclip mr-2"></i> Subir Comprobante (Imagen/PDF)
-                            </label>
-                            <input type="file" id="pagoArchivo" accept="image/*,.pdf"
-                                class="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[var(--color-accent)] file:text-white hover:file:bg-[#289E93]">
-                            <p id="fileNameDisplay" class="text-[10px] text-gray-500 mt-1 italic"></p>
-                        </div>
+
+
+                        <button type="button" id="btnOpenUpload" onclick="up_loadform()"
+                            class="w-full mb-4 py-3 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 transition duration-200 flex items-center justify-center gap-2">
+                            Subir comprobante de pago
+                        </button>
+
                         <button type="button" onclick="fetchAndRenderHistory()"
                             class="w-full mb-4 py-3 px-4 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 transition duration-200 flex items-center justify-center gap-2">
                             <i class="fas fa-history"></i> Ver historial de pagos
@@ -512,6 +600,8 @@
         import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         const APPSSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwL1RpCbeNhzimjHPUR8WAi8hd9ImwWpO19B2lfAG8m6tfq84xQ_QC1TRJydDobA1_lsQ/exec';
+        // URL Específica para la carga de comprobantes (copiada de up_loadform.html)
+        const UPLOAD_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwd2okmgCC39zP33EDcYuruvrJJANoMzSXFSrDIIdWteVsje5GaA-DX324rU7NYTgq-/exec';
 
         const dataList = document.getElementById('dataList');
         const loadingSpinner = document.getElementById('loadingSpinner');
@@ -527,6 +617,11 @@
         const pagoFechaInput = document.getElementById('pagoFecha');
         const pagoMessageEl = document.getElementById('pagoMessage');
         const submitPagoButton = document.getElementById('submitPagoButton');
+
+        // Elementos del Modal de Subida
+        const uploadForm = document.getElementById('uploadForm');
+        const btnUploadSubmit = document.getElementById('btnUploadSubmit');
+        const uploadStatusModal = document.getElementById('uploadStatusModal');
 
         let allData = [];
         let currentSheet = null;
@@ -1037,102 +1132,71 @@
             }
         }
 
-        async function handlePagoSubmit(event) {
-    event.preventDefault();
+                async function handlePagoSubmit(event) {
+            event.preventDefault();
 
-    const submitPagoButton = document.getElementById('submitPagoButton');
-    const pagoMessageEl = document.getElementById('pagoMessage');
-    const fileInput = document.getElementById('pagoArchivo'); // Asegurate que tu input de archivo tenga este ID
+            submitPagoButton.disabled = true;
+            submitPagoButton.textContent = 'Enviando...';
+            pagoMessageEl.classList.add('hidden');
 
-    submitPagoButton.disabled = true;
-    submitPagoButton.textContent = 'Procesando...';
-    pagoMessageEl.classList.add('hidden');
+            const form = event.target;
+            const formData = new FormData(form);
 
-    const form = event.target;
-    const formData = new FormData(form);
+            const montoValue = formData.get('monto');
 
-    let base64File = "";
-    let fileName = "";
+            const pagoData = {
+                socio: formData.get('socio'),
+                monto: montoValue ? parseFloat(montoValue).toFixed(2) : '',
+                fecha_pago: formData.get('fecha_pago'),
+                referenciaTransaccion: formData.get('referenciaTransaccion'),
+                tipoPago: formData.get('tipoPago'),
+                userId: localStorage.getItem('userId')
+            };
 
-    // --- LÓGICA PARA PROCESAR EL ARCHIVO ---
-    if (fileInput && fileInput.files.length > 0) {
-        submitPagoButton.textContent = 'Leyendo archivo...';
-        const file = fileInput.files[0];
-        fileName = file.name;
-        
-        // Convertimos el archivo a Base64
-        base64File = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(',')[1]); // Extrae solo la data
-            reader.onerror = (error) => reject(error);
-            reader.readAsDataURL(file);
-        });
-    }
+            const url = `${APPSSCRIPT_URL}?action=CREATE_RECORD&sheetName=registro_pagos`;
 
-    const montoValue = formData.get('monto');
+            try {
+                const response = await fetchWithRetry(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({ data: JSON.stringify(pagoData) })
+                });
 
-    const pagoData = {
-        socio: localStorage.getItem('fullName'), // Lo sacamos del localStorage por seguridad
-        monto: montoValue ? parseFloat(montoValue).toFixed(2) : '',
-        fecha_pago: formData.get('fecha_pago'),
-        referenciaTransaccion: formData.get('referenciaTransaccion'),
-        tipoPago: formData.get('tipoPago'),
-        userId: localStorage.getItem('userId'),
-        archivoData: base64File,    // Enviamos la data del archivo
-        archivoNombre: fileName     // Enviamos el nombre del archivo
-    };
+                const resultText = await response.text();
+                let result = {};
+                try {
+                    result = JSON.parse(resultText);
+                } catch (e) {
+                    throw new Error(`Respuesta inválida (no JSON) del Apps Script: ${resultText}`);
+                }
 
-    const url = `${APPSSCRIPT_URL}?action=CREATE_RECORD&sheetName=registro_pagos`;
+                if (result.status === 'success') {
+                    pagoMessageEl.classList.remove('hidden', 'bg-red-100', 'text-red-700');
+                    pagoMessageEl.classList.add('bg-green-100', 'text-green-700');
+                    pagoMessageEl.innerHTML = `<i class="fas fa-check-circle mr-2"></i> ${result.message || 'Pago registrado con éxito.'}`;
+                    form.reset();
+                    pagoSocioInput.value = loggedInUserName;
+                    pagoFechaInput.value = getTodayDateString();
+                    
+                    // REACTIVAR CAMPOS DESPUÉS DEL ENVÍO DEL PAGO
+                    enablePaymentFormFields();
 
-    submitPagoButton.textContent = 'Enviando pago...';
+                } else {
+                    throw new Error(result.message || 'Error desconocido al registrar el pago.');
+                }
 
-    try {
-        // Usamos fetch normal (o fetchWithRetry si lo tenés definido)
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({ data: JSON.stringify(pagoData) })
-        });
-
-        const resultText = await response.text();
-        let result = {};
-        try {
-            result = JSON.parse(resultText);
-        } catch (e) {
-            throw new Error(`Respuesta inválida del servidor: ${resultText}`);
+            } catch (error) {
+                console.error('Error en el registro de pago:', error);
+                pagoMessageEl.classList.remove('hidden', 'bg-green-100', 'text-green-700');
+                pagoMessageEl.classList.add('bg-red-100', 'text-red-700');
+                pagoMessageEl.innerHTML = `<i class="fas fa-times-circle mr-2"></i> Error: ${error.message}`;
+            } finally {
+                submitPagoButton.disabled = false;
+                submitPagoButton.textContent = 'Registrar Pago';
+            }
         }
-
-        if (result.status === 'success') {
-            pagoMessageEl.classList.remove('hidden', 'bg-red-100', 'text-red-700');
-            pagoMessageEl.classList.add('bg-green-100', 'text-green-700');
-            pagoMessageEl.innerHTML = `<i class="fas fa-check-circle mr-2"></i> ${result.message || 'Pago registrado con éxito.'}`;
-            
-            form.reset();
-            
-            // Volvemos a poner los datos por defecto
-            const loggedInUserName = localStorage.getItem('fullName');
-            const socioInput = document.getElementById('pagoSocio');
-            const fechaInput = document.getElementById('pagoFecha');
-            
-            if(socioInput) socioInput.value = loggedInUserName;
-            if(fechaInput) fechaInput.value = new Date().toISOString().split('T')[0];
-
-        } else {
-            throw new Error(result.message || 'Error desconocido al registrar el pago.');
-        }
-
-    } catch (error) {
-        console.error('Error en el registro de pago:', error);
-        pagoMessageEl.classList.remove('hidden', 'bg-green-100', 'text-green-700');
-        pagoMessageEl.classList.add('bg-red-100', 'text-red-700');
-        pagoMessageEl.innerHTML = `<i class="fas fa-times-circle mr-2"></i> Error: ${error.message}`;
-    } finally {
-        submitPagoButton.disabled = false;
-        submitPagoButton.textContent = 'Registrar Pago';
-    }
-}
         async function fetchAndRenderHistory() {
             const historyModal = document.getElementById('historyModal');
             const historyList = document.getElementById('historyList');
@@ -1182,7 +1246,130 @@
             }
         }
 
-        // Función para cerrar el modal
+        // --- FUNCIONES DEL MODAL DE UPLOAD ---
+
+        function up_loadform() {
+            document.getElementById('uploadModal').classList.add('open');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('open');
+        }
+        
+        function closeUploadStatusModal() {
+            uploadStatusModal.classList.remove('open');
+        }
+
+        function showUploadStatusModal(title, message, isError = false) {
+             const titleEl = document.getElementById('uploadModalTitle');
+             const msgEl = document.getElementById('uploadModalMessage');
+             const iconEl = document.getElementById('uploadModalIcon');
+             
+             titleEl.innerText = title;
+             msgEl.innerText = message;
+             
+             if (isError) {
+                iconEl.innerHTML = '<i class="fa-solid fa-circle-exclamation text-red-400"></i>';
+            } else {
+                iconEl.innerHTML = '<i class="fa-solid fa-circle-check text-[#30B5AA]"></i>';
+            }
+            
+            uploadStatusModal.classList.add('open');
+        }
+
+        // Lógica de envío del formulario de upload
+        if(uploadForm) {
+            uploadForm.addEventListener('submit', e => {
+                e.preventDefault();
+
+                const originalContent = btnUploadSubmit.innerHTML;
+                btnUploadSubmit.disabled = true;
+                btnUploadSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Enviando...</span>';
+
+                const fileInput = document.getElementById('myFile');
+                const file = fileInput.files[0];
+                
+                if (!file) {
+                     alert("Por favor seleccione un archivo.");
+                     btnUploadSubmit.disabled = false;
+                     btnUploadSubmit.innerHTML = originalContent;
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function() {
+                    const base64Data = reader.result.split(',')[1];
+                    const payload = {
+                        file: base64Data,
+                        filename: file.name,
+                        mimeType: file.type
+                    };
+
+                    fetch(UPLOAD_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: new URLSearchParams(payload)
+                    })
+                    .then(() => {
+                        btnUploadSubmit.disabled = false;
+                        btnUploadSubmit.innerHTML = originalContent;
+                        uploadForm.reset();
+                        closeUploadModal();
+                        showUploadStatusModal('¡Listo!', 'Comprobante enviado correctamente.');
+                        
+                        // DESHABILITAR CAMPOS DEL FORMULARIO DE PAGO
+                        disablePaymentFormFields();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        btnUploadSubmit.disabled = false;
+                        btnUploadSubmit.innerHTML = originalContent;
+                        closeUploadModal();
+                        showUploadStatusModal('Error', 'No se pudo enviar. Intentá de nuevo.', true);
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        function disablePaymentFormFields() {
+            const fieldsIds = ['pagoMonto', 'pagoFecha', 'pagoReferencia', 'pagoTipo'];
+            fieldsIds.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.readonly = true;
+                    el.classList.add('bg-gray-100', 'cursor-not-allowed'); 
+                }
+            });
+            
+            const btnOpenUpload = document.getElementById('btnOpenUpload');
+            if(btnOpenUpload) {
+                btnOpenUpload.disabled = true;
+                btnOpenUpload.classList.add('opacity-50', 'cursor-not-allowed');
+                btnOpenUpload.innerText = 'Comprobante Cargado ✓';
+            }
+        }
+
+        function enablePaymentFormFields() {
+             const fieldsIds = ['pagoMonto', 'pagoFecha', 'pagoReferencia', 'pagoTipo'];
+            fieldsIds.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.disabled = false;
+                    el.classList.remove('bg-gray-100', 'cursor-not-allowed'); 
+                }
+            });
+            
+            const btnOpenUpload = document.getElementById('btnOpenUpload');
+            if(btnOpenUpload) {
+                btnOpenUpload.disabled = false;
+                btnOpenUpload.classList.remove('opacity-50', 'cursor-not-allowed');
+                btnOpenUpload.innerText = 'Subir comprobante de pago';
+            }
+        }
+
+        // Función para cerrar el modal de historial
         function closeHistoryModal() {
             document.getElementById('historyModal').classList.remove('open');
         }
@@ -1195,6 +1382,11 @@
         window.changeView = changeView;
         window.animateButton = animateButton;
         window.handlePagoSubmit = handlePagoSubmit;
+        
+        // Exponemos las funciones del modal de upload
+        window.up_loadform = up_loadform;
+        window.closeUploadModal = closeUploadModal;
+        window.closeUploadStatusModal = closeUploadStatusModal;
 
     </script>
 </body>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir Archivo - Villa Victoria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" />
+
+    <style>
+        :root {
+            --color-primary: #4A5568;
+            --color-accent: #30B5AA;
+            --color-bg-light: #f3f4f6;
+            --color-card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--color-card-bg);
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: var(--color-accent);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.95);
+        }
+
+        /* Estilo del Modal igual a movil_user.html */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            color: white;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 350px;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        input[type="file"]::-webkit-file-upload-button {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <div class="mb-6">
+            <div class="w-16 h-16 bg-[#30B5AA]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-file-invoice-dollar text-[#30B5AA] text-2xl"></i>
+            </div>
+            <h1 class="text-xl font-bold text-gray-800">Seleccionar comprobante</h1>
+            <p class="text-gray-500 text-sm mt-1">Informar comprobante de pago</p>
+        </div>
+
+        <form id="uploadForm" class="space-y-6">
+            <div class="text-left">
+                <label class="block text-xs font-bold text-gray-400 uppercase mb-2 ml-1">Seleccionar comprobante</label>
+                <input type="file" id="myFile" required 
+                    class="w-full text-sm text-gray-500 border border-gray-200 rounded-xl p-3 focus:outline-none focus:border-[#30B5AA]">
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-primary w-full py-4 rounded-2xl font-bold text-sm shadow-lg shadow-[#30B5AA]/20 flex items-center justify-center gap-2">
+                <span>Continuar</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- Modal de Estado (Estilo movil_user.html) -->
+    <div id="statusModal" class="modal-overlay">
+        <div class="modal-content">
+            <div id="modalIcon" class="text-4xl mb-4">
+                <i class="fa-solid fa-circle-check text-[#30B5AA]"></i>
+            </div>
+            <h3 id="modalTitle" class="text-xl font-bold mb-2">¡Éxito!</h3>
+            <p id="modalMessage" class="text-gray-300 text-sm mb-6">El comprobante se envió correctamente.</p>
+            <button onclick="closeStatusModal()" class="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold text-xs transition-colors">
+                ENTENDIDO
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwd2okmgCC39zP33EDcYuruvrJJANoMzSXFSrDIIdWteVsje5GaA-DX324rU7NYTgq-/exec';
+        
+        const form = document.getElementById('uploadForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusModal = document.getElementById('statusModal');
+
+        function showModal(title, message, isError = false) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            const iconContainer = document.getElementById('modalIcon');
+            
+            if (isError) {
+                iconContainer.innerHTML = '<i class="fa-solid fa-circle-exclamation text-red-400"></i>';
+            } else {
+                iconContainer.innerHTML = '<i class="fa-solid fa-circle-check text-[#30B5AA]"></i>';
+            }
+            
+            statusModal.classList.add('open');
+        }
+
+        function closeStatusModal() {
+            statusModal.classList.remove('open');
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            
+            // Animación de carga en el botón
+            const originalContent = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Aguarde un instente. Enviando...</span>';
+
+            const file = document.getElementById('myFile').files[0];
+            const reader = new FileReader();
+
+            reader.onload = function() {
+                const base64Data = reader.result.split(',')[1];
+                const payload = {
+                    file: base64Data,
+                    filename: file.name,
+                    mimeType: file.type
+                };
+
+                fetch(scriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: new URLSearchParams(payload)
+                })
+                .then(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalContent;
+                    form.reset();
+                    showModal('¡Listo!', 'Comprobante enviado correctamente.');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalContent;
+                    showModal('Error', 'No se pudo enviar el comprobante. Intentá de nuevo.', true);
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+
+</html>
