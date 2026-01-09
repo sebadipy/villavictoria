@@ -53,31 +53,33 @@
             width: 150px; 
             height: 150px; 
             margin-bottom: 0.75rem; 
-            filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(0, 0, 0, 0.3)); 
+            /* Quitamos el filtro invertido para que se vea el logo original en fondo blanco */
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)); 
         }
 
         .header-title {
             font-weight: 700; 
             letter-spacing: -0.01em; 
+            color: var(--color-primary); /* Color de letra igual al fondo anterior */
         }
     </style>
 </head>
 <body>
 
     <div class="form-card">
-        <!-- Encabezado Fiel a index.html -->
-        <div class="text-center bg-[var(--color-primary)] p-8 text-white shadow-xl">
+        <!-- Encabezado con Fondo Blanco y Letras de color primario -->
+        <div class="text-center bg-white p-8 border-b border-gray-100 shadow-sm">
             <img 
-                src="logo.png" 
+                src="logo AAVV.png" 
                 alt="Logo Villa Victoria" 
                 class="large-logo mx-auto" 
-                onerror="this.onerror=null; this.src='https://placehold.co/170x170/30B5AA/ffffff?text=Logo';" 
+                onerror="this.onerror=null; this.src='https://placehold.co/170x170/ffffff/4A5568?text=Logo';" 
             />
             <div class="text-center">
                 <h1 class="header-title text-3xl uppercase">
-                    VILLA VICTORIA
+                    Asociación Amigos Villa Victoria
                 </h1>
-                <p class="text-gray-300 text-xs font-light mt-1 px-4">
+                <p class="text-gray-500 text-xs font-light mt-1 px-4">
                     Centro Cultural Victoria Ocampo - Villa Victoria - Mar del Plata - Batán - Partido de General Pueyrredon.
                 </p>
             </div>
@@ -133,13 +135,27 @@
             </div>
             <h3 class="text-xl font-bold text-gray-800">¡Ya casi sos parte!</h3>
             <p class="mt-4 text-gray-600 text-sm">
-                Para continuar con la asociación, debe proceder con el pago mediante transferencia al alias:
+                Para continuar con la asociación, debe proceder con el pago de la <b>cuota anual de $20.000</b> mediante transferencia bancaria:
             </p>
-            <div class="my-4 p-3 bg-gray-100 rounded-lg border-2 border-dashed border-[var(--color-accent)]">
-                <span class="text-xl font-black text-[var(--color-primary)] tracking-widest uppercase">asociacionVV</span>
+            
+            <!-- Datos de Cuenta Corroborados -->
+            <div class="my-4 p-4 bg-gray-50 rounded-lg border border-gray-200 text-left space-y-3">
+                <div class="flex flex-col">
+                    <span class="text-[10px] uppercase font-bold text-gray-400">Nombre de la cuenta</span>
+                    <span class="text-sm font-semibold text-gray-700 italic">Asoc Amigos de Villa Victoria</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[10px] uppercase font-bold text-gray-400">Banco</span>
+                    <span class="text-sm font-semibold text-gray-700 italic">Banco Credicoop</span>
+                </div>
+                <div class="flex flex-col p-2 bg-white border-2 border-dashed border-[var(--color-accent)] rounded">
+                    <span class="text-[10px] uppercase font-bold text-[var(--color-accent)]">Alias de transferencia</span>
+                    <span class="text-lg font-black text-[var(--color-primary)] tracking-widest uppercase">VILLAVICTORIA.MDP</span>
+                </div>
             </div>
-            <button id="btnAceptarPago" class="w-full bg-[var(--color-accent)] text-white font-bold py-3 rounded-lg shadow-lg hover:bg-[#27948a] transition">
-                ACEPTAR
+
+            <button id="btnAceptarPago" class="w-full bg-[var(--color-accent)] text-white font-bold py-3 rounded-lg shadow-lg hover:bg-[#27948a] transition uppercase tracking-wider">
+                Aceptar
             </button>
         </div>
     </div>
@@ -161,6 +177,7 @@
     </div>
 
     <script>
+        // URL de tu Apps Script una vez desplegado
         const APPS_SCRIPT_URL = ""; 
 
         const form = document.getElementById('contactoForm');
@@ -173,6 +190,7 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            // Estado de carga
             loadingMsg.classList.remove('hidden');
             btnSubmit.disabled = true;
             btnSubmit.classList.add('opacity-50');
@@ -181,26 +199,31 @@
             const data = Object.fromEntries(formData.entries());
 
             try {
-                // Aquí iría el fetch real a tu Apps Script
-                // const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
+                // Aquí se realizaría el envío al Apps Script
+                // await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
                 
+                // Simulamos tiempo de red para que se vea el proceso
                 setTimeout(() => {
                     loadingMsg.classList.add('hidden');
                     pagoModal.classList.remove('hidden');
                     pagoModal.classList.add('flex');
-                }, 1000);
+                }, 1200);
 
             } catch (error) {
-                console.error(error);
+                console.error('Error:', error);
                 loadingMsg.classList.add('hidden');
                 btnSubmit.disabled = false;
                 btnSubmit.classList.remove('opacity-50');
+                alert("Hubo un error al procesar la solicitud. Reintentá.");
             }
         });
 
+        // Al presionar Aceptar en el modal de pago
         btnAceptarPago.addEventListener('click', () => {
             pagoModal.classList.add('hidden');
             pagoModal.classList.remove('flex');
+            
+            // Mostrar modal informativo final
             infoModal.classList.remove('hidden');
             infoModal.classList.add('flex');
         });
