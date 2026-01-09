@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Asociarse - Villa Victoria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" />
+    
+    <style>
+        :root {
+            --color-primary: #4A5568;
+            --color-accent: #30B5AA;
+            --color-bg-light: #f3f4f6;
+            --color-card-bg: #ffffff;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .form-card {
+            background-color: var(--color-card-bg);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .input-focus:focus {
+            border-color: var(--color-accent) !important;
+            box-shadow: 0 0 0 3px rgba(48, 181, 170, 0.3);
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-accent);
+        }
+
+        .large-logo {
+            width: 150px; 
+            height: 150px; 
+            margin-bottom: 0.75rem; 
+            filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(0, 0, 0, 0.3)); 
+        }
+
+        .header-title {
+            font-weight: 700; 
+            letter-spacing: -0.01em; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-card">
+        <!-- Encabezado Fiel a index.html -->
+        <div class="text-center bg-[var(--color-primary)] p-8 text-white shadow-xl">
+            <img 
+                src="logo.png" 
+                alt="Logo Villa Victoria" 
+                class="large-logo mx-auto" 
+                onerror="this.onerror=null; this.src='https://placehold.co/170x170/30B5AA/ffffff?text=Logo';" 
+            />
+            <div class="text-center">
+                <h1 class="header-title text-3xl uppercase">
+                    VILLA VICTORIA
+                </h1>
+                <p class="text-gray-300 text-xs font-light mt-1 px-4">
+                    Centro Cultural Victoria Ocampo - Villa Victoria - Mar del Plata - Batán - Partido de General Pueyrredon.
+                </p>
+            </div>
+        </div>
+
+        <div class="px-8 pt-6 text-center">
+            <h2 class="text-xl font-bold text-gray-700">Solicitud de Asociación</h2>
+            <p class="text-gray-500 text-sm mt-1">Completá los datos para iniciar el trámite.</p>
+        </div>
+
+        <form id="contactoForm" class="p-8 space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                    <input type="text" name="nombre" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="Tu nombre">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+                    <input type="text" name="apellido" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="Tu apellido">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">DNI / ID</label>
+                <input type="number" name="dni" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="Número de documento">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input type="email" name="email" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="ejemplo@correo.com">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Celular / WhatsApp</label>
+                <input type="tel" name="celular" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="Cód. área + número">
+            </div>
+
+            <div id="loadingMsg" class="hidden text-center text-sm text-[var(--color-accent)] animate-pulse">
+                <i class="fas fa-spinner fa-spin mr-2"></i> Procesando solicitud...
+            </div>
+
+            <button type="submit" id="btnSubmit" class="btn-primary w-full text-white font-semibold py-3 px-4 rounded-md shadow-lg hover:shadow-xl transition duration-300 flex items-center justify-center">
+                CONTINUAR <i class="fas fa-paper-plane ml-2 text-sm opacity-80"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- Modal de Pago -->
+    <div id="pagoModal" class="hidden fixed inset-0 z-50 bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-8 text-center animate-bounce-in">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
+                <i class="fas fa-university text-blue-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800">¡Ya casi sos parte!</h3>
+            <p class="mt-4 text-gray-600 text-sm">
+                Para continuar con la asociación, debe proceder con el pago mediante transferencia al alias:
+            </p>
+            <div class="my-4 p-3 bg-gray-100 rounded-lg border-2 border-dashed border-[var(--color-accent)]">
+                <span class="text-xl font-black text-[var(--color-primary)] tracking-widest uppercase">asociacionVV</span>
+            </div>
+            <button id="btnAceptarPago" class="w-full bg-[var(--color-accent)] text-white font-bold py-3 rounded-lg shadow-lg hover:bg-[#27948a] transition">
+                ACEPTAR
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Informativo Final -->
+    <div id="infoModal" class="hidden fixed inset-0 z-50 bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-8 text-center">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800">Solicitud Recibida</h3>
+            <p class="mt-4 text-gray-600 text-sm leading-relaxed">
+                Una vez que se hayan corroborado los datos y verificado el pago, nos pondremos en contacto para dar acceso al servicio.
+            </p>
+            <button onclick="location.reload()" class="mt-6 w-full py-2 text-gray-500 hover:text-gray-800 font-medium border-t border-gray-100 pt-4">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const APPS_SCRIPT_URL = ""; 
+
+        const form = document.getElementById('contactoForm');
+        const pagoModal = document.getElementById('pagoModal');
+        const infoModal = document.getElementById('infoModal');
+        const btnAceptarPago = document.getElementById('btnAceptarPago');
+        const loadingMsg = document.getElementById('loadingMsg');
+        const btnSubmit = document.getElementById('btnSubmit');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            loadingMsg.classList.remove('hidden');
+            btnSubmit.disabled = true;
+            btnSubmit.classList.add('opacity-50');
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                // Aquí iría el fetch real a tu Apps Script
+                // const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
+                
+                setTimeout(() => {
+                    loadingMsg.classList.add('hidden');
+                    pagoModal.classList.remove('hidden');
+                    pagoModal.classList.add('flex');
+                }, 1000);
+
+            } catch (error) {
+                console.error(error);
+                loadingMsg.classList.add('hidden');
+                btnSubmit.disabled = false;
+                btnSubmit.classList.remove('opacity-50');
+            }
+        });
+
+        btnAceptarPago.addEventListener('click', () => {
+            pagoModal.classList.add('hidden');
+            pagoModal.classList.remove('flex');
+            infoModal.classList.remove('hidden');
+            infoModal.classList.add('flex');
+        });
+    </script>
+</body>
+</html>
